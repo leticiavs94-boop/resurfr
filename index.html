@@ -413,7 +413,7 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
       </div>
       <div class="reveal reveal-delay-1">
         <div class="waitlist-form-wrap">
-          <div id="waitlist-form">
+          <form id="waitlist-form" name="waitlist" method="POST" data-netlify="true">
             <div style="margin-bottom:16px">
               <label class="form-label">Your Name</label>
               <input type="text" class="form-input" placeholder="Mike Richardson">
@@ -432,9 +432,11 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
                 <option>All of the above</option>
               </select>
             </div>
+            <input type="hidden" name="form-name" value="waitlist">
+<button class="form-btn" onclick="joinWaitlist()">Join the Waitlist</button>
             <button class="form-btn" onclick="joinWaitlist()">Join the Waitlist</button>
             <p class="form-note">Free during beta · No credit card required</p>
-          </div>
+          </form>
           <div class="success-msg" id="success-msg">
             You're on the list. We'll be in touch as soon as we launch in your area. Thank you for your interest in Resurfr.
           </div>
