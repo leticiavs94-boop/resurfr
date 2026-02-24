@@ -433,7 +433,7 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
               </select>
             </div>
             <input type="hidden" name="form-name" value="waitlist">
-<button class="form-btn" onclick="joinWaitlist()">Join the Waitlist</button>
+<button type="button" class="form-btn" onclick="joinWaitlist()">Join the Waitlist</button>
             <button class="form-btn" onclick="joinWaitlist()">Join the Waitlist</button>
             <p class="form-note">Free during beta · No credit card required</p>
           </form>
@@ -492,6 +492,7 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
     }
     document.getElementById('waitlist-form').style.display = 'none';
     document.getElementById('success-msg').style.display = 'block';
+    return false;
   }
 
   document.getElementById('email-input').addEventListener('keypress', e => {
