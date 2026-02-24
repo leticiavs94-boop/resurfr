@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resurfr — Contractor Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #C8E62B;
+  --yellow-dim: rgba(200,230,43,0.12);
+  --green: #1E4D35;
+  --green-mid: #2A6647;
+  --green-light: #4CAF80;
+  --white: #FFFFFF;
+  --off: #F4F6F1;
+  --border: #E2E8DC;
+  --charcoal: #181C17;
+  --text: #1A1F18;
+  --muted: #6B7A65;
+  --light-muted: #9DAA96;
+  --sidebar-w: 220px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);display:flex}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--charcoal);height:100vh;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:8px}
+.logo-badge{background:var(--yellow);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-badge svg{width:20px;height:20px}
+.logo-text{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:white;letter-spacing:0.5px}
+.nav-section-label{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 20px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;margin:1px 8px;border-radius:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8)}
+.nav-item.active{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(200,230,43,0.2)}
+.nav-item.active svg{stroke:var(--yellow)}
+.sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.06)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:10px;cursor:pointer;transition:background .2s}
+.user-card:hover{background:rgba(255,255,255,0.08)}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:white;flex-shrink:0}
+.user-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);line-height:1.2}
+.user-plan{font-size:10px;color:rgba(255,255,255,0.3)}
+.main{margin-left:var(--sidebar-w);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;flex-shrink:0}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);letter-spacing:0.3px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-date{font-size:12px;color:var(--light-muted);font-weight:500}
+.btn-sm{padding:7px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-sm svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-primary{background:var(--charcoal);color:white}
+.btn-primary:hover{background:var(--green)}
+.btn-yellow{background:var(--yellow);color:var(--charcoal)}
+.btn-yellow:hover{background:#d4f030}
+.btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.content{padding:24px 28px;flex:1}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px 22px;position:relative;overflow:hidden;transition:box-shadow .2s}
+.stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.07)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.revenue::before{background:var(--yellow)}
+.stat-card.clients::before{background:var(--green-light)}
+.stat-card.pending::before{background:#F0B429}
+.stat-card.jobs::before{background:var(--green)}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--light-muted);margin-bottom:8px}
+.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:6px}
+.stat-change{font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+.stat-change.up{color:var(--green-light)}
+.stat-change.warn{color:#F0B429}
+.stat-icon{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.stat-card.revenue .stat-icon{background:#F5FAD4}
+.stat-card.clients .stat-icon{background:#E8F5EE}
+.stat-card.pending .stat-icon{background:#FFF8E6}
+.stat-card.jobs .stat-icon{background:#E8F2EC}
+.stat-icon svg{width:16px;height:16px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stat-card.revenue .stat-icon svg{stroke:#8AAA00}
+.stat-card.clients .stat-icon svg{stroke:var(--green-light)}
+.stat-card.pending .stat-icon svg{stroke:#D4A000}
+.stat-card.jobs .stat-icon svg{stroke:var(--green)}
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:14px;margin-bottom:22px}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.panel{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);letter-spacing:0.3px}
+.panel-action{font-size:11px;font-weight:600;color:var(--green);cursor:pointer;text-decoration:none;letter-spacing:0.3px}
+.panel-action:hover{color:var(--green-mid)}
+.client-item{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);gap:12px;transition:background .15s;cursor:pointer}
+.client-item:last-child{border-bottom:none}
+.client-item:hover{background:var(--off)}
+.client-avatar{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;flex-shrink:0}
+.av-green{background:#E8F2EC;color:var(--green)}
+.av-amber{background:#FDF3E0;color:#B8842A}
+.av-blue{background:#EEF0FF;color:#4050C0}
+.av-red{background:#FDEEE8;color:#A84E2A}
+.client-info{flex:1;min-width:0}
+.client-name{font-size:13px;font-weight:600;color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-meta{font-size:11px;color:var(--light-muted);margin-top:1px}
+.surface-tag{padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;flex-shrink:0}
+.tag-hard{background:#FDF3E0;color:#B8842A}
+.tag-hartru{background:#E8F5EE;color:#2A7A52}
+.tag-clay{background:#FDEEE8;color:#A84E2A}
+.client-status{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-green{background:var(--green-light)}
+.status-amber{background:#F0B429}
+.status-red{background:#EF4444}
+.schedule-item{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;transition:background .15s;cursor:pointer}
+.schedule-item:last-child{border-bottom:none}
+.schedule-item:hover{background:var(--off)}
+.schedule-date{text-align:center;flex-shrink:0;width:40px}
+.schedule-month{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--light-muted)}
+.schedule-day{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);line-height:1}
+.schedule-day.today{color:var(--green)}
+.schedule-info{flex:1}
+.schedule-name{font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:2px}
+.schedule-detail{font-size:11px;color:var(--light-muted)}
+.schedule-amount{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--charcoal);flex-shrink:0;align-self:center}
+.alert-item{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;transition:background .15s;cursor:pointer}
+.alert-item:last-child{border-bottom:none}
+.alert-item:hover{background:var(--off)}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-yellow{background:var(--yellow)}
+.dot-red{background:#EF4444}
+.dot-green{background:var(--green-light)}
+.alert-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+.alert-text strong{font-weight:600;color:var(--charcoal)}
+.alert-time{font-size:10px;color:var(--light-muted);flex-shrink:0;margin-top:2px}
+.invoice-item{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;transition:background .15s;cursor:pointer}
+.invoice-item:last-child{border-bottom:none}
+.invoice-item:hover{background:var(--off)}
+.invoice-num{font-size:11px;font-weight:700;color:var(--light-muted);width:52px;flex-shrink:0}
+.invoice-client{flex:1;font-size:13px;font-weight:500;color:var(--charcoal)}
+.invoice-amount{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)}
+.invoice-status{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;flex-shrink:0}
+.inv-paid{background:#E8F5EE;color:#2A7A52}
+.inv-pending{background:#FFF8E6;color:#B88000}
+.inv-overdue{background:#FDEEE8;color:#A84E2A}
+.map-area{background:linear-gradient(135deg,#E8F0E4 0%,#D4E0CE 100%);position:relative;height:220px;overflow:hidden}
+.map-area::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(30,77,53,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(30,77,53,0.08) 1px,transparent 1px);background-size:28px 28px}
+.map-pin{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.2);cursor:pointer;transition:transform .2s}
+.map-pin:hover{transform:scale(1.4)}
+.pin-hard{background:#D4A843}
+.pin-hartru{background:var(--green-light)}
+.pin-clay{background:#C4633A}
+.pin-active{background:var(--green);box-shadow:0 0 0 3px rgba(30,77,53,0.3)}
+.map-label{position:absolute;background:white;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:10px;font-weight:600;color:var(--charcoal);box-shadow:0 2px 8px rgba(0,0,0,0.1);pointer-events:none;white-space:nowrap}
+.map-legend{position:absolute;bottom:10px;left:10px;background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;gap:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.view{display:none}
+.view.active{display:block}
+.prospect-toolbar{display:flex;align-items:center;gap:10px;padding:14px 28px;background:white;border-bottom:1px solid var(--border);flex-shrink:0}
+.search-input{flex:1;max-width:280px;padding:8px 14px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--off);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--green);background:white}
+.search-input::placeholder{color:var(--light-muted)}
+.filter-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.filter-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.filter-btn.active-filter{background:var(--yellow-dim);border-color:rgba(200,230,43,0.4);color:var(--green)}
+.filter-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.prospect-table{width:100%;border-collapse:collapse}
+.prospect-table th{padding:10px 20px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-muted);background:var(--off);border-bottom:1px solid var(--border)}
+.prospect-table td{padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle}
+.prospect-table tr:hover td{background:#FAFFF8;cursor:pointer}
+.prospect-table tr:last-child td{border-bottom:none}
+.priority-stars{color:#F0B429;letter-spacing:-1px;font-size:12px}
+.priority-empty{color:var(--border)}
+.status-badge{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;display:inline-block}
+.badge-contacted{background:#EEF0FF;color:#3040C0}
+.badge-not-contacted{background:var(--off);color:var(--muted);border:1px solid var(--border)}
+.badge-follow-up{background:#FFF8E6;color:#B88000}
+.badge-client{background:#E8F5EE;color:#2A7A52}
+.payments-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:20px 28px;background:white;border-bottom:1px solid var(--border)}
+.pay-sum-card{padding:16px 20px;border-radius:10px;border:1px solid var(--border)}
+.pay-sum-label{font-size:11px;font-weight:600;color:var(--light-muted);letter-spacing:0.5px;margin-bottom:6px}
+.pay-sum-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal)}
+.pay-sum-card.collected{background:#E8F5EE;border-color:rgba(76,175,128,0.2)}
+.pay-sum-card.collected .pay-sum-value{color:var(--green)}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-track{background:transparent}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.nav-badge{margin-left:auto;background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 6px;line-height:1.4}
+.contract-item{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .15s}
+.contract-item:last-child{border-bottom:none}
+.contract-item:hover{background:var(--off)}
+.contract-icon{width:36px;height:36px;border-radius:8px;background:var(--off);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contract-icon svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.contract-name{font-size:13px;font-weight:600;color:var(--charcoal)}
+.contract-meta{font-size:11px;color:var(--light-muted);margin-top:2px}
+.contract-status{margin-left:auto;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">
+      <svg viewBox="0 0 40 40" fill="none">
+        <rect x="2" y="5" width="36" height="30" rx="3.5" fill="rgba(26,31,24,0.08)" stroke="#1A1F18" stroke-width="2.2"/>
+        <line x1="2" y1="20" x2="38" y2="20" stroke="#1A1F18" stroke-width="2.5"/>
+        <line x1="20" y1="5" x2="20" y2="35" stroke="#1A1F18" stroke-width="1.5"/>
+        <line x1="10" y1="5" x2="10" y2="20" stroke="#1A1F18" stroke-width="1.2"/>
+        <line x1="30" y1="5" x2="30" y2="20" stroke="#1A1F18" stroke-width="1.2"/>
+        <path d="M2 27 Q11 22 20 27 Q29 32 38 27" stroke="#1A1F18" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="logo-text">Resurfr</span>
+  </div>
+  <div class="nav-section-label">Main</div>
+  <a class="nav-item active" onclick="showView('dashboard',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </a>
+  <a class="nav-item" onclick="showView('prospects',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    Prospect Map
+  </a>
+  <a class="nav-item" onclick="showView('clients',this)">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Clients <span class="nav-badge">12</span>
+  </a>
+  <a class="nav-item" onclick="showView('schedule',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Schedule
+  </a>
+  <div class="nav-section-label" style="margin-top:8px">Finance</div>
+  <a class="nav-item" onclick="showView('payments',this)">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    Payments <span class="nav-badge">3</span>
+  </a>
+  <a class="nav-item" onclick="showView('contracts',this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Contracts
+  </a>
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar">MR</div>
+      <div>
+        <div class="user-name">Mike Richardson</div>
+        <div class="user-plan">Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main" id="main-content">
+
+  <div id="view-dashboard" class="view active">
+    <div class="topbar">
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <span class="topbar-date">Tuesday, Feb 24, 2026</span>
+        <button class="btn-sm btn-yellow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Job</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card revenue">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg></div>
+          <div class="stat-label">YTD Revenue</div>
+          <div class="stat-value">$48,200</div>
+          <div class="stat-change up">↑ +14% vs last year</div>
+        </div>
+        <div class="stat-card clients">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="stat-label">Active Clients</div>
+          <div class="stat-value">12</div>
+          <div class="stat-change up">↑ 3 new this month</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+          <div class="stat-label">Pending Invoices</div>
+          <div class="stat-value">$9,400</div>
+          <div class="stat-change warn">3 invoices unpaid</div>
+        </div>
+        <div class="stat-card jobs">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="stat-label">Jobs This Month</div>
+          <div class="stat-value">7</div>
+          <div class="stat-change up">↑ 2 this week</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Upcoming Jobs</div><a class="panel-action" onclick="showView('schedule',null)">View all</a></div>
+          <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">FEB</div><div class="schedule-day today">24</div></div><div class="schedule-info"><div class="schedule-name">Westport Tennis Club</div><div class="schedule-detail">Har-Tru topdressing · 4 courts</div></div><div class="schedule-amount">$3,800</div></div>
+          <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">FEB</div><div class="schedule-day">27</div></div><div class="schedule-info"><div class="schedule-name">Greenwich Country Club</div><div class="schedule-detail">Hard court crack fill · 2 courts</div></div><div class="schedule-amount">$1,200</div></div>
+          <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">MAR</div><div class="schedule-day">3</div></div><div class="schedule-info"><div class="schedule-name">Darien Lawn Club</div><div class="schedule-detail">Full resurfacing · 6 courts</div></div><div class="schedule-amount">$18,400</div></div>
+          <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">MAR</div><div class="schedule-day">10</div></div><div class="schedule-info"><div class="schedule-name">New Canaan Country School</div><div class="schedule-detail">Red clay seasonal prep · 3 courts</div></div><div class="schedule-amount">$2,600</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Service Alerts</div><span style="font-size:10px;background:var(--yellow);color:var(--charcoal);padding:2px 8px;border-radius:10px;font-weight:800">5 due</span></div>
+          <div class="alert-item"><div class="alert-dot dot-red"></div><div class="alert-text"><strong>Stamford Athletic Club</strong> — Hard court overdue for resurfacing. Last done 2018.</div><div class="alert-time">6 yrs</div></div>
+          <div class="alert-item"><div class="alert-dot dot-yellow"></div><div class="alert-text"><strong>Wilton Y</strong> — Har-Tru topdressing due this spring.</div><div class="alert-time">Due Apr</div></div>
+          <div class="alert-item"><div class="alert-dot dot-yellow"></div><div class="alert-text"><strong>Ridgefield Tennis</strong> — Red clay seasonal prep coming up.</div><div class="alert-time">Due Apr</div></div>
+          <div class="alert-item"><div class="alert-dot dot-yellow"></div><div class="alert-text"><strong>Fairfield CC</strong> — Concrete color coat fading. 5 yrs since last coat.</div><div class="alert-time">Due soon</div></div>
+          <div class="alert-item"><div class="alert-dot dot-green"></div><div class="alert-text"><strong>Westport TC</strong> — Topdressing scheduled for today. All set.</div><div class="alert-time">Today</div></div>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Recent Clients</div><a class="panel-action" onclick="showView('clients',null)">View all</a></div>
+          <div class="client-item"><div class="client-avatar av-green">WT</div><div class="client-info"><div class="client-name">Westport Tennis Club</div><div class="client-meta">4 courts · Last job Feb 2026</div></div><span class="surface-tag tag-hartru">Har-Tru</span><div class="client-status status-green"></div></div>
+          <div class="client-item"><div class="client-avatar av-amber">GC</div><div class="client-info"><div class="client-name">Greenwich Country Club</div><div class="client-meta">6 courts · Last job Oct 2025</div></div><span class="surface-tag tag-hard">Hard</span><div class="client-status status-green"></div></div>
+          <div class="client-item"><div class="client-avatar av-red">DL</div><div class="client-info"><div class="client-name">Darien Lawn Club</div><div class="client-meta">6 courts · Job Mar 2026</div></div><span class="surface-tag tag-hard">Hard</span><div class="client-status status-amber"></div></div>
+          <div class="client-item"><div class="client-avatar av-blue">NC</div><div class="client-info"><div class="client-name">New Canaan CC</div><div class="client-meta">3 courts · Last job Apr 2025</div></div><span class="surface-tag tag-clay">Clay</span><div class="client-status status-green"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Invoices</div><a class="panel-action" onclick="showView('payments',null)">View all</a></div>
+          <div class="invoice-item"><div class="invoice-num">#1042</div><div class="invoice-client">Westport Tennis Club</div><div class="invoice-amount">$3,800</div><div class="invoice-status inv-pending">Pending</div></div>
+          <div class="invoice-item"><div class="invoice-num">#1041</div><div class="invoice-client">Greenwich CC</div><div class="invoice-amount">$6,200</div><div class="invoice-status inv-paid">Paid</div></div>
+          <div class="invoice-item"><div class="invoice-num">#1040</div><div class="invoice-client">Stamford Athletic</div><div class="invoice-amount">$1,400</div><div class="invoice-status inv-overdue">Overdue</div></div>
+          <div class="invoice-item"><div class="invoice-num">#1039</div><div class="invoice-client">Wilton YMCA</div><div class="invoice-amount">$4,200</div><div class="invoice-status inv-pending">Pending</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Court Map</div><a class="panel-action" onclick="showView('prospects',null)">Open map</a></div>
+          <div class="map-area">
+            <div class="map-pin pin-active" style="top:40%;left:35%"></div>
+            <div class="map-pin pin-hard" style="top:30%;left:52%"></div>
+            <div class="map-pin pin-hard" style="top:55%;left:28%"></div>
+            <div class="map-pin pin-clay" style="top:22%;left:44%"></div>
+            <div class="map-pin pin-hartru" style="top:48%;left:60%"></div>
+            <div class="map-pin pin-hard" style="top:65%;left:42%"></div>
+            <div class="map-pin pin-hartru" style="top:35%;left:65%"></div>
+            <div class="map-pin pin-hard" style="top:18%;left:30%"></div>
+            <div class="map-pin pin-clay" style="top:72%;left:55%"></div>
+            <div class="map-label" style="top:42%;left:38%">Westport TC — Today</div>
+            <div class="map-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#D4A843"></div>Hard</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#4CAF80"></div>Har-Tru</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#C4633A"></div>Clay</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-prospects" class="view">
+    <div class="topbar">
+      <div class="topbar-title">Prospect Map</div>
+      <div class="topbar-right">
+        <button class="btn-sm btn-primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Court</button>
+      </div>
+    </div>
+    <div class="prospect-toolbar">
+      <input type="text" class="search-input" placeholder="Search courts or locations...">
+      <button class="filter-btn active-filter">All Courts</button>
+      <button class="filter-btn">Hard</button>
+      <button class="filter-btn">Har-Tru</button>
+      <button class="filter-btn">Red Clay</button>
+    </div>
+    <div style="padding:14px 28px">
+      <div class="panel">
+        <table class="prospect-table">
+          <thead><tr><th>Court / Facility</th><th>Surface</th><th>Location</th><th>Last Service</th><th>Priority</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Westport Tennis Club</strong><br><span style="color:var(--light-muted);font-size:11px">6 courts</span></td><td><span class="surface-tag tag-hartru">Har-Tru</span></td><td>Westport, CT</td><td>Feb 2026</td><td><span class="priority-stars">★★★</span><span class="priority-empty">★★</span></td><td><span class="status-badge badge-client">Client</span></td></tr>
+            <tr><td><strong>Greenwich Country Club</strong><br><span style="color:var(--light-muted);font-size:11px">8 courts</span></td><td><span class="surface-tag tag-hard">Hard</span></td><td>Greenwich, CT</td><td>Oct 2025</td><td><span class="priority-stars">★★★★★</span></td><td><span class="status-badge badge-client">Client</span></td></tr>
+            <tr><td><strong>Stamford Athletic Club</strong><br><span style="color:var(--light-muted);font-size:11px">4 courts</span></td><td><span class="surface-tag tag-hard">Hard</span></td><td>Stamford, CT</td><td>2018</td><td><span class="priority-stars">★★★★★</span></td><td><span class="status-badge badge-follow-up">Follow Up</span></td></tr>
+            <tr><td><strong>Darien Lawn Club</strong><br><span style="color:var(--light-muted);font-size:11px">6 courts</span></td><td><span class="surface-tag tag-hard">Hard</span></td><td>Darien, CT</td><td>2021</td><td><span class="priority-stars">★★★★</span><span class="priority-empty">★</span></td><td><span class="status-badge badge-contacted">Contacted</span></td></tr>
+            <tr><td><strong>New Canaan Country School</strong><br><span style="color:var(--light-muted);font-size:11px">3 courts</span></td><td><span class="surface-tag tag-clay">Red Clay</span></td><td>New Canaan, CT</td><td>Apr 2025</td><td><span class="priority-stars">★★★</span><span class="priority-empty">★★</span></td><td><span class="status-badge badge-client">Client</span></td></tr>
+            <tr><td><strong>Wilton YMCA</strong><br><span style="color:var(--light-muted);font-size:11px">2 courts</span></td><td><span class="surface-tag tag-hartru">Har-Tru</span></td><td>Wilton, CT</td><td>Apr 2025</td><td><span class="priority-stars">★★★</span><span class="priority-empty">★★</span></td><td><span class="status-badge badge-client">Client</span></td></tr>
+            <tr><td><strong>Ridgefield Tennis Center</strong><br><span style="color:var(--light-muted);font-size:11px">5 courts</span></td><td><span class="surface-tag tag-hartru">Har-Tru</span></td><td>Ridgefield, CT</td><td>Never</td><td><span class="priority-stars">★★</span><span class="priority-empty">★★★</span></td><td><span class="status-badge badge-not-contacted">Not Contacted</span></td></tr>
+            <tr><td><strong>Fairfield Country Club</strong><br><span style="color:var(--light-muted);font-size:11px">4 courts</span></td><td><span class="surface-tag tag-hard">Hard</span></td><td>Fairfield, CT</td><td>2020</td><td><span class="priority-stars">★★★★</span><span class="priority-empty">★</span></td><td><span class="status-badge badge-follow-up">Follow Up</span></td></tr>
+            <tr><td><strong>Trumbull Tennis Club</strong><br><span style="color:var(--light-muted);font-size:11px">3 courts</span></td><td><span class="surface-tag tag-clay">Red Clay</span></td><td>Trumbull, CT</td><td>Never</td><td><span class="priority-stars">★</span><span class="priority-empty">★★★★</span></td><td><span class="status-badge badge-not-contacted">Not Contacted</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-clients" class="view">
+    <div class="topbar">
+      <div class="topbar-title">Clients</div>
+      <div class="topbar-right"><button class="btn-sm btn-primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Client</button></div>
+    </div>
+    <div style="padding:20px 28px">
+      <div class="panel">
+        <table class="prospect-table">
+          <thead><tr><th>Client</th><th>Surface</th><th>Courts</th><th>Last Job</th><th>Next Due</th><th>Total Billed</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="client-avatar av-green" style="width:32px;height:32px;font-size:12px">WT</div><div><strong>Westport Tennis Club</strong><br><span style="color:var(--light-muted);font-size:11px">Westport, CT</span></div></div></td><td><span class="surface-tag tag-hartru">Har-Tru</span></td><td>6</td><td>Feb 2026</td><td><span style="color:var(--green);font-weight:600;font-size:12px">Feb 2027</span></td><td><strong>$22,400</strong></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="client-avatar av-amber" style="width:32px;height:32px;font-size:12px">GC</div><div><strong>Greenwich Country Club</strong><br><span style="color:var(--light-muted);font-size:11px">Greenwich, CT</span></div></div></td><td><span class="surface-tag tag-hard">Hard</span></td><td>8</td><td>Oct 2025</td><td><span style="color:#F0B429;font-weight:600;font-size:12px">2030–2031</span></td><td><strong>$18,600</strong></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="client-avatar av-red" style="width:32px;height:32px;font-size:12px">DL</div><div><strong>Darien Lawn Club</strong><br><span style="color:var(--light-muted);font-size:11px">Darien, CT</span></div></div></td><td><span class="surface-tag tag-hard">Hard</span></td><td>6</td><td>2021</td><td><span style="color:#EF4444;font-weight:600;font-size:12px">Due now</span></td><td><strong>$14,200</strong></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="client-avatar av-blue" style="width:32px;height:32px;font-size:12px">NC</div><div><strong>New Canaan CC</strong><br><span style="color:var(--light-muted);font-size:11px">New Canaan, CT</span></div></div></td><td><span class="surface-tag tag-clay">Red Clay</span></td><td>3</td><td>Apr 2025</td><td><span style="color:#F0B429;font-weight:600;font-size:12px">Apr 2026</span></td><td><strong>$8,800</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-schedule" class="view">
+    <div class="topbar">
+      <div class="topbar-title">Schedule</div>
+      <div class="topbar-right">
+        <button class="btn-sm btn-ghost">Feb 2026</button>
+        <button class="btn-sm btn-yellow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Book Job</button>
+      </div>
+    </div>
+    <div style="padding:20px 28px">
+      <div class="panel">
+        <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">FEB</div><div class="schedule-day today">24</div></div><div class="schedule-info"><div class="schedule-name">Westport Tennis Club</div><div class="schedule-detail">Har-Tru topdressing · 4 courts · All day</div></div><span class="surface-tag tag-hartru" style="align-self:center">Har-Tru</span><div class="schedule-amount">$3,800</div></div>
+        <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">FEB</div><div class="schedule-day">27</div></div><div class="schedule-info"><div class="schedule-name">Greenwich Country Club</div><div class="schedule-detail">Hard court crack fill · 2 courts · Morning</div></div><span class="surface-tag tag-hard" style="align-self:center">Hard</span><div class="schedule-amount">$1,200</div></div>
+        <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">MAR</div><div class="schedule-day">3</div></div><div class="schedule-info"><div class="schedule-name">Darien Lawn Club</div><div class="schedule-detail">Full resurfacing · 6 courts · 3 days</div></div><span class="surface-tag tag-hard" style="align-self:center">Hard</span><div class="schedule-amount">$18,400</div></div>
+        <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">MAR</div><div class="schedule-day">10</div></div><div class="schedule-info"><div class="schedule-name">New Canaan Country School</div><div class="schedule-detail">Red clay seasonal prep · 3 courts</div></div><span class="surface-tag tag-clay" style="align-self:center">Clay</span><div class="schedule-amount">$2,600</div></div>
+        <div class="schedule-item"><div class="schedule-date"><div class="schedule-month">APR</div><div class="schedule-day">4</div></div><div class="schedule-info"><div class="schedule-name">Wilton YMCA</div><div class="schedule-detail">Har-Tru annual maintenance · 2 courts</div></div><span class="surface-tag tag-hartru" style="align-self:center">Har-Tru</span><div class="schedule-amount">$1,800</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-payments" class="view">
+    <div class="topbar">
+      <div class="topbar-title">Payments</div>
+      <div class="topbar-right"><button class="btn-sm btn-yellow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Invoice</button></div>
+    </div>
+    <div class="payments-summary">
+      <div class="pay-sum-card collected"><div class="pay-sum-label">Collected YTD</div><div class="pay-sum-value">$38,800</div></div>
+      <div class="pay-sum-card"><div class="pay-sum-label">Pending</div><div class="pay-sum-value">$8,000</div></div>
+      <div class="pay-sum-card"><div class="pay-sum-label">Overdue</div><div class="pay-sum-value" style="color:#EF4444">$1,400</div></div>
+    </div>
+    <div style="padding:20px 28px">
+      <div class="panel">
+        <table class="prospect-table">
+          <thead><tr><th>Invoice</th><th>Client</th><th>Service</th><th>Issued</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;color:var(--light-muted)">#1042</td><td>Westport Tennis Club</td><td>Har-Tru topdressing</td><td>Feb 24, 2026</td><td><strong>$3,800</strong></td><td><span class="invoice-status inv-pending">Pending</span></td></tr>
+            <tr><td style="font-weight:700;color:var(--light-muted)">#1041</td><td>Greenwich Country Club</td><td>Full resurfacing</td><td>Oct 15, 2025</td><td><strong>$6,200</strong></td><td><span class="invoice-status inv-paid">Paid</span></td></tr>
+            <tr><td style="font-weight:700;color:var(--light-muted)">#1040</td><td>Stamford Athletic Club</td><td>Crack fill repair</td><td>Jan 8, 2026</td><td><strong>$1,400</strong></td><td><span class="invoice-status inv-overdue">Overdue</span></td></tr>
+            <tr><td style="font-weight:700;color:var(--light-muted)">#1039</td><td>Wilton YMCA</td><td>Seasonal maintenance</td><td>Feb 10, 2026</td><td><strong>$4,200</strong></td><td><span class="invoice-status inv-pending">Pending</span></td></tr>
+            <tr><td style="font-weight:700;color:var(--light-muted)">#1038</td><td>Darien Lawn Club</td><td>Color coat application</td><td>Sep 2, 2025</td><td><strong>$8,200</strong></td><td><span class="invoice-status inv-paid">Paid</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-contracts" class="view">
+    <div class="topbar">
+      <div class="topbar-title">Contracts</div>
+      <div class="topbar-right"><button class="btn-sm btn-yellow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Contract</button></div>
+    </div>
+    <div style="padding:20px 28px">
+      <div class="panel">
+        <div class="contract-item"><div class="contract-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="contract-name">Darien Lawn Club — Full Resurfacing</div><div class="contract-meta">$18,400 · Sent Feb 20, 2026 · Signed by both parties</div></div><div class="contract-status"><span class="invoice-status inv-paid">Signed</span></div></div>
+        <div class="contract-item"><div class="contract-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="contract-name">Westport Tennis Club — Annual Maintenance</div><div class="contract-meta">$3,800 · Sent Feb 22, 2026 · Awaiting client signature</div></div><div class="contract-status"><span class="invoice-status inv-pending">Awaiting</span></div></div>
+        <div class="contract-item"><div class="contract-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="contract-name">New Canaan CC — Seasonal Clay Prep</div><div class="contract-meta">$2,600 · Signed Mar 1, 2026</div></div><div class="contract-status"><span class="invoice-status inv-paid">Signed</span></div></div>
+        <div class="contract-item"><div class="contract-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="contract-name">Greenwich CC — Crack Fill Repair</div><div class="contract-meta">$1,200 · Draft · Not yet sent</div></div><div class="contract-status"><span class="status-badge badge-not-contacted">Draft</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('main-content').scrollTop = 0;
+}
+</script>
+</body>
+</html>
