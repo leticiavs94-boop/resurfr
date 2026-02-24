@@ -145,7 +145,6 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
 .footer-links{display:flex;gap:28px;list-style:none}
 .footer-links a{font-size:13px;color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s}
 .footer-links a:hover{color:rgba(255,255,255,0.7)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .reveal-delay-1{transition-delay:0.1s}
@@ -154,6 +153,7 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
 </style>
 </head>
 <body>
+
 <nav>
   <a href="#" class="nav-logo">
     <div class="nav-logo-badge">
@@ -176,6 +176,7 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
     <li><a href="#waitlist" class="nav-cta">Get Early Access</a></li>
   </ul>
 </nav>
+
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-content">
@@ -318,30 +319,10 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
       <p class="section-sub" style="margin:0 auto">No IT setup. No complex onboarding. Just sign up and start running your business smarter.</p>
     </div>
     <div class="steps-grid reveal">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-bar"></div>
-        <div class="step-title">Sign Up Free</div>
-        <p class="step-desc">Create your account in under 2 minutes. No credit card, no setup fees required during the beta period.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-bar"></div>
-        <div class="step-title">Add Your Courts</div>
-        <p class="step-desc">Import from our pre-mapped county database or manually add the courts you already service.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-bar"></div>
-        <div class="step-title">Manage Everything</div>
-        <p class="step-desc">Prospect, schedule, invoice, and contract — all from one clean dashboard, on any device.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-bar"></div>
-        <div class="step-title">Get Paid Faster</div>
-        <p class="step-desc">Send digital invoices and contracts. Clients pay online. You spend more time on courts, less on paperwork.</p>
-      </div>
+      <div class="step"><div class="step-num">01</div><div class="step-bar"></div><div class="step-title">Sign Up Free</div><p class="step-desc">Create your account in under 2 minutes. No credit card, no setup fees required during the beta period.</p></div>
+      <div class="step"><div class="step-num">02</div><div class="step-bar"></div><div class="step-title">Add Your Courts</div><p class="step-desc">Import from our pre-mapped county database or manually add the courts you already service.</p></div>
+      <div class="step"><div class="step-num">03</div><div class="step-bar"></div><div class="step-title">Manage Everything</div><p class="step-desc">Prospect, schedule, invoice, and contract — all from one clean dashboard, on any device.</p></div>
+      <div class="step"><div class="step-num">04</div><div class="step-bar"></div><div class="step-title">Get Paid Faster</div><p class="step-desc">Send digital invoices and contracts. Clients pay online. You spend more time on courts, less on paperwork.</p></div>
     </div>
   </section>
 </div>
@@ -413,18 +394,19 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
       </div>
       <div class="reveal reveal-delay-1">
         <div class="waitlist-form-wrap">
-          <form id="waitlist-form" name="waitlist" method="POST" data-netlify="true">
+          <form name="waitlist" method="POST" data-netlify="true" onsubmit="handleSubmit(event)">
+            <input type="hidden" name="form-name" value="waitlist">
             <div style="margin-bottom:16px">
               <label class="form-label">Your Name</label>
-              <input type="text" class="form-input" placeholder="Mike Richardson">
+              <input type="text" name="name" class="form-input" placeholder="Mike Richardson">
             </div>
             <div style="margin-bottom:16px">
               <label class="form-label">Email Address</label>
-              <input type="email" class="form-input" placeholder="mike@yourcompany.com" id="email-input">
+              <input type="email" name="email" class="form-input" placeholder="mike@yourcompany.com" id="email-input" required>
             </div>
             <div style="margin-bottom:20px">
               <label class="form-label">Primary Court Type You Service</label>
-              <select class="form-input" style="cursor:pointer">
+              <select name="surface" class="form-input" style="cursor:pointer">
                 <option value="">Select surface type</option>
                 <option>Hard Courts (Asphalt / Concrete)</option>
                 <option>Red Clay</option>
@@ -432,7 +414,9 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
                 <option>All of the above</option>
               </select>
             </div>
-            
+            <button type="submit" class="form-btn">Join the Waitlist</button>
+            <p class="form-note">Free during beta · No credit card required</p>
+          </form>
           <div class="success-msg" id="success-msg">
             You're on the list. We'll be in touch as soon as we launch in your area. Thank you for your interest in Resurfr.
           </div>
@@ -479,22 +463,28 @@ footer{background:var(--charcoal);padding:40px 56px;display:flex;align-items:cen
   }, { threshold: 0.1 });
   reveals.forEach(el => observer.observe(el));
 
-  function joinWaitlist() {
+  function handleSubmit(e) {
+    e.preventDefault();
     const email = document.getElementById('email-input').value;
     if (!email || !email.includes('@')) {
       document.getElementById('email-input').style.borderColor = '#C4633A';
       document.getElementById('email-input').focus();
       return;
     }
-    document.getElementById('waitlist-form').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-    return false;
+    const form = e.target;
+    const data = new FormData(form);
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
+    }).then(() => {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    }).catch(() => {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    });
   }
-
-  document.getElementById('email-input').addEventListener('keypress', e => {
-    if (e.key === 'Enter') joinWaitlist();
-    document.getElementById('email-input').style.borderColor = '';
-  });
 </script>
 </body>
 </html>
