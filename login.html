@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resurfr — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--yellow:#C8E62B;--green:#1E4D35;--charcoal:#181C17;--off:#F4F6F1;--border:#E2E8DC;--light-muted:#9DAA96}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off)}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-wrap{width:100%;max-width:420px}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+.logo-badge{background:var(--yellow);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.logo-text{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal)}
+.login-card{background:white;border:1px solid var(--border);border-radius:16px;padding:36px;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--charcoal);margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--light-muted);margin-bottom:28px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:11px;font-weight:700;letter-spacing:0.5px;color:var(--light-muted);margin-bottom:6px;text-transform:uppercase}
+.form-input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal);outline:none;transition:border-color .2s;background:var(--off)}
+.form-input:focus{border-color:var(--green);background:white}
+.form-input::placeholder{color:#C8D0C2}
+.login-btn{width:100%;padding:14px;background:var(--charcoal);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
+.login-btn:hover{background:var(--green)}
+.login-btn:disabled{opacity:0.6;cursor:not-allowed}
+.error-msg{background:#FDEEE8;border:1px solid rgba(196,99,58,0.2);color:#A84E2A;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.error-msg.show{display:block}
+.login-footer{text-align:center;margin-top:20px;font-size:12px;color:var(--light-muted)}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-logo">
+    <div class="logo-badge">
+      <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+        <rect x="2" y="5" width="36" height="30" rx="3.5" fill="rgba(26,31,24,0.08)" stroke="#1A1F18" stroke-width="2.2"/>
+        <line x1="2" y1="20" x2="38" y2="20" stroke="#1A1F18" stroke-width="2.5"/>
+        <line x1="20" y1="5" x2="20" y2="35" stroke="#1A1F18" stroke-width="1.5"/>
+        <line x1="10" y1="5" x2="10" y2="20" stroke="#1A1F18" stroke-width="1.2"/>
+        <line x1="30" y1="5" x2="30" y2="20" stroke="#1A1F18" stroke-width="1.2"/>
+        <path d="M2 27 Q11 22 20 27 Q29 32 38 27" stroke="#1A1F18" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="logo-text">Resurfr</span>
+  </div>
+  <div class="login-card">
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to your contractor dashboard</div>
+    <div class="error-msg" id="error-msg">Invalid email or password. Please try again.</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+    <div class="login-footer">Resurfr · Built for court pros</div>
+  </div>
+</div>
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://qyrgkspwxjmbjnkaixag.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA'
+);
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session) window.location.href = '/dashboard.html';
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+async function handleLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('error-msg');
+  if (!email || !password) { err.textContent='Please enter your email and password.'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in...'; err.classList.remove('show');
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { err.textContent='Invalid email or password. Please try again.'; err.classList.add('show'); btn.disabled=false; btn.textContent='Sign In'; return; }
+  window.location.href = '/dashboard.html';
+}
+</script>
+</body>
+</html>
