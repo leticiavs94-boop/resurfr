@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resurfr — Court Map</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <style>
-:root{--yellow:#C8E62B;--ydim:rgba(200,230,43,0.12);--green:#1E4D35;--glight:#4CAF80;--off:#F4F6F1;--border:#E2E8DC;--charcoal:#181C17;--text:#1A1F18;--muted:#6B7A65;--lmuted:#9DAA96;}
+:root{--yellow:#C8E62B;--ydim:rgba(200,230,43,0.12);--green:#1E4D35;--off:#F4F6F1;--border:#E2E8DC;--charcoal:#181C17;--text:#1A1F18;--muted:#6B7A65;--lmuted:#9DAA96;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text)}
 #loading-screen{position:fixed;inset:0;background:var(--charcoal);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px}
@@ -54,17 +54,20 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .ci-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
 .tag{padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.3px}
 .th{background:#E8F5EE;color:#2A7A52}.thard{background:#FDF3E0;color:#B8842A}.tclay{background:#FDEEE8;color:#A84E2A}.tdef{background:var(--off);color:var(--muted)}.tclient{background:#E8F5EE;color:#2A7A52}.tprospect{background:#FFF8E6;color:#B88000}.tprivate{background:#F0EEFF;color:#5040A0}
-.leaflet-popup-content-wrapper{border-radius:14px!important;box-shadow:0 8px 32px rgba(0,0,0,0.18)!important;border:1px solid var(--border)!important;padding:0!important;overflow:hidden!important}
-.leaflet-popup-content{margin:0!important;min-width:220px!important}
+
+/* Mapbox popup */
+.mapboxgl-popup-content{padding:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 8px 32px rgba(0,0,0,0.18)!important;border:1px solid var(--border)!important;min-width:220px}
+.mapboxgl-popup-close-button{font-size:18px!important;color:var(--muted)!important;padding:8px 10px!important;line-height:1!important}
+.mapboxgl-popup-tip{display:none!important}
 .pu{padding:14px}
-.pu-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:3px;line-height:1.1}
+.pu-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:3px;line-height:1.1;padding-right:20px}
 .pu-loc{font-size:11px;color:var(--lmuted);margin-bottom:8px}
 .pu-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .pu-tag{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700}
 .pu-note{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
 .pu-foot{background:var(--off);padding:9px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
-.leaflet-popup-tip-container{display:none}
-.leaflet-popup-close-button{color:var(--muted)!important;font-size:18px!important;top:8px!important;right:10px!important}
+
+/* Modal */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .modal{background:white;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
@@ -79,6 +82,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .modal-btns button{flex:1;padding:14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .bcancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
 .bsave{background:var(--charcoal);color:white}.bsave:hover{background:var(--green)}.bsave:disabled{opacity:.55;cursor:not-allowed}
+
+/* Bottom sheet (mobile) */
 .detail-sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:20px 20px 0 0;z-index:300;transition:bottom .3s ease;padding:20px 20px 40px;max-height:60vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.15)}
 .detail-sheet.open{bottom:0}
 .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
@@ -90,14 +95,17 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sheet-row:last-child{border-bottom:none}
 .sheet-row-label{color:var(--lmuted)}.sheet-row-val{font-weight:600;color:var(--charcoal)}
 .sheet-note{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6;background:var(--off);padding:12px;border-radius:8px}
-.close-sheet{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;color:var(--lmuted);cursor:pointer;line-height:1}
+.close-sheet{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;color:var(--lmuted);cursor:pointer}
+
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:600;opacity:0;transition:all .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.ok{background:var(--green)}
 @media(max-width:768px){.side{display:none}}
 </style>
 </head>
 <body>
+
 <div id="loading-screen"><div class="logo">Resurfr</div><div class="spin"></div></div>
+
 <div id="app">
   <div class="topbar">
     <div class="topbar-left">
@@ -107,6 +115,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     </div>
     <button class="btn btn-yellow" onclick="openModal()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Court</button>
   </div>
+
   <div class="stats-strip">
     <div class="sstat"><div class="sval" id="st-total">0</div><div class="slbl">Total</div></div>
     <div class="sstat"><div class="sval" id="st-clients" style="color:#1E4D35">0</div><div class="slbl">Clients</div></div>
@@ -116,6 +125,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <div class="sstat"><div class="sval" id="st-hard" style="color:#B8842A">0</div><div class="slbl">Hard</div></div>
     <div class="sstat"><div class="sval" id="st-clay" style="color:#A84E2A">0</div><div class="slbl">Clay</div></div>
   </div>
+
   <div class="filters">
     <button class="btn btn-ghost on" onclick="setFilter('all',this)">All</button>
     <button class="btn btn-ghost" onclick="setFilter('client',this)">✓ Clients</button>
@@ -125,6 +135,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <button class="btn btn-ghost" onclick="setFilter('Hard',this)">Hard</button>
     <button class="btn btn-ghost" onclick="setFilter('Red Clay',this)">Clay</button>
   </div>
+
   <div class="map-wrap">
     <div id="map"></div>
     <div class="side">
@@ -149,7 +160,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <div class="modal-title">Add Court</div>
     <div class="modal-sub">Add a club, school, or private residence</div>
     <div class="fg"><label class="fl">Facility / Owner Name</label><input type="text" class="fi" id="cn" placeholder="Westport Tennis Club or John Smith"></div>
-    <div class="fg"><label class="fl">Address — we'll pin it automatically</label><input type="text" class="fi" id="ca" placeholder="123 Main St, Westport, CT"></div>
+    <div class="fg"><label class="fl">Address — auto-pinned on map</label><input type="text" class="fi" id="ca" placeholder="123 Main St, Westport, CT"></div>
     <div class="row2">
       <div class="fg"><label class="fl">Surface</label><select class="fi" id="cs"><option value="">Select</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select></div>
       <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="cc" placeholder="2" min="1"></div>
@@ -166,13 +177,18 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <div class="modal-btns"><button class="bcancel" onclick="closeModal()">Cancel</button><button class="bsave" id="save-btn" onclick="saveCourt()">Add to Map</button></div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const{createClient}=supabase;
 const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
-let courts=[],markers=[],map,activeFilter='all',selectedId=null;
+
+mapboxgl.accessToken='pk.eyJ1IjoibHZzMTIzIiwiYSI6ImNtbTFmbGVxbzA5MXgycHBuZzFzZm01ZDMifQ.32iLC3uNxgBQ9dZuN9D70A';
+
+let courts=[],map,activeFilter='all',selectedId=null,popupRef=null;
 const isMobile=()=>window.innerWidth<=768;
+
 const SEED=[
   {id:'s1',name:'Westport Tennis Club',location:'Westport, CT',surface:'Har-Tru',courts:6,status:'client',last_service:'Feb 2026',lat:41.1415,lng:-73.3579,notes:'Annual topdressing client. Contact: Tom Walsh.'},
   {id:'s2',name:'Greenwich Country Club',location:'Greenwich, CT',surface:'Hard',courts:8,status:'client',last_service:'Oct 2025',lat:41.0534,lng:-73.6282,notes:'Full resurfacing due 2030.'},
@@ -212,37 +228,72 @@ async function boot(){
   const{data}=await sb.from('courts').select('*').order('created_at',{ascending:false});
   const db=(data||[]).map(c=>({...c,id:'db_'+c.id}));
   courts=[...SEED,...db];
-  updateStats();initMap();renderList();
+  updateStats();
+  initMap();
+  renderList();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='flex';
 }
 boot();
 
 function initMap(){
-  map=L.map('map',{center:[41.1100,-73.4500],zoom:11,tap:false,tapTolerance:15});
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
-  renderMarkers();
+  map=new mapboxgl.Map({
+    container:'map',
+    style:'mapbox://styles/mapbox/light-v11',
+    center:[-73.4500,41.1100],
+    zoom:10.5
+  });
+
+  map.addControl(new mapboxgl.NavigationControl(),'top-right');
+
+  map.on('load',()=>{
+    renderMarkers();
+  });
 }
 
 function renderMarkers(){
-  markers.forEach(m=>map.removeLayer(m));markers=[];
+  // Remove existing markers
+  document.querySelectorAll('.mbx-marker').forEach(el=>el.remove());
+
   getFiltered().forEach(court=>{
     if(!court.lat||!court.lng)return;
-    const isClient=court.status==='client',isPrivate=court.status==='private';
+
+    const isClient=court.status==='client';
+    const isPrivate=court.status==='private';
     const color=dotColor(court.surface,court.status);
     const border=isClient?'#1E4D35':isPrivate?'#5040A0':'#B88000';
-    const size=isClient?15:isPrivate?12:11;
-    const icon=L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-size/2-6]});
-    const m=L.marker([court.lat,court.lng],{icon}).addTo(map);
-    m.on('click',()=>{if(isMobile())showSheet(court);else m.openPopup();selectCourt(court.id,false);});
-    m.bindPopup(buildPopup(court),{maxWidth:260});
-    markers.push(m);
+    const size=isClient?16:isPrivate?13:11;
+
+    const el=document.createElement('div');
+    el.className='mbx-marker';
+    el.style.cssText=`width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;transition:transform .15s`;
+
+    el.addEventListener('mouseenter',()=>el.style.transform='scale(1.4)');
+    el.addEventListener('mouseleave',()=>el.style.transform='scale(1)');
+
+    el.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      if(isMobile()){
+        showSheet(court);
+      } else {
+        if(popupRef) popupRef.remove();
+        popupRef=new mapboxgl.Popup({offset:12,closeButton:true,maxWidth:'280px'})
+          .setLngLat([court.lng,court.lat])
+          .setHTML(buildPopup(court))
+          .addTo(map);
+      }
+      selectCourt(court.id,false);
+    });
+
+    new mapboxgl.Marker({element:el,anchor:'center'})
+      .setLngLat([court.lng,court.lat])
+      .addTo(map);
   });
 }
 
 function buildPopup(c){
   const sc=surfTagStyle(c.surface),stc=statusTagStyle(c.status);
-  return`<div class="pu"><div class="pu-name">${c.name}</div><div class="pu-loc">${c.location||''}</div><div class="pu-tags"><span class="pu-tag" style="${sc}">${c.surface||'Unknown'}</span><span class="pu-tag" style="${stc}">${statusLabel(c.status)}</span></div>${c.last_service?`<div style="font-size:11px;color:var(--lmuted)">Last service: <strong>${c.last_service}</strong></div>`:''}${c.notes?`<div class="pu-note">${c.notes}</div>`:''}</div><div class="pu-foot"><span>${c.courts||1} court${(c.courts||1)!==1?'s':''}</span><span>${statusLabel(c.status)}</span></div>`;
+  return`<div class="pu"><div class="pu-name">${c.name}</div><div class="pu-loc">${c.location||''}</div><div class="pu-tags"><span class="pu-tag" style="${sc}">${c.surface||'Unknown'}</span><span class="pu-tag" style="${stc}">${statusLabel(c.status)}</span></div>${c.last_service?`<div style="font-size:11px;color:#9DAA96">Last service: <strong>${c.last_service}</strong></div>`:''}${c.notes?`<div class="pu-note">${c.notes}</div>`:''}</div><div class="pu-foot"><span>${c.courts||1} court${(c.courts||1)!==1?'s':''}</span><span>${statusLabel(c.status)}</span></div>`;
 }
 
 function showSheet(c){
@@ -250,7 +301,8 @@ function showSheet(c){
   document.getElementById('ds-loc').textContent=c.location||'';
   document.getElementById('ds-tags').innerHTML=`<span class="sheet-tag" style="${surfTagStyle(c.surface)}">${c.surface||'—'}</span><span class="sheet-tag" style="${statusTagStyle(c.status)}">${statusLabel(c.status)}</span>`;
   document.getElementById('ds-rows').innerHTML=[['Courts',(c.courts||1)+' court'+((c.courts||1)!==1?'s':'')],['Last Service',c.last_service||'Unknown']].map(([l,v])=>`<div class="sheet-row"><span class="sheet-row-label">${l}</span><span class="sheet-row-val">${v}</span></div>`).join('');
-  const ne=document.getElementById('ds-note');if(c.notes){ne.textContent=c.notes;ne.style.display='block';}else ne.style.display='none';
+  const ne=document.getElementById('ds-note');
+  if(c.notes){ne.textContent=c.notes;ne.style.display='block';}else ne.style.display='none';
   document.getElementById('detail-sheet').classList.add('open');
 }
 function closeSheet(){document.getElementById('detail-sheet').classList.remove('open');}
@@ -264,7 +316,9 @@ function renderList(){
 function selectCourt(id,flyTo=true){
   selectedId=id;
   const c=courts.find(x=>x.id===id);if(!c)return;
-  if(flyTo&&c.lat&&c.lng)map.flyTo([c.lat,c.lng],14,{duration:0.6});
+  if(flyTo&&c.lat&&c.lng){
+    map.flyTo({center:[c.lng,c.lat],zoom:14,duration:600});
+  }
   document.querySelectorAll('.ci').forEach(el=>el.classList.remove('sel'));
   const item=document.getElementById('ci-'+id);
   if(item){item.classList.add('sel');item.scrollIntoView({behavior:'smooth',block:'nearest'});}
@@ -281,7 +335,8 @@ function getFiltered(){
 function setFilter(f,btn){
   activeFilter=f;
   document.querySelectorAll('.filters .btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');renderMarkers();renderList();
+  btn.classList.add('on');
+  renderMarkers();renderList();
 }
 
 function updateStats(){
@@ -301,7 +356,13 @@ async function saveCourt(){
   const btn=document.getElementById('save-btn');
   btn.disabled=true;btn.textContent='Locating...';
   let lat=41.1100,lng=-73.4500;
-  if(address){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=us`);const g=await r.json();if(g.length>0){lat=parseFloat(g[0].lat);lng=parseFloat(g[0].lon);}}catch(e){}}
+  if(address){
+    try{
+      const r=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&country=us&limit=1`);
+      const g=await r.json();
+      if(g.features&&g.features.length>0){lng=g.features[0].center[0];lat=g.features[0].center[1];}
+    }catch(e){}
+  }
   btn.textContent='Saving...';
   const{data,error}=await sb.from('courts').insert({name,location:address,surface:document.getElementById('cs').value,courts:parseInt(document.getElementById('cc').value)||1,status:document.getElementById('ctype').value,last_service:document.getElementById('cls').value,notes:document.getElementById('cno').value.trim(),lat,lng}).select().single();
   btn.disabled=false;btn.textContent='Add to Map';
@@ -309,7 +370,7 @@ async function saveCourt(){
   courts.push({...data,id:'db_'+data.id});
   updateStats();renderMarkers();renderList();closeModal();
   toast('Court added!','ok');
-  map.flyTo([lat,lng],14,{duration:0.8});
+  map.flyTo({center:[lng,lat],zoom:14,duration:800});
 }
 
 function openModal(){document.getElementById('modal-overlay').classList.add('open');}
@@ -321,7 +382,7 @@ function dotColor(surface,status){
   if(status==='private'){if(surface==='Har-Tru')return'#8B7DD8';if(surface==='Hard'||surface==='Hard Court')return'#A090CC';if(surface==='Red Clay')return'#CC88BB';return'#8B7DD8';}
   if(surface==='Har-Tru')return'#A8D5B5';if(surface==='Hard'||surface==='Hard Court')return'#E8CFA0';if(surface==='Red Clay')return'#E0A898';return'#C8D0C2';
 }
-function surfTagStyle(s){if(s==='Har-Tru')return'background:#E8F5EE;color:#2A7A52';if(s==='Hard'||s==='Hard Court')return'background:#FDF3E0;color:#B8842A';if(s==='Red Clay')return'background:#FDEEE8;color:#A84E2A';return'background:var(--off);color:var(--muted)';}
+function surfTagStyle(s){if(s==='Har-Tru')return'background:#E8F5EE;color:#2A7A52';if(s==='Hard'||s==='Hard Court')return'background:#FDF3E0;color:#B8842A';if(s==='Red Clay')return'background:#FDEEE8;color:#A84E2A';return'background:#F4F6F1;color:#6B7A65';}
 function statusTagStyle(s){if(s==='client')return'background:#E8F5EE;color:#2A7A52';if(s==='private')return'background:#F0EEFF;color:#5040A0';return'background:#FFF8E6;color:#B88000';}
 function statusLabel(s){if(s==='client')return'✓ Client';if(s==='private')return'🏠 Private';return'🎯 Prospect';}
 function surfTag(s){const c=s==='Har-Tru'?'th':s==='Hard'||s==='Hard Court'?'thard':s==='Red Clay'?'tclay':'tdef';return`<span class="tag ${c}">${s||'—'}</span>`;}
