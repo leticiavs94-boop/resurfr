@@ -342,8 +342,10 @@ let clients = [], jobs = [], invoices = [];
 sb.auth.getSession().then(({ data: { session } }) => {
   if (!session) window.location.href = '/login.html';
 });
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long',month:'short',day:'numeric',year:'numeric'});
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '/login.html'; return; }
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric', year:'numeric'});
   loadAll();
 });
 
