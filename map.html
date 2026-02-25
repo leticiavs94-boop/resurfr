@@ -16,253 +16,315 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 #loading-screen .logo{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:white}
 #loading-screen .spin{width:24px;height:24px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#app{display:none;height:100vh;flex-direction:column}
-.topbar{background:white;border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100}
-.topbar-left{display:flex;align-items:center;gap:12px}
-.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;text-decoration:none;transition:color .2s}
+#app{display:none;flex-direction:column;height:100vh}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:200}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s}
 .back-btn:hover{color:var(--charcoal)}
-.back-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.page-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)}
-.btn{padding:7px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.back-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.divider{width:1px;height:18px;background:var(--border)}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)}
+.btn{padding:7px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
-.btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--charcoal);color:var(--charcoal)}
-.btn-ghost.active-filter{background:var(--ydim);border-color:rgba(200,230,43,0.4);color:var(--green)}
-.stats-strip{display:flex;border-bottom:1px solid var(--border);background:white;flex-shrink:0}
-.strip-stat{flex:1;padding:10px 16px;text-align:center;border-right:1px solid var(--border)}
-.strip-stat:last-child{border-right:none}
-.strip-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1}
-.strip-lbl{font-size:10px;color:var(--lmuted);margin-top:2px}
-.filter-bar{background:white;border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
-.filter-bar::-webkit-scrollbar{display:none}
-.map-layout{display:flex;flex:1;overflow:hidden}
+.btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost.on{background:var(--ydim);border-color:rgba(200,230,43,0.4);color:var(--green)}
+.stats-strip{display:flex;background:white;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.stats-strip::-webkit-scrollbar{display:none}
+.sstat{padding:8px 14px;text-align:center;border-right:1px solid var(--border);flex-shrink:0}
+.sstat:last-child{border-right:none}
+.sval{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:var(--charcoal);line-height:1}
+.slbl{font-size:9px;color:var(--lmuted);margin-top:1px;text-transform:uppercase;letter-spacing:.5px}
+.filters{background:white;border-bottom:1px solid var(--border);padding:8px 14px;display:flex;gap:6px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.map-wrap{display:flex;flex:1;overflow:hidden;min-height:0}
 #map{flex:1;z-index:1}
-.side-panel{width:300px;background:white;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
-.side-panel-head{padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
-.side-panel-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--charcoal);margin-bottom:2px}
-.side-panel-sub{font-size:11px;color:var(--lmuted)}
-.court-list{overflow-y:auto;flex:1}
-.court-item{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;display:flex;align-items:flex-start;gap:9px}
-.court-item:last-child{border-bottom:none}
-.court-item:hover{background:var(--off)}
-.court-item.selected{background:#F0F8F4;border-left:3px solid var(--green)}
-.court-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.court-name{font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:2px}
-.court-meta{font-size:11px;color:var(--lmuted)}
-.court-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
-.tag{padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:0.5px}
-.tag-hard{background:#FDF3E0;color:#B8842A}.tag-hartru{background:#E8F5EE;color:#2A7A52}.tag-clay{background:#FDEEE8;color:#A84E2A}.tag-def{background:var(--off);color:var(--muted)}.tag-client{background:#E8F5EE;color:#2A7A52}.tag-prospect{background:#FFF8E6;color:#B88000}
-.leaflet-popup-content-wrapper{border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:1px solid var(--border);padding:0;overflow:hidden}
-.leaflet-popup-content{margin:0;min-width:200px}
-.popup-inner{padding:14px}
-.popup-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--charcoal);margin-bottom:3px}
-.popup-meta{font-size:11px;color:var(--lmuted);margin-bottom:8px}
-.popup-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.popup-tag{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
-.popup-footer{background:var(--off);padding:9px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
-.leaflet-popup-tip{background:white}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.side{width:290px;background:white;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.side-head{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--charcoal)}
+.side-sub{font-size:11px;color:var(--lmuted);margin-top:1px}
+.court-list{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.ci{display:flex;align-items:flex-start;gap:9px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.ci:last-child{border-bottom:none}
+.ci:hover,.ci.sel{background:#F2FAF6}
+.ci.sel{border-left:3px solid var(--green)}
+.ci-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.ci-name{font-size:13px;font-weight:600;color:var(--charcoal);line-height:1.3}
+.ci-meta{font-size:11px;color:var(--lmuted);margin-top:2px}
+.ci-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.tag{padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.th{background:#E8F5EE;color:#2A7A52}.thard{background:#FDF3E0;color:#B8842A}.tclay{background:#FDEEE8;color:#A84E2A}.tdef{background:var(--off);color:var(--muted)}.tclient{background:#E8F5EE;color:#2A7A52}.tprospect{background:#FFF8E6;color:#B88000}.tprivate{background:#F0EEFF;color:#5040A0}
+.leaflet-popup-content-wrapper{border-radius:14px!important;box-shadow:0 8px 32px rgba(0,0,0,0.18)!important;border:1px solid var(--border)!important;padding:0!important;overflow:hidden!important}
+.leaflet-popup-content{margin:0!important;min-width:220px!important}
+.pu{padding:14px}
+.pu-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:3px;line-height:1.1}
+.pu-loc{font-size:11px;color:var(--lmuted);margin-bottom:8px}
+.pu-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.pu-tag{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.pu-note{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.pu-foot{background:var(--off);padding:9px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+.leaflet-popup-tip-container{display:none}
+.leaflet-popup-close-button{color:var(--muted)!important;font-size:18px!important;top:8px!important;right:10px!important}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:white;border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:18px}
+.modal{background:white;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--lmuted);margin-bottom:18px}
 .fg{margin-bottom:12px}
-.fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.5px;color:var(--lmuted);margin-bottom:4px;text-transform:uppercase}
-.fi{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal);outline:none;transition:border-color .2s;background:var(--off);-webkit-appearance:none}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--lmuted);margin-bottom:4px;text-transform:uppercase}
+.fi{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal);outline:none;transition:border-color .2s;background:var(--off);-webkit-appearance:none;appearance:none}
 .fi:focus{border-color:var(--green);background:white}.fi::placeholder{color:#C8D0C2}
-.modal-btns{display:flex;gap:10px;margin-top:18px}
-.modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
-.b-cancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
-.b-save{background:var(--charcoal);color:white}.b-save:hover{background:var(--green)}.b-save:disabled{opacity:0.6;cursor:not-allowed}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.modal-btns button{flex:1;padding:14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.bcancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
+.bsave{background:var(--charcoal);color:white}.bsave:hover{background:var(--green)}.bsave:disabled{opacity:.55;cursor:not-allowed}
+.detail-sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:20px 20px 0 0;z-index:300;transition:bottom .3s ease;padding:20px 20px 40px;max-height:60vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.15)}
+.detail-sheet.open{bottom:0}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.sheet-name{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:4px}
+.sheet-loc{font-size:13px;color:var(--lmuted);margin-bottom:12px}
+.sheet-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sheet-tag{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:700}
+.sheet-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.sheet-row:last-child{border-bottom:none}
+.sheet-row-label{color:var(--lmuted)}.sheet-row-val{font-weight:600;color:var(--charcoal)}
+.sheet-note{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6;background:var(--off);padding:12px;border-radius:8px}
+.close-sheet{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;color:var(--lmuted);cursor:pointer;line-height:1}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:600;opacity:0;transition:all .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.ok{background:var(--green)}
-@media(max-width:768px){.side-panel{display:none}.stats-strip{display:none}}
+@media(max-width:768px){.side{display:none}}
 </style>
 </head>
 <body>
 <div id="loading-screen"><div class="logo">Resurfr</div><div class="spin"></div></div>
-<div id="app" style="display:none;flex-direction:column;height:100vh">
+<div id="app">
   <div class="topbar">
     <div class="topbar-left">
       <a href="/dashboard.html" class="back-btn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Dashboard</a>
-      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="divider"></div>
       <div class="page-title">Court Map</div>
     </div>
     <button class="btn btn-yellow" onclick="openModal()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Court</button>
   </div>
   <div class="stats-strip">
-    <div class="strip-stat"><div class="strip-val" id="st-total">0</div><div class="strip-lbl">Total</div></div>
-    <div class="strip-stat"><div class="strip-val" id="st-clients" style="color:var(--green)">0</div><div class="strip-lbl">Clients</div></div>
-    <div class="strip-stat"><div class="strip-val" id="st-prospects" style="color:#B88000">0</div><div class="strip-lbl">Prospects</div></div>
-    <div class="strip-stat"><div class="strip-val" id="st-hartru" style="color:#2A7A52">0</div><div class="strip-lbl">Har-Tru</div></div>
-    <div class="strip-stat"><div class="strip-val" id="st-hard" style="color:#B8842A">0</div><div class="strip-lbl">Hard</div></div>
-    <div class="strip-stat"><div class="strip-val" id="st-clay" style="color:#A84E2A">0</div><div class="strip-lbl">Clay</div></div>
+    <div class="sstat"><div class="sval" id="st-total">0</div><div class="slbl">Total</div></div>
+    <div class="sstat"><div class="sval" id="st-clients" style="color:#1E4D35">0</div><div class="slbl">Clients</div></div>
+    <div class="sstat"><div class="sval" id="st-prospects" style="color:#B88000">0</div><div class="slbl">Prospects</div></div>
+    <div class="sstat"><div class="sval" id="st-private" style="color:#5040A0">0</div><div class="slbl">Private</div></div>
+    <div class="sstat"><div class="sval" id="st-hartru" style="color:#2A7A52">0</div><div class="slbl">Har-Tru</div></div>
+    <div class="sstat"><div class="sval" id="st-hard" style="color:#B8842A">0</div><div class="slbl">Hard</div></div>
+    <div class="sstat"><div class="sval" id="st-clay" style="color:#A84E2A">0</div><div class="slbl">Clay</div></div>
   </div>
-  <div class="filter-bar">
-    <button class="btn btn-ghost active-filter" onclick="setFilter('all',this)">All Courts</button>
-    <button class="btn btn-ghost" onclick="setFilter('client',this)">● Clients</button>
-    <button class="btn btn-ghost" onclick="setFilter('prospect',this)">● Prospects</button>
+  <div class="filters">
+    <button class="btn btn-ghost on" onclick="setFilter('all',this)">All</button>
+    <button class="btn btn-ghost" onclick="setFilter('client',this)">✓ Clients</button>
+    <button class="btn btn-ghost" onclick="setFilter('prospect',this)">🎯 Prospects</button>
+    <button class="btn btn-ghost" onclick="setFilter('private',this)">🏠 Private</button>
     <button class="btn btn-ghost" onclick="setFilter('Har-Tru',this)">Har-Tru</button>
-    <button class="btn btn-ghost" onclick="setFilter('Hard',this)">Hard Court</button>
-    <button class="btn btn-ghost" onclick="setFilter('Red Clay',this)">Red Clay</button>
+    <button class="btn btn-ghost" onclick="setFilter('Hard',this)">Hard</button>
+    <button class="btn btn-ghost" onclick="setFilter('Red Clay',this)">Clay</button>
   </div>
-  <div class="map-layout">
+  <div class="map-wrap">
     <div id="map"></div>
-    <div class="side-panel">
-      <div class="side-panel-head"><div class="side-panel-title">Courts</div><div class="side-panel-sub" id="panel-count">Loading...</div></div>
+    <div class="side">
+      <div class="side-head"><div class="side-title">Courts</div><div class="side-sub" id="panel-count">Loading...</div></div>
       <div class="court-list" id="court-list"></div>
     </div>
   </div>
 </div>
 
+<div class="detail-sheet" id="detail-sheet">
+  <button class="close-sheet" onclick="closeSheet()">×</button>
+  <div class="sheet-handle"></div>
+  <div class="sheet-name" id="ds-name"></div>
+  <div class="sheet-loc" id="ds-loc"></div>
+  <div class="sheet-tags" id="ds-tags"></div>
+  <div id="ds-rows"></div>
+  <div class="sheet-note" id="ds-note" style="display:none"></div>
+</div>
+
 <div class="overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title">Add Court</div>
-    <div class="fg"><label class="fl">Facility Name</label><input type="text" class="fi" id="court-name" placeholder="Westport Tennis Club"></div>
-    <div class="fg"><label class="fl">Address</label><input type="text" class="fi" id="court-address" placeholder="123 Main St, Westport, CT"></div>
-    <div class="fg"><label class="fl">Surface Type</label><select class="fi" id="court-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select></div>
-    <div class="fg"><label class="fl">Number of Courts</label><input type="number" class="fi" id="court-count" placeholder="4" min="1"></div>
-    <div class="fg"><label class="fl">Status</label><select class="fi" id="court-status"><option value="prospect">Prospect</option><option value="client">Client</option></select></div>
-    <div class="fg"><label class="fl">Last Service</label><input type="text" class="fi" id="court-last" placeholder="e.g. Spring 2024 or Never"></div>
-    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="court-notes" placeholder="Optional..."></div>
-    <div class="modal-btns"><button class="b-cancel" onclick="closeModal()">Cancel</button><button class="b-save" id="save-court-btn" onclick="saveCourt()">Add Court</button></div>
+    <div class="modal-sub">Add a club, school, or private residence</div>
+    <div class="fg"><label class="fl">Facility / Owner Name</label><input type="text" class="fi" id="cn" placeholder="Westport Tennis Club or John Smith"></div>
+    <div class="fg"><label class="fl">Address — we'll pin it automatically</label><input type="text" class="fi" id="ca" placeholder="123 Main St, Westport, CT"></div>
+    <div class="row2">
+      <div class="fg"><label class="fl">Surface</label><select class="fi" id="cs"><option value="">Select</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select></div>
+      <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="cc" placeholder="2" min="1"></div>
+    </div>
+    <div class="fg"><label class="fl">Type</label>
+      <select class="fi" id="ctype">
+        <option value="prospect">🎯 Prospect</option>
+        <option value="client">✓ Client</option>
+        <option value="private">🏠 Private Residence</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Last Service</label><input type="text" class="fi" id="cls" placeholder="e.g. Spring 2023, Never, Unknown"></div>
+    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="cno" placeholder="Condition, contact name, priority..."></div>
+    <div class="modal-btns"><button class="bcancel" onclick="closeModal()">Cancel</button><button class="bsave" id="save-btn" onclick="saveCourt()">Add to Map</button></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-const { createClient } = supabase;
-const sb = createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
-
+const{createClient}=supabase;
+const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
 let courts=[],markers=[],map,activeFilter='all',selectedId=null;
-
+const isMobile=()=>window.innerWidth<=768;
 const SEED=[
-  {id:'s1',name:'Westport Tennis Club',location:'Westport, CT',surface:'Har-Tru',courts:6,status:'client',last_service:'Feb 2026',lat:41.1415,lng:-73.3579,notes:'Annual topdressing client'},
-  {id:'s2',name:'Greenwich Country Club',location:'Greenwich, CT',surface:'Hard',courts:8,status:'client',last_service:'Oct 2025',lat:41.0534,lng:-73.6282,notes:'Full resurfacing due 2030'},
-  {id:'s3',name:'Darien Lawn Club',location:'Darien, CT',surface:'Hard',courts:6,status:'client',last_service:'2021',lat:41.0731,lng:-73.4690,notes:'Crack fill and reseal completed'},
-  {id:'s4',name:'New Canaan Country School',location:'New Canaan, CT',surface:'Red Clay',courts:3,status:'client',last_service:'Apr 2025',lat:41.1468,lng:-73.4940,notes:'Seasonal clay prep'},
-  {id:'s5',name:'Wilton YMCA',location:'Wilton, CT',surface:'Har-Tru',courts:2,status:'client',last_service:'Apr 2025',lat:41.1954,lng:-73.4365,notes:'Annual maintenance'},
-  {id:'s6',name:'Stamford Athletic Club',location:'Stamford, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2018',lat:41.0534,lng:-73.5387,notes:'⚠️ Overdue — last done 2018'},
-  {id:'s7',name:'Ridgefield Tennis Center',location:'Ridgefield, CT',surface:'Har-Tru',courts:5,status:'prospect',last_service:'Never',lat:41.2815,lng:-73.4982,notes:'Never serviced — high priority'},
-  {id:'s8',name:'Fairfield Country Club',location:'Fairfield, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2020',lat:41.1408,lng:-73.2637,notes:'Color coat fading'},
-  {id:'s9',name:'Trumbull Tennis Club',location:'Trumbull, CT',surface:'Red Clay',courts:3,status:'prospect',last_service:'Never',lat:41.2431,lng:-73.2009,notes:'New contact — follow up'},
-  {id:'s10',name:'Westchester Country Club',location:'Rye, NY',surface:'Har-Tru',courts:10,status:'prospect',last_service:'2023',lat:40.9801,lng:-73.6854,notes:'Large account — worth pursuing'},
-  {id:'s11',name:'New Canaan Field Club',location:'New Canaan, CT',surface:'Har-Tru',courts:4,status:'prospect',last_service:'2022',lat:41.1534,lng:-73.4962,notes:'Har-Tru renewal due'},
-  {id:'s12',name:'Tokeneke Club',location:'Darien, CT',surface:'Hard',courts:6,status:'prospect',last_service:'2021',lat:41.0612,lng:-73.4825,notes:'Crack fill needed'},
-  {id:'s13',name:'Round Hill Club',location:'Greenwich, CT',surface:'Har-Tru',courts:8,status:'prospect',last_service:'2023',lat:41.0712,lng:-73.6634,notes:'Top club — worth pursuing'},
-  {id:'s14',name:'Woodway Country Club',location:'Darien, CT',surface:'Hard',courts:5,status:'prospect',last_service:'2022',lat:41.0889,lng:-73.4521,notes:'Color coat fading'},
-  {id:'s15',name:'Silvermine Golf Club',location:'New Canaan, CT',surface:'Hard',courts:3,status:'prospect',last_service:'Never',lat:41.1289,lng:-73.5123,notes:'New potential client'},
+  {id:'s1',name:'Westport Tennis Club',location:'Westport, CT',surface:'Har-Tru',courts:6,status:'client',last_service:'Feb 2026',lat:41.1415,lng:-73.3579,notes:'Annual topdressing client. Contact: Tom Walsh.'},
+  {id:'s2',name:'Greenwich Country Club',location:'Greenwich, CT',surface:'Hard',courts:8,status:'client',last_service:'Oct 2025',lat:41.0534,lng:-73.6282,notes:'Full resurfacing due 2030.'},
+  {id:'s3',name:'Darien Lawn Club',location:'Darien, CT',surface:'Hard',courts:6,status:'client',last_service:'2023',lat:41.0731,lng:-73.4690,notes:'Crack fill and color coat done last season.'},
+  {id:'s4',name:'New Canaan Country School',location:'New Canaan, CT',surface:'Red Clay',courts:3,status:'client',last_service:'Apr 2025',lat:41.1468,lng:-73.4940,notes:'Seasonal clay prep every spring.'},
+  {id:'s5',name:'Wilton YMCA',location:'Wilton, CT',surface:'Har-Tru',courts:2,status:'client',last_service:'Apr 2025',lat:41.1954,lng:-73.4365,notes:'Annual maintenance contract.'},
+  {id:'s6',name:'Stamford Athletic Club',location:'Stamford, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2018',lat:41.0534,lng:-73.5387,notes:'⚠️ Overdue — last resurfaced 2018. High priority.'},
+  {id:'s7',name:'Ridgefield Tennis Center',location:'Ridgefield, CT',surface:'Har-Tru',courts:5,status:'prospect',last_service:'Never',lat:41.2815,lng:-73.4982,notes:'Never professionally serviced.'},
+  {id:'s8',name:'Fairfield Sportsplex',location:'Fairfield, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2020',lat:41.1408,lng:-73.2637,notes:'Color coat fading, cracks forming.'},
+  {id:'s9',name:'Trumbull Tennis Club',location:'Trumbull, CT',surface:'Red Clay',courts:3,status:'prospect',last_service:'Never',lat:41.2431,lng:-73.2009,notes:'New contact — follow up in March.'},
+  {id:'s10',name:'Westchester Country Club',location:'Rye, NY',surface:'Har-Tru',courts:10,status:'prospect',last_service:'2023',lat:40.9801,lng:-73.6854,notes:'Large account — 10 Har-Tru courts.'},
+  {id:'s11',name:'New Canaan Field Club',location:'New Canaan, CT',surface:'Har-Tru',courts:4,status:'prospect',last_service:'2022',lat:41.1534,lng:-73.4962,notes:'Har-Tru renewal due.'},
+  {id:'s12',name:'Tokeneke Club',location:'Darien, CT',surface:'Hard',courts:6,status:'prospect',last_service:'2021',lat:41.0612,lng:-73.4825,notes:'Crack fill needed on 2 courts.'},
+  {id:'s13',name:'Round Hill Club',location:'Greenwich, CT',surface:'Har-Tru',courts:8,status:'prospect',last_service:'2023',lat:41.0712,lng:-73.6634,notes:'Premium club — big opportunity.'},
+  {id:'s14',name:'Woodway Country Club',location:'Darien, CT',surface:'Hard',courts:5,status:'prospect',last_service:'2022',lat:41.0889,lng:-73.4521,notes:'Color coat fading.'},
+  {id:'s15',name:'Wee Burn Country Club',location:'Darien, CT',surface:'Har-Tru',courts:6,status:'prospect',last_service:'2023',lat:41.0823,lng:-73.4612,notes:'Annual topdressing opportunity.'},
+  {id:'s16',name:'Ox Ridge Hunt Club',location:'Darien, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2019',lat:41.0756,lng:-73.4734,notes:'⚠️ Overdue by several years.'},
+  {id:'s17',name:'Country Club of Fairfield',location:'Fairfield, CT',surface:'Hard',courts:6,status:'prospect',last_service:'2021',lat:41.1356,lng:-73.2489,notes:'Full resurfacing candidate.'},
+  {id:'s18',name:'Greens Farms Academy',location:'Westport, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2022',lat:41.1123,lng:-73.3456,notes:'School — contact athletics dept.'},
+  {id:'s19',name:'Staples High School',location:'Westport, CT',surface:'Hard',courts:6,status:'prospect',last_service:'2020',lat:41.1289,lng:-73.3612,notes:'Town courts — go through Parks & Rec.'},
+  {id:'s20',name:'New Canaan High School',location:'New Canaan, CT',surface:'Hard',courts:4,status:'prospect',last_service:'2021',lat:41.1534,lng:-73.5012,notes:'School district courts.'},
+  {id:'p1',name:'Private Estate — Westport',location:'Westport, CT',surface:'Har-Tru',courts:1,status:'private',last_service:'2022',lat:41.1512,lng:-73.3712,notes:'1 Har-Tru court. Referred by Tom Walsh.'},
+  {id:'p2',name:'Private Estate — Greenwich',location:'Greenwich, CT',surface:'Hard',courts:2,status:'private',last_service:'2020',lat:41.0623,lng:-73.6123,notes:'2 hard courts. Resurfacing overdue.'},
+  {id:'p3',name:'Private Residence — Darien',location:'Darien, CT',surface:'Har-Tru',courts:1,status:'private',last_service:'Never',lat:41.0812,lng:-73.4723,notes:'New build — never serviced.'},
+  {id:'p4',name:'Private Estate — New Canaan',location:'New Canaan, CT',surface:'Red Clay',courts:2,status:'private',last_service:'Apr 2024',lat:41.1623,lng:-73.5034,notes:'2 clay courts. Annual contract potential.'},
+  {id:'p5',name:'Private Residence — Wilton',location:'Wilton, CT',surface:'Hard',courts:1,status:'private',last_service:'2021',lat:41.1912,lng:-73.4423,notes:'1 asphalt court. Crack fill needed.'},
+  {id:'p6',name:'Private Estate — Greenwich',location:'Greenwich, CT',surface:'Har-Tru',courts:2,status:'private',last_service:'2023',lat:41.0734,lng:-73.6534,notes:'2 Har-Tru courts. Gated — call ahead.'},
+  {id:'p7',name:'Private Residence — Westport',location:'Westport, CT',surface:'Hard',courts:1,status:'private',last_service:'2019',lat:41.1334,lng:-73.3534,notes:'⚠️ Hard court not done since 2019.'},
+  {id:'p8',name:'Private Estate — Darien',location:'Darien, CT',surface:'Har-Tru',courts:1,status:'private',last_service:'Apr 2025',lat:41.0934,lng:-73.4834,notes:'Annual Har-Tru client. Very responsive.'},
+  {id:'p9',name:'Private Residence — Stamford',location:'Stamford, CT',surface:'Hard',courts:1,status:'private',last_service:'Never',lat:41.0634,lng:-73.5534,notes:'Never serviced. Referred by neighbor.'},
+  {id:'p10',name:'Private Estate — New Canaan',location:'New Canaan, CT',surface:'Har-Tru',courts:1,status:'private',last_service:'2022',lat:41.1434,lng:-73.4834,notes:'Owner very particular about quality.'},
 ];
 
-async function boot() {
-  const {data:{session}}=await sb.auth.getSession();
+async function boot(){
+  const{data:{session}}=await sb.auth.getSession();
   if(!session){window.location.href='/login.html';return;}
-  const {data}=await sb.from('courts').select('*').order('created_at',{ascending:false});
+  const{data}=await sb.from('courts').select('*').order('created_at',{ascending:false});
   const db=(data||[]).map(c=>({...c,id:'db_'+c.id}));
   courts=[...SEED,...db];
-  updateStats();
-  initMap();
-  renderList();
+  updateStats();initMap();renderList();
   document.getElementById('loading-screen').style.display='none';
-  const app=document.getElementById('app');
-  app.style.display='flex';
+  document.getElementById('app').style.display='flex';
 }
 boot();
 
 function initMap(){
-  map=L.map('map',{center:[41.1200,-73.4500],zoom:11});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+  map=L.map('map',{center:[41.1100,-73.4500],zoom:11,tap:false,tapTolerance:15});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   renderMarkers();
 }
 
 function renderMarkers(){
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
+  markers.forEach(m=>map.removeLayer(m));markers=[];
   getFiltered().forEach(court=>{
     if(!court.lat||!court.lng)return;
-    const isClient=court.status==='client';
-    const color=getColor(court.surface,court.status);
-    const border=isClient?'#1E4D35':'#B88000';
-    const size=isClient?14:11;
-    const icon=L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.25);cursor:pointer"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-size/2-4]});
+    const isClient=court.status==='client',isPrivate=court.status==='private';
+    const color=dotColor(court.surface,court.status);
+    const border=isClient?'#1E4D35':isPrivate?'#5040A0':'#B88000';
+    const size=isClient?15:isPrivate?12:11;
+    const icon=L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-size/2-6]});
     const m=L.marker([court.lat,court.lng],{icon}).addTo(map);
+    m.on('click',()=>{if(isMobile())showSheet(court);else m.openPopup();selectCourt(court.id,false);});
     m.bindPopup(buildPopup(court),{maxWidth:260});
-    m.on('click',()=>selectCourt(court.id));
     markers.push(m);
   });
 }
 
 function buildPopup(c){
-  const sc=c.surface==='Har-Tru'?'#E8F5EE;color:#2A7A52':c.surface==='Hard'?'#FDF3E0;color:#B8842A':'#FDEEE8;color:#A84E2A';
-  const stc=c.status==='client'?'#E8F5EE;color:#2A7A52':'#FFF8E6;color:#B88000';
-  return `<div class="popup-inner"><div class="popup-name">${c.name}</div><div class="popup-meta">${c.location||''} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div><div class="popup-tags"><span class="popup-tag" style="background:${sc}">${c.surface||'Unknown'}</span><span class="popup-tag" style="background:${stc}">${c.status==='client'?'Client':'Prospect'}</span></div>${c.last_service?`<div style="font-size:11px;color:#9DAA96">Last service: ${c.last_service}</div>`:''} ${c.notes?`<div style="font-size:11px;color:#6B7A65;margin-top:4px">${c.notes}</div>`:''}</div><div class="popup-footer">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.status==='client'?'✓ Your client':'🎯 Prospect'}</div>`;
+  const sc=surfTagStyle(c.surface),stc=statusTagStyle(c.status);
+  return`<div class="pu"><div class="pu-name">${c.name}</div><div class="pu-loc">${c.location||''}</div><div class="pu-tags"><span class="pu-tag" style="${sc}">${c.surface||'Unknown'}</span><span class="pu-tag" style="${stc}">${statusLabel(c.status)}</span></div>${c.last_service?`<div style="font-size:11px;color:var(--lmuted)">Last service: <strong>${c.last_service}</strong></div>`:''}${c.notes?`<div class="pu-note">${c.notes}</div>`:''}</div><div class="pu-foot"><span>${c.courts||1} court${(c.courts||1)!==1?'s':''}</span><span>${statusLabel(c.status)}</span></div>`;
 }
 
-function getColor(surface,status){
-  if(status==='client'){if(surface==='Har-Tru')return'#4CAF80';if(surface==='Hard')return'#D4A843';if(surface==='Red Clay')return'#C4633A';return'#4CAF80';}
-  if(surface==='Har-Tru')return'#A8D5B5';if(surface==='Hard')return'#E8CFA0';if(surface==='Red Clay')return'#E0A898';return'#C8D0C2';
+function showSheet(c){
+  document.getElementById('ds-name').textContent=c.name;
+  document.getElementById('ds-loc').textContent=c.location||'';
+  document.getElementById('ds-tags').innerHTML=`<span class="sheet-tag" style="${surfTagStyle(c.surface)}">${c.surface||'—'}</span><span class="sheet-tag" style="${statusTagStyle(c.status)}">${statusLabel(c.status)}</span>`;
+  document.getElementById('ds-rows').innerHTML=[['Courts',(c.courts||1)+' court'+((c.courts||1)!==1?'s':'')],['Last Service',c.last_service||'Unknown']].map(([l,v])=>`<div class="sheet-row"><span class="sheet-row-label">${l}</span><span class="sheet-row-val">${v}</span></div>`).join('');
+  const ne=document.getElementById('ds-note');if(c.notes){ne.textContent=c.notes;ne.style.display='block';}else ne.style.display='none';
+  document.getElementById('detail-sheet').classList.add('open');
 }
+function closeSheet(){document.getElementById('detail-sheet').classList.remove('open');}
 
 function renderList(){
   const f=getFiltered();
   document.getElementById('panel-count').textContent=f.length+' court'+(f.length!==1?'s':'')+' shown';
-  document.getElementById('court-list').innerHTML=f.map(c=>`<div class="court-item ${c.id===selectedId?'selected':''}" onclick="selectCourt('${c.id}')" id="item-${c.id}"><div class="court-dot" style="background:${getColor(c.surface,c.status)}"></div><div style="flex:1;min-width:0"><div class="court-name">${c.name}</div><div class="court-meta">${c.location||''} · ${c.courts||1} courts</div><div class="court-tags">${stag(c.surface)}<span class="tag ${c.status==='client'?'tag-client':'tag-prospect'}">${c.status==='client'?'Client':'Prospect'}</span>${c.last_service?`<span class="tag tag-def">${c.last_service}</span>`:''}</div></div></div>`).join('');
+  document.getElementById('court-list').innerHTML=f.map(c=>`<div class="ci ${c.id===selectedId?'sel':''}" onclick="selectCourt('${c.id}',true)" id="ci-${c.id}"><div class="ci-dot" style="background:${dotColor(c.surface,c.status)}"></div><div style="flex:1;min-width:0"><div class="ci-name">${c.name}</div><div class="ci-meta">${c.location||''} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div><div class="ci-tags">${surfTag(c.surface)}<span class="tag ${c.status==='client'?'tclient':c.status==='private'?'tprivate':'tprospect'}">${statusLabel(c.status)}</span>${c.last_service?`<span class="tag tdef">${c.last_service}</span>`:''}</div></div></div>`).join('');
 }
 
-function selectCourt(id){
+function selectCourt(id,flyTo=true){
   selectedId=id;
-  const c=courts.find(x=>x.id===id);
-  if(!c)return;
-  if(c.lat&&c.lng)map.flyTo([c.lat,c.lng],14,{duration:0.8});
-  document.querySelectorAll('.court-item').forEach(el=>el.classList.remove('selected'));
-  const item=document.getElementById('item-'+id);
-  if(item){item.classList.add('selected');item.scrollIntoView({behavior:'smooth',block:'nearest'});}
-  const fi=getFiltered();
-  markers.forEach((m,i)=>{if(fi[i]&&fi[i].id===id)m.openPopup();});
+  const c=courts.find(x=>x.id===id);if(!c)return;
+  if(flyTo&&c.lat&&c.lng)map.flyTo([c.lat,c.lng],14,{duration:0.6});
+  document.querySelectorAll('.ci').forEach(el=>el.classList.remove('sel'));
+  const item=document.getElementById('ci-'+id);
+  if(item){item.classList.add('sel');item.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
 
 function getFiltered(){
   if(activeFilter==='all')return courts;
   if(activeFilter==='client')return courts.filter(c=>c.status==='client');
   if(activeFilter==='prospect')return courts.filter(c=>c.status==='prospect');
+  if(activeFilter==='private')return courts.filter(c=>c.status==='private');
   return courts.filter(c=>c.surface===activeFilter);
 }
 
 function setFilter(f,btn){
   activeFilter=f;
-  document.querySelectorAll('.filter-bar .btn').forEach(b=>b.classList.remove('active-filter'));
-  btn.classList.add('active-filter');
-  renderMarkers();renderList();
+  document.querySelectorAll('.filters .btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');renderMarkers();renderList();
 }
 
 function updateStats(){
   document.getElementById('st-total').textContent=courts.length;
   document.getElementById('st-clients').textContent=courts.filter(c=>c.status==='client').length;
   document.getElementById('st-prospects').textContent=courts.filter(c=>c.status==='prospect').length;
+  document.getElementById('st-private').textContent=courts.filter(c=>c.status==='private').length;
   document.getElementById('st-hartru').textContent=courts.filter(c=>c.surface==='Har-Tru').length;
-  document.getElementById('st-hard').textContent=courts.filter(c=>c.surface==='Hard').length;
+  document.getElementById('st-hard').textContent=courts.filter(c=>c.surface==='Hard'||c.surface==='Hard Court').length;
   document.getElementById('st-clay').textContent=courts.filter(c=>c.surface==='Red Clay').length;
 }
 
 async function saveCourt(){
-  const name=document.getElementById('court-name').value.trim();
-  const address=document.getElementById('court-address').value.trim();
-  if(!name){toast('Enter a court name','err');return;}
-  const btn=document.getElementById('save-court-btn');
-  btn.disabled=true;btn.textContent='Adding...';
-  let lat=41.1200,lng=-73.4500;
-  if(address){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address+', CT')}&limit=1`);const g=await r.json();if(g.length>0){lat=parseFloat(g[0].lat);lng=parseFloat(g[0].lon);}}catch(e){}}
-  const {data,error}=await sb.from('courts').insert({name,location:address,surface:document.getElementById('court-surface').value,courts:parseInt(document.getElementById('court-count').value)||1,status:document.getElementById('court-status').value,last_service:document.getElementById('court-last').value,notes:document.getElementById('court-notes').value.trim(),lat,lng}).select().single();
-  btn.disabled=false;btn.textContent='Add Court';
+  const name=document.getElementById('cn').value.trim();
+  const address=document.getElementById('ca').value.trim();
+  if(!name){toast('Enter a name','err');return;}
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true;btn.textContent='Locating...';
+  let lat=41.1100,lng=-73.4500;
+  if(address){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=us`);const g=await r.json();if(g.length>0){lat=parseFloat(g[0].lat);lng=parseFloat(g[0].lon);}}catch(e){}}
+  btn.textContent='Saving...';
+  const{data,error}=await sb.from('courts').insert({name,location:address,surface:document.getElementById('cs').value,courts:parseInt(document.getElementById('cc').value)||1,status:document.getElementById('ctype').value,last_service:document.getElementById('cls').value,notes:document.getElementById('cno').value.trim(),lat,lng}).select().single();
+  btn.disabled=false;btn.textContent='Add to Map';
   if(error){toast('Error: '+error.message,'err');return;}
   courts.push({...data,id:'db_'+data.id});
-  updateStats();renderMarkers();renderList();closeModal();toast('Court added!','ok');
+  updateStats();renderMarkers();renderList();closeModal();
+  toast('Court added!','ok');
   map.flyTo([lat,lng],14,{duration:0.8});
 }
 
 function openModal(){document.getElementById('modal-overlay').classList.add('open');}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');['court-name','court-address','court-count','court-last','court-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('court-surface').value='';document.getElementById('court-status').value='prospect';}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');['cn','ca','cc','cls','cno'].forEach(id=>document.getElementById(id).value='');document.getElementById('cs').value='';document.getElementById('ctype').value='prospect';}
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
-function stag(s){const m={'Har-Tru':'tag-hartru','Hard':'tag-hard','Hard Court':'tag-hard','Red Clay':'tag-clay'};return`<span class="tag ${m[s]||'tag-def'}">${s||'—'}</span>`;}
+
+function dotColor(surface,status){
+  if(status==='client'){if(surface==='Har-Tru')return'#4CAF80';if(surface==='Hard'||surface==='Hard Court')return'#D4A843';if(surface==='Red Clay')return'#C4633A';return'#4CAF80';}
+  if(status==='private'){if(surface==='Har-Tru')return'#8B7DD8';if(surface==='Hard'||surface==='Hard Court')return'#A090CC';if(surface==='Red Clay')return'#CC88BB';return'#8B7DD8';}
+  if(surface==='Har-Tru')return'#A8D5B5';if(surface==='Hard'||surface==='Hard Court')return'#E8CFA0';if(surface==='Red Clay')return'#E0A898';return'#C8D0C2';
+}
+function surfTagStyle(s){if(s==='Har-Tru')return'background:#E8F5EE;color:#2A7A52';if(s==='Hard'||s==='Hard Court')return'background:#FDF3E0;color:#B8842A';if(s==='Red Clay')return'background:#FDEEE8;color:#A84E2A';return'background:var(--off);color:var(--muted)';}
+function statusTagStyle(s){if(s==='client')return'background:#E8F5EE;color:#2A7A52';if(s==='private')return'background:#F0EEFF;color:#5040A0';return'background:#FFF8E6;color:#B88000';}
+function statusLabel(s){if(s==='client')return'✓ Client';if(s==='private')return'🏠 Private';return'🎯 Prospect';}
+function surfTag(s){const c=s==='Har-Tru'?'th':s==='Hard'||s==='Hard Court'?'thard':s==='Red Clay'?'tclay':'tdef';return`<span class="tag ${c}">${s||'—'}</span>`;}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 </script>
 </body>
