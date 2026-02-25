@@ -121,12 +121,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
 .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(--lmuted);font-size:13px}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
+.m-card{background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:none}
+.m-card:last-child{border-bottom:none}
+.m-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;gap:8px}
+.m-card-name{font-size:14px;font-weight:700;color:var(--charcoal);line-height:1.3}
+.m-card-amount{font-size:14px;font-weight:700;color:var(--charcoal);white-space:nowrap}
+.m-card-meta{font-size:12px;color:var(--lmuted);margin-bottom:8px;line-height:1.4}
+.m-card-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.m-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.m-card-actions .act-btn{padding:8px 14px;font-size:12px;border-radius:6px}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}.main{margin-left:0}.menu-btn{display:flex}
   .stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
-  .content{padding:16px}.topbar{padding:0 16px}.tbl th,.tbl td{padding:9px 12px}
+  .content{padding:14px}.topbar{padding:0 14px}
   .topbar-date{display:none}
+  .desktop-table{display:none}
+  .m-card{display:block}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr}.stat-val{font-size:28px}}
 </style>
@@ -381,53 +392,68 @@ function renderDashboard(){
 
 // ── CLIENTS TABLE ──
 function renderClients(){
-  document.getElementById('clients-list').innerHTML=clients.length===0?empty('No clients yet — tap "Add Client" to get started'):
-    `<table class="tbl"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Billed</th><th></th></tr></thead><tbody>`+
+  if(clients.length===0){document.getElementById('clients-list').innerHTML=empty('No clients yet — tap "Add Client" to get started');return;}
+  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Billed</th><th></th></tr></thead><tbody>`+
     clients.map(c=>`<tr>
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
-      <td>${c.location||'—'}</td>
-      <td>${stag(c.surface)}</td>
-      <td>${c.courts||1}</td>
+      <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
       <td><strong>$${(c.total_billed||0).toLocaleString()}</strong></td>
-      <td><div class="row-actions">
-        <button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button>
-        <button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button>
-      </div></td>
+      <td><div class="row-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
+  const cards=clients.map(c=>`<div class="m-card">
+    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${(c.total_billed||0).toLocaleString()}</div></div>
+    <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
+    <div class="m-card-tags">${stag(c.surface)}</div>
+    <div class="m-card-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
+  </div>`).join('');
+  document.getElementById('clients-list').innerHTML=tbl+cards;
 }
 
 // ── JOBS TABLE ──
 function renderJobs(){
-  document.getElementById('jobs-list').innerHTML=jobs.length===0?empty('No jobs yet — tap "Add Job" to schedule one'):
-    `<table class="tbl"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
+  if(jobs.length===0){document.getElementById('jobs-list').innerHTML=empty('No jobs yet — tap "Add Job" to schedule one');return;}
+  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
-      <td><strong>${j.clients?.name||'?'}</strong></td>
-      <td>${j.service||'—'}</td>
-      <td>${j.date?new Date(j.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'}</td>
-      <td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
+      <td><strong>${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td>
+      <td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
       <td>${jbadge(j.status)}</td>
-      <td><div class="row-actions">
-        <button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button>
-        <button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button>
-      </div></td>
+      <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
+  const cards=jobs.map(j=>`<div class="m-card">
+    <div class="m-card-top"><div class="m-card-name">${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-meta">${j.service||'—'} · ${fmt(j.date)}</div>
+    <div class="m-card-tags">${jbadge(j.status)}</div>
+    <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div>
+  </div>`).join('');
+  document.getElementById('jobs-list').innerHTML=tbl+cards;
 }
 
 // ── INVOICES TABLE ──
 function renderInvoices(){
-  document.getElementById('invoices-list').innerHTML=invoices.length===0?empty('No invoices yet — tap "New Invoice" to create one'):
-    `<table class="tbl"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
+  if(invoices.length===0){document.getElementById('invoices-list').innerHTML=empty('No invoices yet — tap "New Invoice" to create one');return;}
+  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
     invoices.map(i=>`<tr>
-      <td><strong>${i.clients?.name||'?'}</strong></td>
-      <td><strong>$${(i.amount||0).toLocaleString()}</strong></td>
-      <td>${i.issued_date?new Date(i.issued_date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'}</td>
-      <td>${ibadge(i.status)}</td>
+      <td><strong>${i.clients?.name||'?'}</strong></td><td><strong>$${(i.amount||0).toLocaleString()}</strong></td>
+      <td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
       <td><div class="row-actions">
         ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
         <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
         <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
       </div></td>
     </tr>`).join('')+`</tbody></table>`;
+  const cards=invoices.map(i=>`<div class="m-card">
+    <div class="m-card-top"><div class="m-card-name">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-meta">${fmt(i.issued_date)}</div>
+    <div class="m-card-tags">${ibadge(i.status)}</div>
+    <div class="m-card-actions">
+      ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+      <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
+      <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
+    </div>
+  </div>`).join('');
+  document.getElementById('invoices-list').innerHTML=tbl+cards;
 }
 
 // ── MARK AS PAID ──
