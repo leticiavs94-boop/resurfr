@@ -158,7 +158,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);di
       <div class="user-avatar">MR</div>
       <div>
         <div class="user-name">Mike Richardson</div>
-        <div class="user-plan">Pro Plan</div>
+        <div class="user-plan" style="cursor:pointer;color:rgba(255,255,255,0.3)" onclick="signOut()">Sign Out</div>
       </div>
     </div>
   </div>
@@ -513,7 +513,11 @@ function surfaceTag(s) {
 function jobBadge(s) { const m={scheduled:'inv-pending',completed:'inv-paid',cancelled:'inv-overdue'}; return `<span class="invoice-status ${m[s]||'inv-pending'}">${s||'scheduled'}</span>`; }
 function invBadge(s) { const m={paid:'inv-paid',pending:'inv-pending',overdue:'inv-overdue'}; return `<span class="invoice-status ${m[s]||'inv-pending'}">${s||'pending'}</span>`; }
 function emptyState(t,s) { return `<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p><strong>${t}</strong><br>${s}</p></div>`; }
-function showToast(msg, ok=true) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'+(ok?' success':''); setTimeout(()=>t.className='toast',3000); }
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = '/login.html';
+}
+  function showToast(msg, ok=true) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'+(ok?' success':''); setTimeout(()=>t.className='toast',3000); }
 </script>
 </body>
 </html>
