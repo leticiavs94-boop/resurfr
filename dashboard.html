@@ -99,12 +99,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 
 .fg{margin-bottom:12px}
 .fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.5px;color:var(–lmuted);margin-bottom:4px;text-transform:uppercase}
-.fi{width:100%;padding:10px 14px;border:1.5px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:15px;color:var(–charcoal);outline:none;transition:border-color .2s;background:var(–off);-webkit-appearance:none;-webkit-text-fill-color:var(–charcoal)}
-.fi:focus{border-color:var(–green);background:white;-webkit-text-fill-color:var(–charcoal)}
-input[type=date].fi{color:var(–charcoal);-webkit-text-fill-color:var(–charcoal)}
-select.fi{color:var(–charcoal);-webkit-text-fill-color:var(–charcoal)}
-select.fi option{color:var(–charcoal)}
+.fi{width:100%;padding:10px 14px;border:1.5px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:15px;color:var(–charcoal)!important;outline:none;transition:border-color .2s;background:var(–off);-webkit-appearance:none;-webkit-text-fill-color:var(–charcoal)!important}
+.fi:focus{border-color:var(–green);background:white}
+input[type=date].fi,.fi[type=date]{color:var(–charcoal)!important;-webkit-text-fill-color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit{color:var(–charcoal)!important;-webkit-text-fill-color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit-text{color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit-month-field{color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit-day-field{color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit-year-field{color:var(–charcoal)!important}
+select.fi,select.fi:focus{color:var(–charcoal)!important;-webkit-text-fill-color:var(–charcoal)!important}
 .fi::placeholder{color:#C8D0C2}
+input[type=date]::-webkit-datetime-edit{color:var(–charcoal)!important}
+input[type=date]::-webkit-datetime-edit-fields-wrapper{color:var(–charcoal)!important}
+input[type=date]::-webkit-inner-spin-button{display:none}
+input[type=date]::-webkit-calendar-picker-indicator{opacity:0.5}
+select option{color:var(–charcoal)!important}
 .modal-btns{display:flex;gap:10px;margin-top:18px}
 .modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .b-cancel{background:var(–off);color:var(–muted);border:1px solid var(–border)}
