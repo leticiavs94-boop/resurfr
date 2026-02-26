@@ -381,11 +381,11 @@ select option{color:var(–charcoal)!important}
   <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
   <div class="fg">
     <label class="fl">Invoice Amount ($)</label>
-    <input type="number" class="fi" id="i-amount" placeholder="0">
+    <input type="number" class="fi" id="qa-i-amount" placeholder="0">
     <div style="font-size:11px;color:var(--lmuted);margin-top:4px">Pre-filled from job — edit if different</div>
   </div>
   <div class="fg"><label class="fl">Payment Status</label>
-    <select class="fi" id="i-status">
+    <select class="fi" id="qa-i-status">
       <option value="pending">Pending — not yet paid</option>
       <option value="paid">Paid ✓</option>
       <option value="overdue">Overdue</option>
@@ -433,9 +433,9 @@ select option{color:var(–charcoal)!important}
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
     <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="i-client"></select></div>
-    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
+    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-i-amount" placeholder="3800"></div>
     <div class="fg"><label class="fl">Status</label>
-      <select class="fi" id="i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
+      <select class="fi" id="qa-i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
     </div>
     <div class="fg"><label class="fl">Notes / Comments</label><input type="text" class="fi" id="i-notes" placeholder="Payment instructions, work summary..."></div>
     <div class="fg">
@@ -507,6 +507,10 @@ select option{color:var(–charcoal)!important}
     <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:6px">Notes</div>
       <div id="jd-notes" style="font-size:13px;color:var(--muted);line-height:1.5">—</div>
+    </div>
+    <div id="jd-invoice-section" style="padding:14px 20px;border-bottom:1px solid var(--border);display:none">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:8px">Invoice</div>
+      <div id="jd-invoice-content"></div>
     </div>
     <div style="padding:16px 20px;display:flex;gap:10px">
       <button id="jd-done-btn" onclick="markJobDone(document.getElementById('job-detail-overlay').dataset.jobId)" style="flex:1;padding:13px;border-radius:10px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✓ Mark as Done</button>
@@ -855,14 +859,16 @@ function showClientDetail(id){
   document.getElementById('cd-invoices').innerHTML=cInvoices.length===0
     ?'<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No invoices</div>'
     :cInvoices.map(i=>`
-      <div style="padding:10px 16px;border-bottom:1px solid var(--border)">
-        <div style="display:flex;align-items:center;gap:10px">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px">
           <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
           <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
           ${ibadge(i.status)}
+          ${i.photo_url?'<span style="font-size:14px">📎</span>':''}
           ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700">✓ Paid</button>`:''}
         </div>
         ${i.notes?`<div style="font-size:11px;color:var(--lmuted);margin-top:4px">${i.notes}</div>`:''}
+        ${i.photo_url?`<img src="${i.photo_url}" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'150px':'none'" style="width:100%;border-radius:8px;margin-top:8px;max-height:150px;object-fit:cover;cursor:pointer" title="Tap to expand">`:''}
       </div>`).join('');
   el.style.display='flex';
 }
@@ -1056,7 +1062,7 @@ function qaNext(page){
   document.getElementById('qa-page-'+page).style.display='block';
   if(page===3){
     const jobAmt=parseFloat(document.getElementById('qa-j-amount').value)||0;
-    document.getElementById('i-amount').value=jobAmt||'';
+    document.getElementById('qa-i-amount').value=jobAmt||'';
     document.getElementById('qa-inv-preview').textContent='$'+jobAmt.toLocaleString();
   }
   // Update step indicators
@@ -1095,7 +1101,7 @@ async function qaSaveJobThenInvoice(){
       if(error){toast('Error saving job: '+error.message,'err');return;}
       qaJobSaved=true;
       // Pre-fill invoice amount from job
-      document.getElementById('i-amount').value=document.getElementById('qa-j-amount').value||'';
+      document.getElementById('qa-i-amount').value=document.getElementById('qa-j-amount').value||'';
     }
   }
   qaNext(3);
@@ -1121,12 +1127,12 @@ async function qaFinish(saveJob, saveInvoice){
 
   // Save invoice if requested
   if(saveInvoice && qaClientId){
-    const amt=parseFloat(document.getElementById('i-amount').value);
+    const amt=parseFloat(document.getElementById('qa-i-amount').value);
     if(amt){
       await sb.from('invoices').insert({
         client_id:qaClientId,
         amount:amt,
-        status:document.getElementById('i-status').value
+        status:document.getElementById('qa-i-status').value
       });
     }
   }
@@ -1305,6 +1311,21 @@ function showJobDetail(id){
   document.getElementById('jd-status').innerHTML=jbadge(j.status);
   document.getElementById('jd-notes').textContent=j.notes||'No notes';
   document.getElementById('jd-next').textContent=j.next_visit?fmt(j.next_visit):'Not set';
+  // Show linked invoice + photo
+  const linkedInv=invoices.filter(i=>String(i.client_id)===String(j.client_id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+  const invSection=document.getElementById('jd-invoice-section');
+  const invContent=document.getElementById('jd-invoice-content');
+  if(linkedInv){
+    invSection.style.display='block';
+    invContent.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(linkedInv.amount||0).toLocaleString()}</span>
+      ${ibadge(linkedInv.status)}
+      ${linkedInv.notes?`<span style="font-size:11px;color:var(--lmuted)">${linkedInv.notes}</span>`:''}
+    </div>
+    ${linkedInv.photo_url?`<img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;cursor:pointer" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'160px':'none'" title="Tap to expand">`:''}`;
+  } else {
+    invSection.style.display='none';
+  }
   const doneBtn=document.getElementById('jd-done-btn');
   if(j.status==='completed'){doneBtn.style.display='none';}
   else{doneBtn.style.display='block';}
