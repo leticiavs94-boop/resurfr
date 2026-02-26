@@ -742,14 +742,14 @@ function renderDashboard(){
   document.getElementById('d-upcoming').innerHTML = upcoming.length===0
     ? empty('No upcoming jobs — tap "Add Job" to schedule one')
     : upcoming.slice(0,5).map(j=>{
-        const d = new Date(j.date+'T00:00:00');
-        const isToday = d.toDateString()===new Date().toDateString();
-        const isTomorrow = d.toDateString()===new Date(Date.now()+86400000).toDateString();
-        const dayLabel = isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+        const d = j.date ? new Date(j.date+'T00:00:00') : null;
+        const isToday = d && d.toDateString()===new Date().toDateString();
+        const isTomorrow = d && d.toDateString()===new Date(Date.now()+86400000).toDateString();
+        const dayLabel = !d ? '<span style="color:var(--lmuted)">No date set</span>' : isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
         return `<div class="c-row" style="align-items:center;cursor:pointer" onclick="showJobDetail('${j.id}')">
           <div style="width:44px;text-align:center;flex-shrink:0">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d.getDate()}</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d.toLocaleDateString('en-US',{month:'short'})}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
           </div>
           <div style="flex:1;min-width:0">
             <div class="c-name">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
