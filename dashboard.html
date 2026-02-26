@@ -470,7 +470,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
         <div id="cd-meta" style="font-size:12px;color:var(--lmuted);margin-top:2px"></div>
       </div>
-      <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
+      <div style="display:flex;gap:6px">
+        <button id="cd-edit-btn" onclick="cdEdit()" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer">Edit</button>
+        <button id="cd-delete-btn" onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:#A84E2A;cursor:pointer">Delete</button>
+        <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)">
       <div style="background:white;padding:14px 20px">
@@ -769,6 +773,7 @@ function showClientDetail(id){
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
   const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const el=document.getElementById('client-detail-overlay');
+  el.dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
   document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':'')+( c.surface||'')+(c.courts?' · '+c.courts+' court'+(c.courts!==1?'s':''):'');
@@ -1152,6 +1157,18 @@ function stag(s){const m={'Har-Tru':'tag-hartru','Hard':'tag-hard','Hard Court':
 function jbadge(s){const m={scheduled:'b-scheduled',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
 function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
+function cdEdit(){
+  const id=document.getElementById('client-detail-overlay').dataset.clientId;
+  document.getElementById('client-detail-overlay').style.display='none';
+  editClient(id);
+}
+function cdDelete(){
+  const id=document.getElementById('client-detail-overlay').dataset.clientId;
+  const c=clients.find(x=>String(x.id)===String(id));
+  if(!c)return;
+  document.getElementById('client-detail-overlay').style.display='none';
+  confirmDelete('client',id,c.name);
+}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 </script>
 
