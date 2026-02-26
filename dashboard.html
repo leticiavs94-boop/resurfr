@@ -441,9 +441,9 @@ select option{color:var(–charcoal)!important}
     <div class="fg">
       <label class="fl">Photo <span style="font-weight:400;color:var(--lmuted);text-transform:none;letter-spacing:0">(optional)</span></label>
       <input type="file" accept="image/*" id="i-photo" style="width:100%;padding:8px 0;font-size:13px;color:var(--muted)">
-      <div id="i-photo-preview" style="margin-top:8px;display:none"><img id="i-photo-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover"></div>
+      <div id="i-photo-preview" style="margin-top:8px;display:none"><img id="i-photo-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;cursor:pointer" onclick="openPhoto(this.src,'Invoice photo')"></div>
       <div id="i-photo-existing" style="margin-top:8px;display:none">
-        <img id="i-photo-existing-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover">
+        <img id="i-photo-existing-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;cursor:pointer" onclick="openPhoto(this.src,'Invoice photo')">
         <button onclick="removeInvoicePhoto()" style="margin-top:4px;font-size:11px;color:#A84E2A;background:none;border:none;cursor:pointer">Remove photo</button>
       </div>
     </div>
@@ -469,6 +469,14 @@ select option{color:var(–charcoal)!important}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- FULL SCREEN PHOTO VIEWER -->
+
+<div id="photo-viewer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:900;align-items:center;justify-content:center;flex-direction:column" onclick="document.getElementById('photo-viewer').style.display='none'">
+  <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300;line-height:1">✕</div>
+  <img id="photo-viewer-img" src="" style="max-width:95vw;max-height:85vh;object-fit:contain;border-radius:8px">
+  <div id="photo-viewer-caption" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:12px;font-family:'DM Sans',sans-serif"></div>
+</div>
 
 <!-- PAYMENT CONFIRMATION POPUP -->
 
@@ -868,7 +876,7 @@ function showClientDetail(id){
           ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700">✓ Paid</button>`:''}
         </div>
         ${i.notes?`<div style="font-size:11px;color:var(--lmuted);margin-top:4px">${i.notes}</div>`:''}
-        ${i.photo_url?`<img src="${i.photo_url}" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'150px':'none'" style="width:100%;border-radius:8px;margin-top:8px;max-height:150px;object-fit:cover;cursor:pointer" title="Tap to expand">`:''}
+        ${i.photo_url?`<div style="margin-top:8px;position:relative;cursor:pointer" onclick="openPhoto('${i.photo_url}','${(i.clients?.name||'').replace(/'/g,'')} · Invoice')"><img src="${i.photo_url}" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif">Tap to expand</div></div>`:''}
       </div>`).join('');
   el.style.display='flex';
 }
@@ -910,7 +918,7 @@ function renderInvoices(){
   const cards=invoices.map(i=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
     <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
-    ${i.photo_url?`<div style='margin-top:6px'><img src='${i.photo_url}' style='width:100%;border-radius:8px;max-height:150px;object-fit:cover'></div>`:''}
+    ${i.photo_url?`<div style='margin-top:6px;position:relative' onclick="openPhoto('${i.photo_url}','${(i.clients?.name||'').replace(/'/g,'')} · Invoice')"><img src='${i.photo_url}' style='width:100%;border-radius:8px;max-height:150px;object-fit:cover;cursor:pointer'><div style='position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif'>Tap to expand</div></div>`:''}
     <div class="m-card-tags" style="display:flex;align-items:center;gap:6px">${ibadge(i.status)}${i.photo_url?'<span style="font-size:14px" title="Has photo">📎</span>':''}</div>
     <div class="m-card-actions">
       ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
@@ -1324,7 +1332,7 @@ function showJobDetail(id){
       ${ibadge(linkedInv.status)}
       ${linkedInv.notes?`<span style="font-size:11px;color:var(--lmuted)">${linkedInv.notes}</span>`:''}
     </div>
-    ${linkedInv.photo_url?`<img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;cursor:pointer" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'160px':'none'" title="Tap to expand">`:''}`;
+    ${linkedInv.photo_url?`<div style="position:relative;cursor:pointer;margin-top:4px" onclick="openPhoto('${linkedInv.photo_url}','${(j.clients?.name||'').replace(/'/g,'')} · Job Invoice')"><img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif">Tap to expand</div></div>`:''}`;
   } else {
     invSection.style.display='none';
   }
@@ -1364,6 +1372,13 @@ async function completeJobWithPayment(paid){
   }
   toast(paid?'Job complete & payment recorded! 💰':'Job complete — invoice marked pending.','ok');
   await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
+}
+function openPhoto(url, caption){
+  if(!url)return;
+  document.getElementById('photo-viewer-img').src=url;
+  document.getElementById('photo-viewer-caption').textContent=caption||'';
+  document.getElementById('photo-viewer').style.display='flex';
+  event.stopPropagation();
 }
 function showClientDetailByName(name){
   const c=clients.find(x=>x.name===name);
