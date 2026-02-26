@@ -652,7 +652,7 @@ function renderDashboard(){
   // Active clients
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>{const jobTotal=jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0);return`<div class="c-row"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${jobTotal.toLocaleString()}</div></div>`;}).join('');
+    : clients.slice(0,5).map(c=>{const jobTotal=jobs.filter(j=>j.client_id==c.id).reduce((s,j)=>s+(j.amount||0),0);return`<div class="c-row"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${jobTotal.toLocaleString()}</div></div>`;}).join('');
 
   // Recently completed jobs
   const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
@@ -681,11 +681,11 @@ function renderClients(){
     clients.map(c=>`<tr>
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
       <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
-      <td><strong>$${jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</strong></td>
+      <td><strong>$${jobs.filter(j=>j.client_id==c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</strong></td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=clients.map(c=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</div></div>
+    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${jobs.filter(j=>j.client_id==c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</div></div>
     <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
     <div class="m-card-tags">${stag(c.surface)}</div>
     <div class="m-card-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
@@ -1004,7 +1004,7 @@ async function doDelete(){
 
 // ── MODALS ──
 function closeModal(type){document.getElementById('m-'+type).classList.remove('open');editingId[type]=null;}
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){const t=o.id.replace('m-','');closeModal(t);}}));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='confirm-overlay'){const t=o.id.replace('m-','');closeModal(t);}}));
 
 // ── NAV ──
 function nav(name,el){
