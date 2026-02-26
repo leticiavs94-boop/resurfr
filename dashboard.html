@@ -251,6 +251,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
         <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
+      <div class="panel" id="followups-panel" style="display:none">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">🔔 Follow-ups Due</div>
+            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+          </div>
+          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+        </div>
+        <div id="d-followups"></div>
+      </div>
+      <div class="panel" id="followups-panel" style="display:none">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">🔔 Follow-ups Due</div>
+            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+          </div>
+          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+        </div>
+        <div id="d-followups"></div>
+      </div>
     </div>
   </div>
 
@@ -370,7 +390,7 @@ async function boot(){
   document.getElementById('user-email').textContent=email;
   document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
   document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
-  await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadFollowups()]);
   renderDashboard();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -391,6 +411,35 @@ async function loadJobs(){
   jobs=data||[];
   renderJobs();
 }
+async function loadFollowups(){
+  const today=new Date(new Date().toDateString());
+  const nextWeek=new Date(today.getTime()+7*86400000);
+  const{data}=await sb.from('courts').select('id,name,location,status,followup_date,followup_status').not('followup_date','is',null).order('followup_date',{ascending:true});
+  const due=(data||[]).filter(c=>{const d=new Date(c.followup_date);return d<=nextWeek;});
+  const fuPanel=document.getElementById('followups-panel');
+  const fuCount=document.getElementById('fu-count');
+  if(due.length>0){
+    fuPanel.style.display='block';
+    fuCount.textContent=due.length+' due';
+    document.getElementById('d-followups').innerHTML=due.map(c=>{
+      const d=new Date(c.followup_date+'T00:00:00');
+      const isOverdue=d<today;
+      const isToday=d.toDateString()===today.toDateString();
+      const dayLabel=isOverdue?'Overdue':isToday?'Today':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      const color=isOverdue?'#A84E2A':isToday?'#B88000':'#2A7A52';
+      return`<div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${c.name}</div>
+          <div style="font-size:11px;color:var(--lmuted);margin-top:1px">${c.location||'—'} · ${c.followup_status||'Not contacted'}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:${color};white-space:nowrap">${dayLabel}</div>
+      </div>`;
+    }).join('');
+  } else {
+    fuPanel.style.display='none';
+  }
+}
+
 async function loadInvoices(){
   const{data}=await sb.from('invoices').select('*,clients(name)').order('created_at',{ascending:false});
   invoices=data||[];
