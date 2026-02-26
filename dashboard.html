@@ -433,7 +433,10 @@ select option{color:var(–charcoal)!important}
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
     <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="i-client"></select></div>
-    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
+      <div class="fg"><label class="fl">Invoice Date</label><input type="date" class="fi" id="i-date"></div>
+    </div>
     <div class="fg"><label class="fl">Status</label>
       <select class="fi" id="i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
     </div>
@@ -987,6 +990,7 @@ function editInvoice(id){
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=i.client_id||'';
   const iamtEl=document.getElementById('i-amount');if(iamtEl)iamtEl.value=i.amount||'';
+  const idateEl=document.getElementById('i-date');if(idateEl)idateEl.value=i.issued_date||new Date().toISOString().split('T')[0];
   const istatEl=document.getElementById('i-status');if(istatEl)istatEl.value=i.status||'pending';
   document.getElementById('i-notes').value=i.notes||'';
   document.getElementById('i-photo').value='';
@@ -1054,6 +1058,7 @@ function openModal(type){
     document.getElementById('invoice-modal-sub').textContent='';document.getElementById('invoice-modal-sub').style.display='none';
     document.getElementById('save-invoice-btn').textContent='Save Invoice';
     const iamt=document.getElementById('i-amount');if(iamt)iamt.value='';
+    const idate=document.getElementById('i-date');if(idate)idate.value=new Date().toISOString().split('T')[0];
     const inst=document.getElementById('i-status');if(inst)inst.value='pending';
     const inotes=document.getElementById('i-notes');if(inotes)inotes.value='';
     const iphoto=document.getElementById('i-photo');if(iphoto)iphoto.value='';
@@ -1142,7 +1147,8 @@ async function qaFinish(saveJob, saveInvoice){
       await sb.from('invoices').insert({
         client_id:qaClientId,
         amount:amt,
-        status:document.getElementById('qa-i-status').value
+        status:document.getElementById('qa-i-status').value,
+        issued_date:new Date().toISOString().split('T')[0]
       });
     }
   }
@@ -1209,7 +1215,7 @@ async function saveJob(){
   if(error){toast('Error: '+error.message,'err');return;}
   // Auto-create invoice for new jobs
   if(newJobId&&amt>0){
-    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending'});
+    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',issued_date:new Date().toISOString().split('T')[0]});
   }
   closeModal('job');
   toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
@@ -1234,7 +1240,7 @@ async function saveInvoice(){
       r.readAsDataURL(photoFile);
     });
   }
-  const istatus=document.getElementById('i-status')?.value||'pending';const payload={client_id:cid,amount:amt,status:istatus,notes:notes,photo_url:photoUrl};
+  const istatus=document.getElementById('i-status')?.value||'pending';const idate=document.getElementById('i-date')?.value||null;const payload={client_id:cid,amount:amt,status:istatus,notes:notes,photo_url:photoUrl,issued_date:idate};
   let error;
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
