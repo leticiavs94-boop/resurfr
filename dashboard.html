@@ -316,15 +316,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <div class="overlay" id="m-client">
   <div class="modal">
     <div class="modal-title" id="client-modal-title">Add Client</div>
-    <div class="modal-sub" id="client-modal-sub" style="margin-bottom:16px"></div>
 
 ```
 <!-- Step indicators -->
-<div id="qa-steps" style="display:none;margin-bottom:20px">
-  <div style="display:flex;align-items:center;gap:0">
-    <div class="qa-step active" id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
-    <div class="qa-step" id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 · Job</div>
-    <div class="qa-step" id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
+<div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
+  <div style="display:flex;align-items:center">
+    <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
+    <div id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 · Job</div>
+    <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
   </div>
 </div>
 
@@ -346,19 +345,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     </div>
   </div>
   <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..."></div>
-  <div class="modal-btns">
+  <div class="modal-btns" id="edit-client-btns" style="display:none">
     <button class="b-cancel" onclick="closeModal('client')">Cancel</button>
     <button class="b-save" id="save-client-btn" onclick="saveClient()">Save Client</button>
   </div>
-  <div id="qa-next-btn-wrap" style="display:none;margin-top:10px">
-    <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none" onclick="qaNext(2)">Next — Add a Job →</button>
-    <button style="width:100%;padding:10px;margin-top:6px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaSkipAll()">Skip — just save client</button>
+  <div id="qa-new-btns" style="margin-top:4px">
+    <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job →</button>
+    <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClientOnly()">Save Client Only</button>
+    <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeModal('client')">Cancel</button>
   </div>
 </div>
 
 <!-- Page 2: Job -->
 <div id="qa-page-2" style="display:none">
-  <div style="background:var(--off);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--muted)">Adding job for <strong id="qa-client-name-display"></strong></div>
+  <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
   <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="j-service" placeholder="Har-Tru topdressing"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
@@ -367,17 +367,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   <div class="fg"><label class="fl">Job Status</label>
     <select class="fi" id="j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
   </div>
-  <div class="modal-btns">
-    <button class="b-cancel" style="flex:0.5" onclick="qaNext(1)">← Back</button>
-    <button class="b-save" onclick="qaNext(3)">Next — Add Invoice →</button>
-  </div>
-  <button style="width:100%;padding:10px;margin-top:6px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(true,false)">Skip invoice — just save job</button>
+  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaNext(3)">Save Job &amp; Add Invoice →</button>
+  <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
+  <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
 </div>
 
 <!-- Page 3: Invoice -->
 <div id="qa-page-3" style="display:none">
-  <div style="background:var(--off);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--muted)">Adding invoice for <strong id="qa-client-name-display2"></strong></div>
-  <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800" id="qa-inv-amount"></div>
+  <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Now add an invoice for <span id="qa-client-name-display2"></span></div>
+  <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
   <div class="fg"><label class="fl">Payment Status</label>
     <select class="fi" id="i-status">
       <option value="pending">Pending — not yet paid</option>
@@ -385,11 +383,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
       <option value="overdue">Overdue</option>
     </select>
   </div>
-  <div class="modal-btns">
-    <button class="b-cancel" style="flex:0.5" onclick="qaNext(2)">← Back</button>
-    <button class="b-save" id="qa-finish-btn" onclick="qaFinish(true,true)">Save Everything ✓</button>
-  </div>
-  <button style="width:100%;padding:10px;margin-top:6px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(true,false)">Skip invoice — finish</button>
+  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish ✓</button>
+  <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without invoice</button>
 </div>
 ```
 
@@ -706,7 +701,12 @@ function editClient(id){
   const c=clients.find(x=>x.id===id);if(!c)return;
   editingId.client=id;
   document.getElementById('client-modal-title').textContent='Edit Client';
-  document.getElementById('client-modal-sub').textContent='Changes save immediately';
+  document.getElementById('qa-steps').style.display='none';
+  document.getElementById('edit-client-btns').style.display='flex';
+  document.getElementById('qa-new-btns').style.display='none';
+  document.getElementById('qa-page-1').style.display='block';
+  document.getElementById('qa-page-2').style.display='none';
+  document.getElementById('qa-page-3').style.display='none';
   document.getElementById('c-name').value=c.name||'';
   document.getElementById('c-loc').value=c.location||'';
   document.getElementById('c-surface').value=c.surface||'';
@@ -754,13 +754,11 @@ let qaMode=false, qaClientId=null;
 function openModal(type){
   editingId[type]=null;
   if(type==='client'){
-    // Reset all quick-add state
-    qaMode=false; qaClientId=null;
+    qaClientId=null;
     document.getElementById('client-modal-title').textContent='Add Client';
-    document.getElementById('client-modal-sub').textContent='';
     document.getElementById('qa-steps').style.display='none';
-    document.getElementById('qa-next-btn-wrap').style.display='block';
-    document.getElementById('save-client-btn').style.display='none';
+    document.getElementById('edit-client-btns').style.display='none';
+    document.getElementById('qa-new-btns').style.display='block';
     document.getElementById('qa-page-1').style.display='block';
     document.getElementById('qa-page-2').style.display='none';
     document.getElementById('qa-page-3').style.display='none';
@@ -802,9 +800,16 @@ function qaNext(page){
   });
 }
 
-async function qaSkipAll(){
-  // Just save client only
-  document.getElementById('save-client-btn').click();
+async function saveClientOnly(){
+  // Save client and close without adding job/invoice
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){toast('Enter a client name','err');return;}
+  const payload={name,location:document.getElementById('c-loc').value.trim(),surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()};
+  const{error}=await sb.from('clients').insert(payload);
+  if(error){toast('Error: '+error.message,'err');return;}
+  closeModal('client');
+  toast('Client saved!','ok');
+  await loadClients();renderDashboard();
 }
 
 async function qaFinish(saveJob, saveInvoice){
@@ -863,14 +868,10 @@ async function saveClient(){
   // If in quick-add mode (new client), go to job step
   if(!editingId.client && data){
     qaClientId=data.id;
-    const clientName=name;
-    document.getElementById('qa-client-name-display').textContent=clientName;
-    document.getElementById('qa-client-name-display2').textContent=clientName;
+    document.getElementById('qa-client-name-display').textContent=name;
+    document.getElementById('qa-client-name-display2').textContent=name;
     document.getElementById('qa-steps').style.display='block';
-    document.getElementById('qa-next-btn-wrap').style.display='none';
-    document.getElementById('save-client-btn').style.display='none';
-    // Pre-fill invoice amount from job amount
-    document.getElementById('i-amount').value=document.getElementById('j-amount').value||'';
+    document.getElementById('qa-new-btns').style.display='none';
     qaNext(2);
     return;
   }
