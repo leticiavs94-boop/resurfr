@@ -437,6 +437,16 @@ select option{color:var(–charcoal)!important}
     <div class="fg"><label class="fl">Status</label>
       <select class="fi" id="i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
     </div>
+    <div class="fg"><label class="fl">Notes / Comments</label><input type="text" class="fi" id="i-notes" placeholder="Payment instructions, work summary..."></div>
+    <div class="fg">
+      <label class="fl">Photo <span style="font-weight:400;color:var(--lmuted);text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input type="file" accept="image/*" id="i-photo" style="width:100%;padding:8px 0;font-size:13px;color:var(--muted)">
+      <div id="i-photo-preview" style="margin-top:8px;display:none"><img id="i-photo-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover"></div>
+      <div id="i-photo-existing" style="margin-top:8px;display:none">
+        <img id="i-photo-existing-img" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover">
+        <button onclick="removeInvoicePhoto()" style="margin-top:4px;font-size:11px;color:#A84E2A;background:none;border:none;cursor:pointer">Remove photo</button>
+      </div>
+    </div>
     <div class="modal-btns">
       <button class="b-cancel" onclick="closeModal('invoice')">Cancel</button>
       <button class="b-save" id="save-invoice-btn" onclick="saveInvoice()">Save Invoice</button>
@@ -686,12 +696,12 @@ function renderDashboard(){
   const thisMonth = now.getMonth();
   const thisYear = now.getFullYear();
   const totalCourts = clients.reduce((s,c)=>s+(c.courts||1),0);
-  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear&&j.status==='completed';});
+  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date+'T00:00:00').getFullYear()===thisYear&&j.status==='completed';});
   const ytdRev = ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
   const pend = invoices.filter(i=>i.status==='pending'||i.status==='overdue');
   const pendAmt = pend.reduce((s,i)=>s+(i.amount||0),0);
   const overdue = invoices.filter(i=>i.status==='overdue');
-  const monthJobs = jobs.filter(j=>{if(!j.date)return false;const d=new Date(j.date);return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;});
+  const monthJobs = jobs.filter(j=>{if(!j.date)return false;const d=new Date(j.date+'T00:00:00');return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;});
   const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
 
   document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
@@ -700,7 +710,7 @@ function renderDashboard(){
   document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
   document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
   document.getElementById('s-pending-sub').textContent=pend.length+' unpaid invoice'+(pend.length!==1?'s':'');
-  const yearJobs=jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear;});
+  const yearJobs=jobs.filter(j=>{if(!j.date)return false;return new Date(j.date+'T00:00:00').getFullYear()===thisYear;});
   document.getElementById('s-month').textContent=monthJobs.length;
   document.getElementById('s-month-sub').textContent=yearJobs.length+' job'+(yearJobs.length!==1?'s':'')+' this year';
 
@@ -716,7 +726,7 @@ function renderDashboard(){
   document.getElementById('d-upcoming').innerHTML = upcoming.length===0
     ? empty('No upcoming jobs — tap "Add Job" to schedule one')
     : upcoming.slice(0,5).map(j=>{
-        const d = new Date(j.date);
+        const d = new Date(j.date+'T00:00:00');
         const isToday = d.toDateString()===new Date().toDateString();
         const isTomorrow = d.toDateString()===new Date(Date.now()+86400000).toDateString();
         const dayLabel = isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -762,8 +772,8 @@ function renderDashboard(){
     ? empty('No completed jobs yet')
     : completed.map(j=>`<div class="c-row" style="align-items:center">
         <div style="width:44px;text-align:center;flex-shrink:0">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--glight);line-height:1">${j.date?new Date(j.date).getDate():'—'}</div>
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${j.date?new Date(j.date).toLocaleDateString('en-US',{month:'short'}):''}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--glight);line-height:1">${j.date?new Date(j.date+'T00:00:00').getDate():'—'}</div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${j.date?new Date(j.date+'T00:00:00').toLocaleDateString('en-US',{month:'short'}):''}</div>
         </div>
         <div style="flex:1;min-width:0">
           <div class="c-name">${j.clients?.name||'?'}</div>
@@ -804,7 +814,7 @@ function showClientDetail(id){
   const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
   const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id)||(i.clients&&i.clients.name===c.name));
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
-  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const el=document.getElementById('client-detail-overlay');
   el.dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
@@ -829,10 +839,14 @@ function showClientDetail(id){
   document.getElementById('cd-invoices').innerHTML=cInvoices.length===0
     ?'<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No invoices</div>'
     :cInvoices.map(i=>`
-      <div style="display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);gap:10px">
-        <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
-        <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
-        ${ibadge(i.status)}
+      <div style="padding:10px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
+          ${ibadge(i.status)}
+          ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700">✓ Paid</button>`:''}
+        </div>
+        ${i.notes?`<div style="font-size:11px;color:var(--lmuted);margin-top:4px">${i.notes}</div>`:''}
       </div>`).join('');
   el.style.display='flex';
 }
@@ -840,7 +854,7 @@ function showClientDetail(id){
 // ── JOBS TABLE ──
 function renderJobs(){
   if(jobs.length===0){document.getElementById('jobs-list').innerHTML=empty('No jobs yet — tap "Add Job" to schedule one');return;}
-  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
       <td><strong>${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td>
@@ -849,7 +863,7 @@ function renderJobs(){
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=jobs.map(j=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name">${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-top"><div class="m-card-name" style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${j.clients?.name||""}')"> ${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
     <div class="m-card-meta">${j.service||'—'} · ${fmt(j.date)}</div>
     <div class="m-card-tags">${jbadge(j.status)}</div>
     <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div>
@@ -860,7 +874,7 @@ function renderJobs(){
 // ── INVOICES TABLE ──
 function renderInvoices(){
   if(invoices.length===0){document.getElementById('invoices-list').innerHTML=empty('No invoices yet — tap "New Invoice" to create one');return;}
-  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
     invoices.map(i=>`<tr>
       <td><strong>${i.clients?.name||'?'}</strong></td><td><strong>$${(i.amount||0).toLocaleString()}</strong></td>
@@ -873,7 +887,8 @@ function renderInvoices(){
     </tr>`).join('')+`</tbody></table>`;
   const cards=invoices.map(i=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
-    <div class="m-card-meta">${fmt(i.issued_date)}</div>
+    <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
+    ${i.photo_url?`<img src="${i.photo_url}" style="width:100%;border-radius:6px;margin-top:6px;max-height:120px;object-fit:cover">`:''}'
     <div class="m-card-tags">${ibadge(i.status)}</div>
     <div class="m-card-actions">
       ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
@@ -935,6 +950,7 @@ function editJob(id){
 function editInvoice(id){
   const i=invoices.find(x=>x.id===id);if(!i)return;
   editingId.invoice=id;
+  invoicePhotoUrl=i.photo_url||null;
   document.getElementById('invoice-modal-title').textContent='Edit Invoice';
   document.getElementById('invoice-modal-sub').textContent='Changes save immediately';document.getElementById('invoice-modal-sub').style.display='block';
   const sel=document.getElementById('i-client');
@@ -942,12 +958,37 @@ function editInvoice(id){
   sel.value=i.client_id||'';
   document.getElementById('i-amount').value=i.amount||'';
   document.getElementById('i-status').value=i.status||'pending';
+  document.getElementById('i-notes').value=i.notes||'';
+  document.getElementById('i-photo').value='';
+  const existing=document.getElementById('i-photo-existing');
+  const existingImg=document.getElementById('i-photo-existing-img');
+  if(i.photo_url){existing.style.display='block';existingImg.src=i.photo_url;}
+  else{existing.style.display='none';}
   document.getElementById('save-invoice-btn').textContent='Save Changes';
   document.getElementById('m-invoice').classList.add('open');
 }
 
 // ── QUICK ADD STATE ──
-let qaMode=false, qaClientId=null, qaJobSaved=false;
+let qaMode=false, qaClientId=null, qaJobSaved=false, invoicePhotoUrl=null;
+
+// Photo preview
+document.addEventListener('DOMContentLoaded',()=>{
+  const photoInput=document.getElementById('i-photo');
+  if(photoInput){
+    photoInput.addEventListener('change',function(){
+      const file=this.files[0];
+      if(file){
+        const reader=new FileReader();
+        reader.onload=e=>{
+          document.getElementById('i-photo-img').src=e.target.result;
+          document.getElementById('i-photo-preview').style.display='block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
+function removeInvoicePhoto(){invoicePhotoUrl=null;document.getElementById('i-photo-existing').style.display='none';}
 
 function openModal(type){
   editingId[type]=null;
@@ -978,9 +1019,14 @@ function openModal(type){
     el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
   if(type==='invoice'){
+    invoicePhotoUrl=null;
     document.getElementById('invoice-modal-title').textContent='New Invoice';
     document.getElementById('invoice-modal-sub').textContent='';document.getElementById('invoice-modal-sub').style.display='none';
     document.getElementById('save-invoice-btn').textContent='Save Invoice';
+    document.getElementById('i-notes').value='';
+    document.getElementById('i-photo').value='';
+    document.getElementById('i-photo-preview').style.display='none';
+    document.getElementById('i-photo-existing').style.display='none';
     const el=document.getElementById('i-client');
     el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
@@ -1138,7 +1184,8 @@ async function saveInvoice(){
   if(!cid||!amt){toast('Please fill in all fields','err');return;}
   const btn=document.getElementById('save-invoice-btn');
   btn.disabled=true;btn.textContent='Saving...';
-  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value};
+  const notes=document.getElementById('i-notes')?document.getElementById('i-notes').value.trim()||null:null;
+  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value,notes:notes};
   let error;
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
@@ -1236,6 +1283,10 @@ async function markJobDone(id){
   document.getElementById('job-detail-overlay').style.display='none';
   toast('Job marked complete! ✓','ok');
   await loadJobs();renderClients();renderDashboard();loadServiceAlerts();
+}
+function showClientDetailByName(name){
+  const c=clients.find(x=>x.name===name);
+  if(c) showClientDetail(c.id);
 }
 function cdEdit(){
   const id=document.getElementById('client-detail-overlay').dataset.clientId;
