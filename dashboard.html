@@ -362,13 +362,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <!-- Page 2: Job -->
 <div id="qa-page-2" style="display:none">
   <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
-  <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="j-service" placeholder="Har-Tru topdressing"></div>
+  <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="Har-Tru topdressing"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
-    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="j-amount" placeholder="3800"></div>
+    <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
+    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800"></div>
   </div>
   <div class="fg"><label class="fl">Job Status</label>
-    <select class="fi" id="j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+    <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
   </div>
   <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaNext(3)">Save Job &amp; Add Invoice →</button>
   <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
@@ -402,10 +402,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     <div class="modal-sub" id="job-modal-sub"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="j-client"></select></div>
     <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="j-service" placeholder="Har-Tru topdressing"></div>
-    <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
-    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="j-amount" placeholder="3800"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
+      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="j-amount" placeholder="3800"></div>
+    </div>
     <div class="fg"><label class="fl">Status</label>
       <select class="fi" id="j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="j-notes" placeholder="What was done, materials used, condition..."></div>
+    <div class="fg">
+      <label class="fl">Next Visit Date <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--lmuted)">(when to return)</span></label>
+      <input type="date" class="fi" id="j-next-visit">
     </div>
     <div class="modal-btns">
       <button class="b-cancel" onclick="closeModal('job')">Cancel</button>
@@ -518,6 +525,10 @@ async function loadServiceAlerts(){
   const currentYear=new Date().getFullYear();
 
   // Score each court by urgency
+  // Also pull next_visit from jobs for courts that are clients
+  const clientNextVisits={};
+  jobs.forEach(j=>{if(j.next_visit&&j.clients){const name=j.clients.name;if(!clientNextVisits[name]||j.next_visit>clientNextVisits[name])clientNextVisits[name]=j.next_visit;}});
+
   const alerts=allCourts.map(c=>{
     const ls=c.last_service||'';
     // Extract year from last_service string
@@ -770,6 +781,8 @@ function editJob(id){
   document.getElementById('j-date').value=j.date||'';
   document.getElementById('j-amount').value=j.amount||'';
   document.getElementById('j-status').value=j.status||'scheduled';
+  document.getElementById('j-notes').value=j.notes||'';
+  document.getElementById('j-next-visit').value=j.next_visit||'';
   document.getElementById('save-job-btn').textContent='Save Changes';
   document.getElementById('m-job').classList.add('open');
 }
@@ -814,6 +827,9 @@ function openModal(type){
     document.getElementById('job-modal-title').textContent='Add Job';
     document.getElementById('job-modal-sub').textContent='';
     document.getElementById('save-job-btn').textContent='Save Job';
+    ['j-service','j-amount','j-notes','j-next-visit'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('j-status').value='scheduled';
+    document.getElementById('j-date').value=new Date().toISOString().split('T')[0];
     const el=document.getElementById('j-client');
     el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
@@ -859,14 +875,14 @@ async function qaFinish(saveJob, saveInvoice){
 
   // Save job if requested
   if(saveJob && qaClientId){
-    const svc=document.getElementById('j-service').value.trim();
+    const svc=document.getElementById('qa-j-service').value.trim();
     if(svc){
       await sb.from('jobs').insert({
         client_id:qaClientId,
         service:svc,
-        date:document.getElementById('j-date').value,
-        amount:parseFloat(document.getElementById('j-amount').value)||0,
-        status:document.getElementById('j-status').value
+        date:document.getElementById('qa-j-date').value||null,
+        amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
+        status:document.getElementById('qa-j-status').value
       });
     }
   }
@@ -930,7 +946,7 @@ async function saveJob(){
   if(!cid||!svc){toast('Please fill in all fields','err');return;}
   const btn=document.getElementById('save-job-btn');
   btn.disabled=true;btn.textContent='Saving...';
-  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value,amount:parseFloat(document.getElementById('j-amount').value)||0,status:document.getElementById('j-status').value};
+  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,amount:parseFloat(document.getElementById('j-amount').value)||0,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
   let error;
   if(editingId.job){
     ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
