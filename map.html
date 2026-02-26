@@ -52,11 +52,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .ci-name{font-size:13px;font-weight:600;color:var(--charcoal);line-height:1.3}
 .ci-meta{font-size:11px;color:var(--lmuted);margin-top:2px}
 .ci-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.ci-followup{font-size:10px;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px}
 .tag{padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.3px}
 .th{background:#E8F5EE;color:#2A7A52}.thard{background:#FDF3E0;color:#B8842A}.tclay{background:#FDEEE8;color:#A84E2A}.tdef{background:var(--off);color:var(--muted)}.tclient{background:#E8F5EE;color:#2A7A52}.tprospect{background:#FFF8E6;color:#B88000}.tprivate{background:#F0EEFF;color:#5040A0}
+.fdue{color:#A84E2A}.fsoon{color:#B88000}.fok{color:#2A7A52}.fnone{color:var(--lmuted)}
 
 /* Mapbox popup */
-.mapboxgl-popup-content{padding:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 8px 32px rgba(0,0,0,0.18)!important;border:1px solid var(--border)!important;min-width:220px}
+.mapboxgl-popup-content{padding:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 8px 32px rgba(0,0,0,0.18)!important;border:1px solid var(--border)!important;min-width:240px}
 .mapboxgl-popup-close-button{font-size:18px!important;color:var(--muted)!important;padding:8px 10px!important;line-height:1!important}
 .mapboxgl-popup-tip{display:none!important}
 .pu{padding:14px}
@@ -65,6 +67,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .pu-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .pu-tag{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700}
 .pu-note{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.pu-followup{background:var(--off);border-top:1px solid var(--border);padding:10px 14px;font-size:11px}
 .pu-foot{background:var(--off);padding:9px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
 
 /* Modal */
@@ -83,19 +86,26 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .bcancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
 .bsave{background:var(--charcoal);color:white}.bsave:hover{background:var(--green)}.bsave:disabled{opacity:.55;cursor:not-allowed}
 
-/* Bottom sheet (mobile) */
-.detail-sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:20px 20px 0 0;z-index:300;transition:bottom .3s ease;padding:20px 20px 40px;max-height:60vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.15)}
+/* Bottom sheet */
+.detail-sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:20px 20px 0 0;z-index:300;transition:bottom .3s ease;max-height:80vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.15)}
 .detail-sheet.open{bottom:0}
+.sheet-inner{padding:20px 20px 40px}
 .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
 .sheet-name{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:4px}
 .sheet-loc{font-size:13px;color:var(--lmuted);margin-bottom:12px}
-.sheet-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sheet-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .sheet-tag{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:700}
 .sheet-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
 .sheet-row:last-child{border-bottom:none}
 .sheet-row-label{color:var(--lmuted)}.sheet-row-val{font-weight:600;color:var(--charcoal)}
 .sheet-note{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6;background:var(--off);padding:12px;border-radius:8px}
 .close-sheet{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;color:var(--lmuted);cursor:pointer}
+.followup-section{margin-top:16px;background:var(--off);border-radius:12px;padding:14px}
+.followup-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.followup-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.followup-save{width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:background .2s}
+.followup-save:hover{background:var(--green)}
+.followup-save:disabled{opacity:.55;cursor:not-allowed}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:600;opacity:0;transition:all .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.ok{background:var(--green)}
@@ -121,9 +131,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <div class="sstat"><div class="sval" id="st-clients" style="color:#1E4D35">0</div><div class="slbl">Clients</div></div>
     <div class="sstat"><div class="sval" id="st-prospects" style="color:#B88000">0</div><div class="slbl">Prospects</div></div>
     <div class="sstat"><div class="sval" id="st-private" style="color:#5040A0">0</div><div class="slbl">Private</div></div>
-    <div class="sstat"><div class="sval" id="st-hartru" style="color:#2A7A52">0</div><div class="slbl">Har-Tru</div></div>
-    <div class="sstat"><div class="sval" id="st-hard" style="color:#B8842A">0</div><div class="slbl">Hard</div></div>
-    <div class="sstat"><div class="sval" id="st-clay" style="color:#A84E2A">0</div><div class="slbl">Clay</div></div>
+    <div class="sstat"><div class="sval" id="st-due" style="color:#A84E2A">0</div><div class="slbl">Due</div></div>
   </div>
 
   <div class="filters">
@@ -131,6 +139,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
     <button class="btn btn-ghost" onclick="setFilter('client',this)">✓ Clients</button>
     <button class="btn btn-ghost" onclick="setFilter('prospect',this)">🎯 Prospects</button>
     <button class="btn btn-ghost" onclick="setFilter('private',this)">🏠 Private</button>
+    <button class="btn btn-ghost" onclick="setFilter('followup',this)">🔔 Follow-ups Due</button>
     <button class="btn btn-ghost" onclick="setFilter('Har-Tru',this)">Har-Tru</button>
     <button class="btn btn-ghost" onclick="setFilter('Hard',this)">Hard</button>
     <button class="btn btn-ghost" onclick="setFilter('Red Clay',this)">Clay</button>
@@ -145,16 +154,42 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
   </div>
 </div>
 
+<!-- Bottom sheet -->
 <div class="detail-sheet" id="detail-sheet">
-  <button class="close-sheet" onclick="closeSheet()">×</button>
-  <div class="sheet-handle"></div>
-  <div class="sheet-name" id="ds-name"></div>
-  <div class="sheet-loc" id="ds-loc"></div>
-  <div class="sheet-tags" id="ds-tags"></div>
-  <div id="ds-rows"></div>
-  <div class="sheet-note" id="ds-note" style="display:none"></div>
+  <div class="sheet-inner">
+    <button class="close-sheet" onclick="closeSheet()">×</button>
+    <div class="sheet-handle"></div>
+    <div class="sheet-name" id="ds-name"></div>
+    <div class="sheet-loc" id="ds-loc"></div>
+    <div class="sheet-tags" id="ds-tags"></div>
+    <div id="ds-rows"></div>
+    <div class="sheet-note" id="ds-note" style="display:none"></div>
+
+    <!-- Follow-up section -->
+    <div class="followup-section" id="ds-followup" style="display:none">
+      <div class="followup-title">🔔 Follow-up Reminder</div>
+      <div class="followup-row">
+        <div>
+          <label class="fl" style="font-size:9px">Status</label>
+          <select class="fi" id="fu-status" style="padding:8px 10px;font-size:13px">
+            <option value="Not contacted">Not contacted</option>
+            <option value="Reached out">Reached out</option>
+            <option value="Meeting set">Meeting set</option>
+            <option value="Quote sent">Quote sent</option>
+            <option value="Closed">Closed ✓</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl" style="font-size:9px">Follow-up Date</label>
+          <input type="date" class="fi" id="fu-date" style="padding:8px 10px;font-size:13px">
+        </div>
+      </div>
+      <button class="followup-save" id="fu-save-btn" onclick="saveFollowup()">Save Reminder</button>
+    </div>
+  </div>
 </div>
 
+<!-- Add Court Modal -->
 <div class="overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title">Add Court</div>
@@ -183,11 +218,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 <script>
 const{createClient}=supabase;
 const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
-
 mapboxgl.accessToken='pk.eyJ1IjoibHZzMTIzIiwiYSI6ImNtbTFmbGVxbzA5MXgycHBuZzFzZm01ZDMifQ.32iLC3uNxgBQ9dZuN9D70A';
 
-let courts=[],map,activeFilter='all',selectedId=null,popupRef=null;
+let courts=[],map,activeFilter='all',selectedId=null,popupRef=null,sheetCourtId=null;
 const isMobile=()=>window.innerWidth<=768;
+const today=new Date(new Date().toDateString());
+const tomorrow=new Date(today.getTime()+86400000);
+const nextWeek=new Date(today.getTime()+7*86400000);
 
 const SEED=[
   {id:'s1',name:'Westport Tennis Club',location:'Westport, CT',surface:'Har-Tru',courts:6,status:'client',last_service:'Feb 2026',lat:41.1415,lng:-73.3579,notes:'Annual topdressing client. Contact: Tom Walsh.'},
@@ -228,97 +265,134 @@ async function boot(){
   const{data}=await sb.from('courts').select('*').order('created_at',{ascending:false});
   const db=(data||[]).map(c=>({...c,id:'db_'+c.id}));
   courts=[...SEED,...db];
-  updateStats();
-  initMap();
-  renderList();
+  updateStats();initMap();renderList();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='flex';
 }
 boot();
 
 function initMap(){
-  map=new mapboxgl.Map({
-    container:'map',
-    style:'mapbox://styles/mapbox/light-v11',
-    center:[-73.4500,41.1100],
-    zoom:10.5
-  });
-
+  map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/light-v11',center:[-73.4500,41.1100],zoom:10.5});
   map.addControl(new mapboxgl.NavigationControl(),'top-right');
-
-  map.on('load',()=>{
-    renderMarkers();
-  });
+  map.on('load',()=>renderMarkers());
 }
 
 function renderMarkers(){
-  // Remove existing markers
   document.querySelectorAll('.mbx-marker').forEach(el=>el.remove());
-
   getFiltered().forEach(court=>{
     if(!court.lat||!court.lng)return;
-
-    const isClient=court.status==='client';
-    const isPrivate=court.status==='private';
+    const isClient=court.status==='client',isPrivate=court.status==='private';
+    const isDue=isFollowupDue(court);
     const color=dotColor(court.surface,court.status);
-    const border=isClient?'#1E4D35':isPrivate?'#5040A0':'#B88000';
+    const border=isDue?'#A84E2A':isClient?'#1E4D35':isPrivate?'#5040A0':'#B88000';
     const size=isClient?16:isPrivate?13:11;
-
     const el=document.createElement('div');
     el.className='mbx-marker';
-    el.style.cssText=`width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;transition:transform .15s`;
-
+    el.style.cssText=`width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid ${border};box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;transition:transform .15s;position:relative`;
+    if(isDue){
+      const dot=document.createElement('div');
+      dot.style.cssText='position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#A84E2A;border:1.5px solid white';
+      el.appendChild(dot);
+    }
     el.addEventListener('mouseenter',()=>el.style.transform='scale(1.4)');
     el.addEventListener('mouseleave',()=>el.style.transform='scale(1)');
-
     el.addEventListener('click',(e)=>{
       e.stopPropagation();
-      if(isMobile()){
-        showSheet(court);
-      } else {
-        if(popupRef) popupRef.remove();
-        popupRef=new mapboxgl.Popup({offset:12,closeButton:true,maxWidth:'280px'})
+      if(isMobile()){showSheet(court);}
+      else{
+        if(popupRef)popupRef.remove();
+        popupRef=new mapboxgl.Popup({offset:12,closeButton:true,maxWidth:'300px'})
           .setLngLat([court.lng,court.lat])
           .setHTML(buildPopup(court))
           .addTo(map);
       }
       selectCourt(court.id,false);
     });
-
-    new mapboxgl.Marker({element:el,anchor:'center'})
-      .setLngLat([court.lng,court.lat])
-      .addTo(map);
+    new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([court.lng,court.lat]).addTo(map);
   });
 }
 
 function buildPopup(c){
   const sc=surfTagStyle(c.surface),stc=statusTagStyle(c.status);
-  return`<div class="pu"><div class="pu-name">${c.name}</div><div class="pu-loc">${c.location||''}</div><div class="pu-tags"><span class="pu-tag" style="${sc}">${c.surface||'Unknown'}</span><span class="pu-tag" style="${stc}">${statusLabel(c.status)}</span></div>${c.last_service?`<div style="font-size:11px;color:#9DAA96">Last service: <strong>${c.last_service}</strong></div>`:''}${c.notes?`<div class="pu-note">${c.notes}</div>`:''}</div><div class="pu-foot"><span>${c.courts||1} court${(c.courts||1)!==1?'s':''}</span><span>${statusLabel(c.status)}</span></div>`;
+  const fuLine=c.followup_date?`<div style="margin-top:6px;font-size:11px;color:${followupColor(c)}">🔔 Follow-up: <strong>${formatDate(c.followup_date)}</strong>${c.followup_status?' · '+c.followup_status:''}</div>`:'';
+  return`<div class="pu"><div class="pu-name">${c.name}</div><div class="pu-loc">${c.location||''}</div><div class="pu-tags"><span class="pu-tag" style="${sc}">${c.surface||'Unknown'}</span><span class="pu-tag" style="${stc}">${statusLabel(c.status)}</span></div>${c.last_service?`<div style="font-size:11px;color:#9DAA96">Last service: <strong>${c.last_service}</strong></div>`:''}${fuLine}${c.notes?`<div class="pu-note">${c.notes}</div>`:''}</div><div class="pu-foot"><span>${c.courts||1} court${(c.courts||1)!==1?'s':''}</span><span>${statusLabel(c.status)}</span></div>`;
 }
 
+// ── BOTTOM SHEET ──
 function showSheet(c){
+  sheetCourtId=c.id;
   document.getElementById('ds-name').textContent=c.name;
   document.getElementById('ds-loc').textContent=c.location||'';
   document.getElementById('ds-tags').innerHTML=`<span class="sheet-tag" style="${surfTagStyle(c.surface)}">${c.surface||'—'}</span><span class="sheet-tag" style="${statusTagStyle(c.status)}">${statusLabel(c.status)}</span>`;
-  document.getElementById('ds-rows').innerHTML=[['Courts',(c.courts||1)+' court'+((c.courts||1)!==1?'s':'')],['Last Service',c.last_service||'Unknown']].map(([l,v])=>`<div class="sheet-row"><span class="sheet-row-label">${l}</span><span class="sheet-row-val">${v}</span></div>`).join('');
+  document.getElementById('ds-rows').innerHTML=[
+    ['Courts',(c.courts||1)+' court'+((c.courts||1)!==1?'s':'')],
+    ['Last Service',c.last_service||'Unknown'],
+    ...(c.followup_status?[['Follow-up Status',c.followup_status]]:[]),
+    ...(c.followup_date?[['Follow-up Date',formatDate(c.followup_date)]]:[]),
+  ].map(([l,v])=>`<div class="sheet-row"><span class="sheet-row-label">${l}</span><span class="sheet-row-val" style="${l==='Follow-up Date'?'color:'+followupColor(c):''}">${v}</span></div>`).join('');
   const ne=document.getElementById('ds-note');
   if(c.notes){ne.textContent=c.notes;ne.style.display='block';}else ne.style.display='none';
+
+  // Show follow-up section for prospects and private only
+  const fuSection=document.getElementById('ds-followup');
+  if(c.status!=='client'){
+    fuSection.style.display='block';
+    document.getElementById('fu-status').value=c.followup_status||'Not contacted';
+    document.getElementById('fu-date').value=c.followup_date||'';
+  } else {
+    fuSection.style.display='none';
+  }
+
   document.getElementById('detail-sheet').classList.add('open');
 }
-function closeSheet(){document.getElementById('detail-sheet').classList.remove('open');}
+function closeSheet(){document.getElementById('detail-sheet').classList.remove('open');sheetCourtId=null;}
+
+// ── SAVE FOLLOW-UP ──
+async function saveFollowup(){
+  if(!sheetCourtId)return;
+  const status=document.getElementById('fu-status').value;
+  const date=document.getElementById('fu-date').value;
+  const btn=document.getElementById('fu-save-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+
+  // Only DB courts can be saved (seed courts are static)
+  if(sheetCourtId.startsWith('db_')){
+    const realId=sheetCourtId.replace('db_','');
+    const{error}=await sb.from('courts').update({followup_status:status,followup_date:date||null}).eq('id',realId);
+    if(error){toast('Error: '+error.message,'err');btn.disabled=false;btn.textContent='Save Reminder';return;}
+  }
+
+  // Update local state
+  const idx=courts.findIndex(x=>x.id===sheetCourtId);
+  if(idx>=0){courts[idx].followup_status=status;courts[idx].followup_date=date||null;}
+
+  btn.disabled=false;btn.textContent='Save Reminder';
+  toast('Follow-up saved! 🔔','ok');
+  renderMarkers();renderList();updateStats();
+  closeSheet();
+}
 
 function renderList(){
   const f=getFiltered();
   document.getElementById('panel-count').textContent=f.length+' court'+(f.length!==1?'s':'')+' shown';
-  document.getElementById('court-list').innerHTML=f.map(c=>`<div class="ci ${c.id===selectedId?'sel':''}" onclick="selectCourt('${c.id}',true)" id="ci-${c.id}"><div class="ci-dot" style="background:${dotColor(c.surface,c.status)}"></div><div style="flex:1;min-width:0"><div class="ci-name">${c.name}</div><div class="ci-meta">${c.location||''} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div><div class="ci-tags">${surfTag(c.surface)}<span class="tag ${c.status==='client'?'tclient':c.status==='private'?'tprivate':'tprospect'}">${statusLabel(c.status)}</span>${c.last_service?`<span class="tag tdef">${c.last_service}</span>`:''}</div></div></div>`).join('');
+  document.getElementById('court-list').innerHTML=f.map(c=>{
+    const fuHtml=c.followup_date||c.followup_status?`<div class="ci-followup ${followupClass(c)}">🔔 ${c.followup_status||''}${c.followup_date?' · '+formatDate(c.followup_date):''}</div>`:'';
+    return`<div class="ci ${c.id===selectedId?'sel':''}" onclick="selectCourt('${c.id}',true)" id="ci-${c.id}">
+      <div class="ci-dot" style="background:${dotColor(c.surface,c.status)}"></div>
+      <div style="flex:1;min-width:0">
+        <div class="ci-name">${c.name}</div>
+        <div class="ci-meta">${c.location||''} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
+        <div class="ci-tags">${surfTag(c.surface)}<span class="tag ${c.status==='client'?'tclient':c.status==='private'?'tprivate':'tprospect'}">${statusLabel(c.status)}</span></div>
+        ${fuHtml}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function selectCourt(id,flyTo=true){
   selectedId=id;
   const c=courts.find(x=>x.id===id);if(!c)return;
-  if(flyTo&&c.lat&&c.lng){
-    map.flyTo({center:[c.lng,c.lat],zoom:14,duration:600});
-  }
+  if(flyTo&&c.lat&&c.lng)map.flyTo({center:[c.lng,c.lat],zoom:14,duration:600});
   document.querySelectorAll('.ci').forEach(el=>el.classList.remove('sel'));
   const item=document.getElementById('ci-'+id);
   if(item){item.classList.add('sel');item.scrollIntoView({behavior:'smooth',block:'nearest'});}
@@ -329,14 +403,14 @@ function getFiltered(){
   if(activeFilter==='client')return courts.filter(c=>c.status==='client');
   if(activeFilter==='prospect')return courts.filter(c=>c.status==='prospect');
   if(activeFilter==='private')return courts.filter(c=>c.status==='private');
+  if(activeFilter==='followup')return courts.filter(c=>isFollowupDue(c));
   return courts.filter(c=>c.surface===activeFilter);
 }
 
 function setFilter(f,btn){
   activeFilter=f;
   document.querySelectorAll('.filters .btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderMarkers();renderList();
+  btn.classList.add('on');renderMarkers();renderList();
 }
 
 function updateStats(){
@@ -344,9 +418,7 @@ function updateStats(){
   document.getElementById('st-clients').textContent=courts.filter(c=>c.status==='client').length;
   document.getElementById('st-prospects').textContent=courts.filter(c=>c.status==='prospect').length;
   document.getElementById('st-private').textContent=courts.filter(c=>c.status==='private').length;
-  document.getElementById('st-hartru').textContent=courts.filter(c=>c.surface==='Har-Tru').length;
-  document.getElementById('st-hard').textContent=courts.filter(c=>c.surface==='Hard'||c.surface==='Hard Court').length;
-  document.getElementById('st-clay').textContent=courts.filter(c=>c.surface==='Red Clay').length;
+  document.getElementById('st-due').textContent=courts.filter(c=>isFollowupDue(c)).length;
 }
 
 async function saveCourt(){
@@ -356,13 +428,7 @@ async function saveCourt(){
   const btn=document.getElementById('save-btn');
   btn.disabled=true;btn.textContent='Locating...';
   let lat=41.1100,lng=-73.4500;
-  if(address){
-    try{
-      const r=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&country=us&limit=1`);
-      const g=await r.json();
-      if(g.features&&g.features.length>0){lng=g.features[0].center[0];lat=g.features[0].center[1];}
-    }catch(e){}
-  }
+  if(address){try{const r=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&country=us&limit=1`);const g=await r.json();if(g.features&&g.features.length>0){lng=g.features[0].center[0];lat=g.features[0].center[1];}}catch(e){}}
   btn.textContent='Saving...';
   const{data,error}=await sb.from('courts').insert({name,location:address,surface:document.getElementById('cs').value,courts:parseInt(document.getElementById('cc').value)||1,status:document.getElementById('ctype').value,last_service:document.getElementById('cls').value,notes:document.getElementById('cno').value.trim(),lat,lng}).select().single();
   btn.disabled=false;btn.textContent='Add to Map';
@@ -377,6 +443,26 @@ function openModal(){document.getElementById('modal-overlay').classList.add('ope
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');['cn','ca','cc','cls','cno'].forEach(id=>document.getElementById(id).value='');document.getElementById('cs').value='';document.getElementById('ctype').value='prospect';}
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
 
+// ── HELPERS ──
+function isFollowupDue(c){
+  if(!c.followup_date)return false;
+  return new Date(c.followup_date)<=nextWeek;
+}
+function followupColor(c){
+  if(!c.followup_date)return'var(--lmuted)';
+  const d=new Date(c.followup_date);
+  if(d<today)return'#A84E2A';
+  if(d<=tomorrow)return'#B88000';
+  return'#2A7A52';
+}
+function followupClass(c){
+  if(!c.followup_date)return'fnone';
+  const d=new Date(c.followup_date);
+  if(d<today)return'fdue';
+  if(d<=tomorrow)return'fsoon';
+  return'fok';
+}
+function formatDate(d){if(!d)return'';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function dotColor(surface,status){
   if(status==='client'){if(surface==='Har-Tru')return'#4CAF80';if(surface==='Hard'||surface==='Hard Court')return'#D4A843';if(surface==='Red Clay')return'#C4633A';return'#4CAF80';}
   if(status==='private'){if(surface==='Har-Tru')return'#8B7DD8';if(surface==='Hard'||surface==='Hard Court')return'#A090CC';if(surface==='Red Clay')return'#CC88BB';return'#8B7DD8';}
