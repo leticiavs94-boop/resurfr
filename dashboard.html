@@ -433,9 +433,9 @@ select option{color:var(–charcoal)!important}
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
     <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="i-client"></select></div>
-    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-i-amount" placeholder="3800"></div>
+    <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
     <div class="fg"><label class="fl">Status</label>
-      <select class="fi" id="qa-i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
+      <select class="fi" id="i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
     </div>
     <div class="fg"><label class="fl">Notes / Comments</label><input type="text" class="fi" id="i-notes" placeholder="Payment instructions, work summary..."></div>
     <div class="fg">
@@ -579,6 +579,7 @@ async function boot(){
   renderJobs();
   renderInvoices();
   renderDashboard();
+  loadServiceAlerts();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='block';
 }
@@ -595,7 +596,6 @@ async function loadClients(){
 async function loadJobs(){
   const{data}=await sb.from('jobs').select('*,clients(name)').order('created_at',{ascending:false});
   jobs=data||[];
-  renderJobs();
 }
 async function loadFollowups(){
   const today=new Date(new Date().toDateString());
@@ -978,8 +978,8 @@ function editInvoice(id){
   const sel=document.getElementById('i-client');
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=i.client_id||'';
-  document.getElementById('i-amount').value=i.amount||'';
-  document.getElementById('i-status').value=i.status||'pending';
+  const iamtEl=document.getElementById('i-amount');if(iamtEl)iamtEl.value=i.amount||'';
+  const istatEl=document.getElementById('i-status');if(istatEl)istatEl.value=i.status||'pending';
   document.getElementById('i-notes').value=i.notes||'';
   document.getElementById('i-photo').value='';
   const existing=document.getElementById('i-photo-existing');
@@ -1045,10 +1045,12 @@ function openModal(type){
     document.getElementById('invoice-modal-title').textContent='New Invoice';
     document.getElementById('invoice-modal-sub').textContent='';document.getElementById('invoice-modal-sub').style.display='none';
     document.getElementById('save-invoice-btn').textContent='Save Invoice';
-    document.getElementById('i-notes').value='';
-    document.getElementById('i-photo').value='';
-    document.getElementById('i-photo-preview').style.display='none';
-    document.getElementById('i-photo-existing').style.display='none';
+    const iamt=document.getElementById('i-amount');if(iamt)iamt.value='';
+    const inst=document.getElementById('i-status');if(inst)inst.value='pending';
+    const inotes=document.getElementById('i-notes');if(inotes)inotes.value='';
+    const iphoto=document.getElementById('i-photo');if(iphoto)iphoto.value='';
+    const prev=document.getElementById('i-photo-preview');if(prev)prev.style.display='none';
+    const pex=document.getElementById('i-photo-existing');if(pex)pex.style.display='none';
     const el=document.getElementById('i-client');
     el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
@@ -1096,7 +1098,7 @@ async function qaSaveJobThenInvoice(){
         service:svc,
         date:document.getElementById('qa-j-date').value||null,
         amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
-        status:document.getElementById('qa-j-status').value
+        status:document.getElementById('qa-j-status').value||'scheduled'
       });
       if(error){toast('Error saving job: '+error.message,'err');return;}
       qaJobSaved=true;
@@ -1120,7 +1122,7 @@ async function qaFinish(saveJob, saveInvoice){
         service:svc,
         date:document.getElementById('qa-j-date').value||null,
         amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
-        status:document.getElementById('qa-j-status').value
+        status:document.getElementById('qa-j-status').value||'scheduled'
       });
     }
   }
@@ -1203,13 +1205,13 @@ async function saveJob(){
   }
   closeModal('job');
   toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
-  await loadJobs();await loadInvoices();renderClients();renderDashboard();
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
 // ── SAVE INVOICE (add or edit) ──
 async function saveInvoice(){
   const cid=document.getElementById('i-client').value;
-  const amt=parseFloat(document.getElementById('i-amount').value);
+  const iamtField=document.getElementById('i-amount');const amt=iamtField?parseFloat(iamtField.value)||0:0;
   if(!cid||!amt){toast('Please fill in all fields','err');return;}
   const btn=document.getElementById('save-invoice-btn');
   btn.disabled=true;btn.textContent='Saving...';
@@ -1224,7 +1226,7 @@ async function saveInvoice(){
       r.readAsDataURL(photoFile);
     });
   }
-  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value,notes:notes,photo_url:photoUrl};
+  const istatus=document.getElementById('i-status')?.value||'pending';const payload={client_id:cid,amount:amt,status:istatus,notes:notes,photo_url:photoUrl};
   let error;
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
@@ -1361,7 +1363,7 @@ async function completeJobWithPayment(paid){
     }
   }
   toast(paid?'Job complete & payment recorded! 💰':'Job complete — invoice marked pending.','ok');
-  await loadJobs();await loadInvoices();renderClients();renderDashboard();loadServiceAlerts();
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
 }
 function showClientDetailByName(name){
   const c=clients.find(x=>x.name===name);
