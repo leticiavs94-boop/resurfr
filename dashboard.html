@@ -259,22 +259,12 @@ select option{color:var(–charcoal)!important}
           <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
       </div>
-      <div class="grid2">
-        <div class="panel">
-          <div class="panel-head">
-            <div style="display:flex;align-items:center;gap:8px">
-              <div class="panel-title">Outstanding Invoices</div>
-              <span id="overdue-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none">overdue</span>
-            </div>
-            <button class="panel-link" onclick="nav('invoices',null)">View all</button>
-          </div>
-          <div id="d-invoices"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-        </div>
-        <div class="panel">
+      <div class="panel">
           <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
           <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
-      </div>
+      <!-- hidden invoices container so JS still works -->
+      <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
       <div class="panel">
         <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
         <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -468,6 +458,35 @@ select option{color:var(–charcoal)!important}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- JOB DETAIL OVERLAY -->
+
+<div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center">
+  <div style="background:white;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding-bottom:40px">
+    <div style="padding:12px 20px 0;text-align:center"><div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="jd-client" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
+        <div id="jd-service" style="font-size:13px;color:var(--muted);margin-top:2px">Service</div>
+      </div>
+      <button onclick="document.getElementById('job-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
+    </div>
+    <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Date</div><div id="jd-date" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">—</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Amount</div><div id="jd-amount" style="font-size:14px;font-weight:700;color:var(--charcoal);margin-top:4px">$0</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Status</div><div id="jd-status" style="margin-top:4px"></div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Next Visit</div><div id="jd-next" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">—</div></div>
+    </div>
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:6px">Notes</div>
+      <div id="jd-notes" style="font-size:13px;color:var(--muted);line-height:1.5">—</div>
+    </div>
+    <div style="padding:16px 20px;display:flex;gap:10px">
+      <button id="jd-done-btn" onclick="markJobDone(document.getElementById('job-detail-overlay').dataset.jobId)" style="flex:1;padding:13px;border-radius:10px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✓ Mark as Done</button>
+      <button onclick="editJob(document.getElementById('job-detail-overlay').dataset.jobId);document.getElementById('job-detail-overlay').style.display='none'" style="flex:1;padding:13px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Edit Job</button>
+    </div>
+  </div>
+</div>
 
 <!-- CLIENT DETAIL OVERLAY -->
 
@@ -675,13 +694,14 @@ function renderDashboard(){
   const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
 
   document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
-  document.getElementById('s-revenue-sub').textContent=ytdJobs.length+' job'+(ytdJobs.length!==1?'s':'')+' this year';
+  document.getElementById('s-revenue-sub').textContent='completed jobs';
   document.getElementById('s-clients').textContent=clients.length;
   document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
   document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
   document.getElementById('s-pending-sub').textContent=pend.length+' unpaid invoice'+(pend.length!==1?'s':'');
+  const yearJobs=jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear;});
   document.getElementById('s-month').textContent=monthJobs.length;
-  document.getElementById('s-month-sub').textContent='$'+monthRev.toLocaleString()+' revenue';
+  document.getElementById('s-month-sub').textContent=yearJobs.length+' job'+(yearJobs.length!==1?'s':'')+' this year';
 
   // Overdue badge
   const od = document.getElementById('overdue-count');
@@ -699,7 +719,7 @@ function renderDashboard(){
         const isToday = d.toDateString()===new Date().toDateString();
         const isTomorrow = d.toDateString()===new Date(Date.now()+86400000).toDateString();
         const dayLabel = isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-        return `<div class="c-row" style="align-items:center">
+        return `<div class="c-row" style="align-items:center;cursor:pointer" onclick="showJobDetail('${j.id}')">
           <div style="width:44px;text-align:center;flex-shrink:0">
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d.getDate()}</div>
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d.toLocaleDateString('en-US',{month:'short'})}</div>
@@ -708,9 +728,9 @@ function renderDashboard(){
             <div class="c-name">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
             <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
           </div>
-          <div style="text-align:right;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
             <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
-            <div style="font-size:10px;color:var(--lmuted)">${j.service||''}</div>
+            <button onclick="markJobDone('${j.id}')" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">✓ Done</button>
           </div>
         </div>`;
       }).join('');
@@ -1191,6 +1211,31 @@ function stag(s){const m={'Har-Tru':'tag-hartru','Hard':'tag-hard','Hard Court':
 function jbadge(s){const m={scheduled:'b-scheduled',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
 function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
+function showJobDetail(id){
+  const j=jobs.find(x=>x.id===id);if(!j)return;
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'Not set';
+  const el=document.getElementById('job-detail-overlay');
+  el.dataset.jobId=id;
+  document.getElementById('jd-client').textContent=j.clients?.name||'Unknown client';
+  document.getElementById('jd-service').textContent=j.service||'—';
+  document.getElementById('jd-date').textContent=fmt(j.date);
+  document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
+  document.getElementById('jd-status').innerHTML=jbadge(j.status);
+  document.getElementById('jd-notes').textContent=j.notes||'No notes';
+  document.getElementById('jd-next').textContent=j.next_visit?fmt(j.next_visit):'Not set';
+  const doneBtn=document.getElementById('jd-done-btn');
+  if(j.status==='completed'){doneBtn.style.display='none';}
+  else{doneBtn.style.display='block';}
+  el.style.display='flex';
+}
+async function markJobDone(id){
+  const{error}=await sb.from('jobs').update({status:'completed'}).eq('id',id);
+  if(error){toast('Error: '+error.message,'err');return;}
+  const j=jobs.find(x=>x.id===id);if(j)j.status='completed';
+  document.getElementById('job-detail-overlay').style.display='none';
+  toast('Job marked complete! ✓','ok');
+  await loadJobs();renderClients();renderDashboard();loadServiceAlerts();
+}
 function cdEdit(){
   const id=document.getElementById('client-detail-overlay').dataset.clientId;
   document.getElementById('client-detail-overlay').style.display='none';
