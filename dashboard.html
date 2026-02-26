@@ -368,7 +368,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   <div class="fg"><label class="fl">Job Status</label>
     <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
   </div>
-  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaNext(3)">Save Job &amp; Add Invoice →</button>
+  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaSaveJobThenInvoice()">Save Job &amp; Add Invoice →</button>
   <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
   <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
 </div>
@@ -654,7 +654,7 @@ function renderDashboard(){
   const thisMonth = now.getMonth();
   const thisYear = now.getFullYear();
   const totalCourts = clients.reduce((s,c)=>s+(c.courts||1),0);
-  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear;});
+  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear&&j.status==='completed';});
   const ytdRev = ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
   const pend = invoices.filter(i=>i.status==='pending'||i.status==='overdue');
   const pendAmt = pend.reduce((s,i)=>s+(i.amount||0),0);
@@ -914,12 +914,12 @@ function editInvoice(id){
 }
 
 // ── QUICK ADD STATE ──
-let qaMode=false, qaClientId=null;
+let qaMode=false, qaClientId=null, qaJobSaved=false;
 
 function openModal(type){
   editingId[type]=null;
   if(type==='client'){
-    qaClientId=null;
+    qaClientId=null;qaJobSaved=false;
     document.getElementById('client-modal-title').textContent='Add Client';
     document.getElementById('qa-steps').style.display='none';
     document.getElementById('edit-client-btns').style.display='none';
@@ -985,12 +985,33 @@ async function saveClientOnly(){
   await loadClients();renderDashboard();
 }
 
+async function qaSaveJobThenInvoice(){
+  // Save job first, then show invoice step
+  if(qaClientId){
+    const svc=document.getElementById('qa-j-service').value.trim();
+    if(svc){
+      const{error}=await sb.from('jobs').insert({
+        client_id:qaClientId,
+        service:svc,
+        date:document.getElementById('qa-j-date').value||null,
+        amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
+        status:document.getElementById('qa-j-status').value
+      });
+      if(error){toast('Error saving job: '+error.message,'err');return;}
+      qaJobSaved=true;
+      // Pre-fill invoice amount from job
+      document.getElementById('i-amount').value=document.getElementById('qa-j-amount').value||'';
+    }
+  }
+  qaNext(3);
+}
+
 async function qaFinish(saveJob, saveInvoice){
   const btn=document.getElementById('qa-finish-btn')||document.getElementById('save-client-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
 
-  // Save job if requested
-  if(saveJob && qaClientId){
+  // Save job if requested and not already saved
+  if(saveJob && qaClientId && !qaJobSaved){
     const svc=document.getElementById('qa-j-service').value.trim();
     if(svc){
       await sb.from('jobs').insert({
@@ -1017,8 +1038,9 @@ async function qaFinish(saveJob, saveInvoice){
 
   if(btn){btn.disabled=false;}
   closeModal('client');
+  qaJobSaved=false;
   toast('All saved! 🎉','ok');
-  await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadServiceAlerts()]);
   renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
