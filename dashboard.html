@@ -429,13 +429,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 </div>
 
 <!-- CONFIRM DELETE -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-title">Delete this?</div>
-    <div class="confirm-msg" id="confirm-msg">This cannot be undone.</div>
-    <div class="confirm-btns">
-      <button class="b-cancel" onclick="closeConfirm()">Cancel</button>
-      <button class="b-danger" id="confirm-ok-btn">Delete</button>
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="font-size:32px;margin-bottom:12px">🗑️</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:8px">Are you sure?</div>
+    <div id="confirm-msg" style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5">This cannot be undone.</div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeConfirm()" style="flex:1;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Cancel</button>
+      <button id="confirm-ok-btn" style="flex:1;padding:14px;border-radius:10px;background:#C0392B;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none">Yes, Delete</button>
     </div>
   </div>
 </div>
@@ -975,20 +976,32 @@ async function saveInvoice(){
 let pendingDelete={type:null,id:null};
 function confirmDelete(type,id,label){
   pendingDelete={type,id};
-  document.getElementById('confirm-msg').textContent=`Delete "${label}"? This cannot be undone.`;
-  document.getElementById('confirm-overlay').classList.add('open');
+  const extra=type==='client'?' All jobs and invoices for this client will also be deleted.':'';
+  document.getElementById('confirm-msg').textContent=`Delete "${label}"? This cannot be undone.${extra}`;
+  const co=document.getElementById('confirm-overlay');co.style.display='flex';
   document.getElementById('confirm-ok-btn').onclick=doDelete;
 }
-function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');pendingDelete={type:null,id:null};}
+function closeConfirm(){document.getElementById('confirm-overlay').style.display='none';pendingDelete={type:null,id:null};}
 async function doDelete(){
   const{type,id}=pendingDelete;
   closeConfirm();
-  const{error}=await sb.from(type==='client'?'clients':type==='job'?'jobs':'invoices').delete().eq('id',id);
-  if(error){toast('Error: '+error.message,'err');return;}
+  if(type==='client'){
+    // Delete related jobs and invoices first, then the client
+    await sb.from('jobs').delete().eq('client_id',id);
+    await sb.from('invoices').delete().eq('client_id',id);
+    const{error}=await sb.from('clients').delete().eq('id',id);
+    if(error){toast('Error: '+error.message,'err');return;}
+    await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+  } else if(type==='job'){
+    const{error}=await sb.from('jobs').delete().eq('id',id);
+    if(error){toast('Error: '+error.message,'err');return;}
+    await loadJobs();renderClients();
+  } else {
+    const{error}=await sb.from('invoices').delete().eq('id',id);
+    if(error){toast('Error: '+error.message,'err');return;}
+    await loadInvoices();
+  }
   toast('Deleted','ok');
-  if(type==='client'){await loadClients();}
-  else if(type==='job'){await loadJobs();}
-  else{await loadInvoices();}
   renderDashboard();
 }
 
