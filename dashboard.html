@@ -155,6 +155,8 @@ select option{color:var(–charcoal)!important}
 @media(max-width:400px){.stats{grid-template-columns:1fr}.stat-val{font-size:28px}}
 </style>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 <body>
 
@@ -914,6 +916,7 @@ function renderInvoices(){
       <td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
       <td><div class="row-actions">
         ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+        <button class="act-btn" style="background:#E8F0FE;color:#1a56db;border:1px solid #c3d4f7" onclick="exportInvoicePDF('${i.id}')">⬇ PDF</button>
         <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
         <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
       </div></td>
@@ -925,6 +928,7 @@ function renderInvoices(){
     <div class="m-card-tags" style="display:flex;align-items:center;gap:6px">${ibadge(i.status)}${i.photo_url?'<span style="font-size:14px" title="Has photo">📎</span>':''}</div>
     <div class="m-card-actions">
       ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+      <button class="act-btn" style="background:#E8F0FE;color:#1a56db;border:1px solid #c3d4f7" onclick="exportInvoicePDF('${i.id}')">⬇ PDF</button>
       <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
       <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
     </div>
@@ -1253,6 +1257,137 @@ async function saveInvoice(){
   closeModal('invoice');
   toast(editingId.invoice?'Invoice updated!':'Invoice created!','ok');
   await loadInvoices();renderDashboard();
+}
+
+// ── PDF EXPORT ──
+async function exportInvoicePDF(id){
+  const i=invoices.find(x=>x.id===id);
+  if(!i){toast('Invoice not found','err');return;}
+  const c=clients.find(x=>String(x.id)===String(i.client_id));
+  const clientName=i.clients?.name||c?.name||'Client';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—';
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'letter'});
+  const W=612, margin=50;
+
+  // ── Header bar ──
+  doc.setFillColor(42,122,82); // --green
+  doc.rect(0,0,W,80,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(28);
+  doc.text('INVOICE',margin,52);
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  doc.text('Resurfr · Tennis Court Services',W-margin,52,{align:'right'});
+
+  // ── Invoice meta ──
+  doc.setTextColor(80,80,80);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  const invNum='INV-'+String(id).substring(0,8).toUpperCase();
+  doc.text('Invoice #: '+invNum, margin, 110);
+  doc.text('Date: '+fmt(i.issued_date), margin, 126);
+  doc.text('Status: '+(i.status||'pending').toUpperCase(), margin, 142);
+
+  // ── Bill To ──
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(42,122,82);
+  doc.text('BILL TO', margin, 180);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(14);
+  doc.setTextColor(30,30,30);
+  doc.text(clientName, margin, 198);
+  if(c?.location){
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100,100,100);
+    doc.text(c.location, margin, 214);
+  }
+
+  // ── Divider ──
+  doc.setDrawColor(220,220,220);
+  doc.setLineWidth(1);
+  doc.line(margin, 240, W-margin, 240);
+
+  // ── Services table header ──
+  doc.setFillColor(245,245,245);
+  doc.rect(margin, 248, W-margin*2, 24, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(80,80,80);
+  doc.text('DESCRIPTION', margin+10, 264);
+  doc.text('AMOUNT', W-margin-10, 264, {align:'right'});
+
+  // ── Service row ──
+  const linkedJob=jobs.find(j=>String(j.client_id)===String(i.client_id)&&j.amount===i.amount);
+  const serviceDesc=linkedJob?.service||i.notes||'Tennis Court Service';
+  const serviceDate=linkedJob?.date?fmt(linkedJob.date):'';
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11);
+  doc.setTextColor(30,30,30);
+  doc.text(serviceDesc, margin+10, 294);
+  if(serviceDate){
+    doc.setFontSize(9);
+    doc.setTextColor(120,120,120);
+    doc.text(serviceDate, margin+10, 308);
+  }
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(30,30,30);
+  doc.text('$'+(i.amount||0).toLocaleString(), W-margin-10, 294, {align:'right'});
+
+  // ── Divider ──
+  doc.setDrawColor(220,220,220);
+  doc.line(margin, 325, W-margin, 325);
+
+  // ── Total ──
+  doc.setFillColor(42,122,82);
+  doc.rect(W-margin-180, 335, 180, 40, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(255,255,255);
+  doc.text('TOTAL DUE', W-margin-170, 351);
+  doc.setFontSize(16);
+  doc.text('$'+(i.amount||0).toLocaleString(), W-margin-10, 363, {align:'right'});
+
+  // ── Notes ──
+  if(i.notes){
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(42,122,82);
+    doc.text('NOTES', margin, 400);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(80,80,80);
+    const noteLines=doc.splitTextToSize(i.notes, W-margin*2);
+    doc.text(noteLines, margin, 416);
+  }
+
+  // ── Footer ──
+  doc.setFillColor(245,245,245);
+  doc.rect(0, 720, W, 72, 'F');
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(120,120,120);
+  doc.text('Thank you for your business!', W/2, 745, {align:'center'});
+  doc.text('Resurfr · Tennis Court Services · getresurfr.netlify.app', W/2, 761, {align:'center'});
+
+  // ── Status badge ──
+  if(i.status==='paid'){
+    doc.setFontSize(36);
+    doc.setTextColor(42,122,82);
+    doc.setFont('helvetica','bold');
+    doc.text('PAID', W/2, 500, {align:'center', angle:15});
+    doc.setDrawColor(42,122,82);
+    doc.setLineWidth(3);
+    doc.rect(W/2-60, 468, 120, 48);
+  }
+
+  const filename=clientName.replace(/[^a-z0-9]/gi,'_')+'_Invoice_'+invNum+'.pdf';
+  doc.save(filename);
+  toast('PDF downloaded! 📄','ok');
 }
 
 // ── DELETE ──
