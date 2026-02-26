@@ -205,27 +205,55 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     <div class="topbar">
       <div class="topbar-left">
         <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-        <div class="page-title">Dashboard</div>
+        <div>
+          <div class="page-title" id="dash-greeting">Good morning</div>
+          <div class="topbar-date" id="today-date" style="font-size:11px;color:var(--lmuted);margin-top:1px"></div>
+        </div>
       </div>
       <div class="topbar-right">
-        <span id="today-date" class="topbar-date" style="font-size:12px;color:var(--lmuted)"></span>
         <button class="btn btn-yellow" onclick="openModal('client')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Client</button>
       </div>
     </div>
     <div class="content">
       <div class="stats">
         <div class="stat s1"><div class="stat-lbl">Total Billed</div><div class="stat-val" id="s-revenue">$0</div><div class="stat-sub">All time</div></div>
-        <div class="stat s2"><div class="stat-lbl">Clients</div><div class="stat-val" id="s-clients">0</div><div class="stat-sub">Active</div></div>
-        <div class="stat s3"><div class="stat-lbl">Pending</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 invoices</div></div>
-        <div class="stat s4"><div class="stat-lbl">Jobs</div><div class="stat-val" id="s-jobs">0</div><div class="stat-sub">Total</div></div>
+        <div class="stat s2"><div class="stat-lbl">Active Clients</div><div class="stat-val" id="s-clients">0</div><div class="stat-sub" id="s-clients-sub">0 courts</div></div>
+        <div class="stat s3"><div class="stat-lbl">Unpaid</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 invoices</div></div>
+        <div class="stat s4"><div class="stat-lbl">This Month</div><div class="stat-val" id="s-month">$0</div><div class="stat-sub" id="s-month-sub">0 jobs</div></div>
+      </div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">Upcoming Jobs</div>
+            <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+          </div>
+          <button class="panel-link" onclick="nav('jobs',null)">View all</button>
+        </div>
+        <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
       <div class="grid2">
-        <div class="panel"><div class="panel-head"><div class="panel-title">Recent Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div><div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
-        <div class="panel"><div class="panel-head"><div class="panel-title">Recent Jobs</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div><div id="d-jobs"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="panel">
+          <div class="panel-head">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="panel-title">Outstanding Invoices</div>
+              <span id="overdue-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none">overdue</span>
+            </div>
+            <button class="panel-link" onclick="nav('invoices',null)">View all</button>
+          </div>
+          <div id="d-invoices"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
+          <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
       </div>
-      <div class="panel"><div class="panel-head"><div class="panel-title">Recent Invoices</div><button class="panel-link" onclick="nav('invoices',null)">View all</button></div><div id="d-invoices"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
+        <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      </div>
     </div>
   </div>
+
 
   <!-- CLIENTS -->
   <div id="view-clients" class="view">
@@ -372,22 +400,108 @@ async function loadInvoices(){
 
 // ── DASHBOARD ──
 function renderDashboard(){
-  const rev=clients.reduce((s,c)=>s+(c.total_billed||0),0);
-  const pend=invoices.filter(i=>i.status==='pending');
-  const pendAmt=pend.reduce((s,i)=>s+(i.amount||0),0);
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dash-greeting').textContent = greeting;
+  document.getElementById('today-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  // Stats
+  const rev = clients.reduce((s,c)=>s+(c.total_billed||0),0);
+  const totalCourts = clients.reduce((s,c)=>s+(c.courts||1),0);
+  const pend = invoices.filter(i=>i.status==='pending'||i.status==='overdue');
+  const pendAmt = pend.reduce((s,i)=>s+(i.amount||0),0);
+  const overdue = invoices.filter(i=>i.status==='overdue');
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+  const monthJobs = jobs.filter(j=>{if(!j.date)return false;const d=new Date(j.date);return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;});
+  const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
+
   document.getElementById('s-revenue').textContent='$'+rev.toLocaleString();
   document.getElementById('s-clients').textContent=clients.length;
+  document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
   document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
   document.getElementById('s-pending-sub').textContent=pend.length+' invoice'+(pend.length!==1?'s':'');
-  document.getElementById('s-jobs').textContent=jobs.length;
-  document.getElementById('d-clients').innerHTML=clients.length===0?empty('No clients yet'):
-    clients.slice(0,4).map(c=>`<div class="c-row"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} courts · ${c.location||'—'}</div></div>${stag(c.surface)}</div>`).join('');
-  document.getElementById('d-jobs').innerHTML=jobs.length===0?empty('No jobs yet'):
-    `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Client</th><th>Service</th><th>Amount</th><th>Status</th></tr></thead><tbody>`+
-    jobs.slice(0,4).map(j=>`<tr><td><strong>${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td><td>${jbadge(j.status)}</td></tr>`).join('')+`</tbody></table></div>`;
-  document.getElementById('d-invoices').innerHTML=invoices.length===0?empty('No invoices yet'):
-    `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Client</th><th>Amount</th><th>Status</th></tr></thead><tbody>`+
-    invoices.slice(0,5).map(i=>`<tr><td><strong>${i.clients?.name||'?'}</strong></td><td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${ibadge(i.status)}</td></tr>`).join('')+`</tbody></table></div>`;
+  document.getElementById('s-month').textContent='$'+monthRev.toLocaleString();
+  document.getElementById('s-month-sub').textContent=monthJobs.length+' job'+(monthJobs.length!==1?'s':'');
+
+  // Overdue badge
+  const od = document.getElementById('overdue-count');
+  if(overdue.length>0){od.textContent=overdue.length+' overdue';od.style.display='inline';}
+  else od.style.display='none';
+
+  // Upcoming jobs (scheduled, future dates)
+  const upcoming = jobs.filter(j=>j.status==='scheduled'&&j.date&&new Date(j.date)>=new Date(new Date().toDateString())).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const uc = document.getElementById('upcoming-count');
+  uc.textContent = upcoming.length > 0 ? upcoming.length : '';
+  document.getElementById('d-upcoming').innerHTML = upcoming.length===0
+    ? empty('No upcoming jobs — tap "Add Job" to schedule one')
+    : upcoming.slice(0,5).map(j=>{
+        const d = new Date(j.date);
+        const isToday = d.toDateString()===new Date().toDateString();
+        const isTomorrow = d.toDateString()===new Date(Date.now()+86400000).toDateString();
+        const dayLabel = isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+        return `<div class="c-row" style="align-items:center">
+          <div style="width:44px;text-align:center;flex-shrink:0">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d.getDate()}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d.toLocaleDateString('en-US',{month:'short'})}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="c-name">${j.clients?.name||'?'}</div>
+            <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
+            <div style="font-size:10px;color:var(--lmuted)">${j.service||''}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+  // Outstanding invoices
+  document.getElementById('d-invoices').innerHTML = pend.length===0
+    ? `<div class="empty" style="padding:24px"><p>🎉 All invoices paid!</p></div>`
+    : pend.slice(0,5).map(i=>`<div class="c-row" style="align-items:center">
+        <div style="flex:1;min-width:0">
+          <div class="c-name">${i.clients?.name||'?'}</div>
+          <div class="c-meta">${i.issued_date?new Date(i.issued_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
+          ${ibadge(i.status)}
+          <button class="act-btn act-paid" style="padding:4px 10px;font-size:11px" onclick="markPaid('${i.id}')">✓ Paid</button>
+        </div>
+      </div>`).join('');
+
+  // Active clients
+  document.getElementById('d-clients').innerHTML = clients.length===0
+    ? empty('No clients yet')
+    : clients.slice(0,5).map(c=>`<div class="c-row">
+        <div class="c-av">${c.name.substring(0,2).toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div class="c-name">${c.name}</div>
+          <div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div>
+        </div>
+        ${stag(c.surface)}
+      </div>`).join('');
+
+  // Recently completed jobs
+  const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
+  document.getElementById('d-completed').innerHTML = completed.length===0
+    ? empty('No completed jobs yet')
+    : completed.map(j=>`<div class="c-row" style="align-items:center">
+        <div style="width:44px;text-align:center;flex-shrink:0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--glight);line-height:1">${j.date?new Date(j.date).getDate():'—'}</div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${j.date?new Date(j.date).toLocaleDateString('en-US',{month:'short'}):''}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="c-name">${j.clients?.name||'?'}</div>
+          <div class="c-meta">${j.service||'—'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
+          ${jbadge(j.status)}
+        </div>
+      </div>`).join('');
 }
 
 // ── CLIENTS TABLE ──
