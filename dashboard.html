@@ -105,7 +105,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .modal-btns{display:flex;gap:10px;margin-top:18px}
 .modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .b-cancel{background:var(–off);color:var(–muted);border:1px solid var(–border)}
-.b-save{background:var(–charcoal);color:white}.b-save:hover{background:var(–green)}.b-save:disabled{opacity:0.6;cursor:not-allowed}
+.b-save{background:var(–yellow);color:var(–charcoal)}.b-save:hover{background:#d4f030}.b-save:disabled{opacity:0.6;cursor:not-allowed}
 .b-danger{background:#FDEEE8;color:#A84E2A;border:1px solid #F5D4CF}.b-danger:hover{background:#F9E0DA}
 
 /* Confirm dialog */
@@ -549,7 +549,7 @@ function renderDashboard(){
   else od.style.display='none';
 
   // Upcoming jobs (scheduled, future dates)
-  const upcoming = jobs.filter(j=>j.status==='scheduled'&&j.date&&new Date(j.date)>=new Date(new Date().toDateString())).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const upcoming = jobs.filter(j=>j.status==='scheduled').sort((a,b)=>new Date(a.date)-new Date(b.date));
   const uc = document.getElementById('upcoming-count');
   uc.textContent = upcoming.length > 0 ? upcoming.length : '';
   document.getElementById('d-upcoming').innerHTML = upcoming.length===0
@@ -593,14 +593,7 @@ function renderDashboard(){
   // Active clients
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>`<div class="c-row">
-        <div class="c-av">${c.name.substring(0,2).toUpperCase()}</div>
-        <div style="flex:1;min-width:0">
-          <div class="c-name">${c.name}</div>
-          <div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div>
-        </div>
-        ${stag(c.surface)}
-      </div>`).join('');
+    : clients.slice(0,5).map(c=>{const jobTotal=jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0);return`<div class="c-row"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${jobTotal.toLocaleString()}</div></div>`;}).join('');
 
   // Recently completed jobs
   const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
@@ -629,11 +622,11 @@ function renderClients(){
     clients.map(c=>`<tr>
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
       <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
-      <td><strong>$${(c.total_billed||0).toLocaleString()}</strong></td>
+      <td><strong>$${jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</strong></td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=clients.map(c=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${(c.total_billed||0).toLocaleString()}</div></div>
+    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${jobs.filter(j=>j.client_id===c.id).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</div></div>
     <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
     <div class="m-card-tags">${stag(c.surface)}</div>
     <div class="m-card-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
