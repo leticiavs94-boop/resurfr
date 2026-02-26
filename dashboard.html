@@ -224,15 +224,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <div class="stat s3"><div class="stat-lbl">Unpaid</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 invoices</div></div>
         <div class="stat s4"><div class="stat-lbl">This Month</div><div class="stat-val" id="s-month">$0</div><div class="stat-sub" id="s-month-sub">0 jobs</div></div>
       </div>
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">Upcoming Jobs</div>
-            <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+      <!-- Upcoming + Service Alerts side by side on desktop -->
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="panel">
+          <div class="panel-head">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="panel-title">Upcoming Jobs</div>
+              <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+            </div>
+            <button class="panel-link" onclick="nav('jobs',null)">View all</button>
           </div>
-          <button class="panel-link" onclick="nav('jobs',null)">View all</button>
+          <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
-        <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <div class="panel">
+          <div class="panel-head">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="panel-title">⚠️ Service Alerts</div>
+              <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
+            </div>
+            <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+          </div>
+          <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        </div>
       </div>
       <div class="grid2">
         <div class="panel">
@@ -253,16 +266,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
       <div class="panel">
         <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
         <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-      </div>
-      <div class="panel" id="followups-panel" style="display:none">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">🔔 Follow-ups Due</div>
-            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
-          </div>
-          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
-        </div>
-        <div id="d-followups"></div>
       </div>
       <div class="panel" id="followups-panel" style="display:none">
         <div class="panel-head">
@@ -459,7 +462,7 @@ async function boot(){
   document.getElementById('user-email').textContent=email;
   document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
   document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
-  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadFollowups()]);
+  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadFollowups(),loadServiceAlerts()]);
   renderDashboard();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -507,6 +510,51 @@ async function loadFollowups(){
   } else {
     fuPanel.style.display='none';
   }
+}
+
+async function loadServiceAlerts(){
+  const{data}=await sb.from('courts').select('id,name,location,surface,courts,status,last_service,notes').order('name',{ascending:true});
+  const allCourts=data||[];
+  const currentYear=new Date().getFullYear();
+
+  // Score each court by urgency
+  const alerts=allCourts.map(c=>{
+    const ls=c.last_service||'';
+    // Extract year from last_service string
+    const yearMatch=ls.match(/\b(20\d{2}|19\d{2})\b/);
+    const lastYear=yearMatch?parseInt(yearMatch[0]):null;
+    const neverDone=ls.toLowerCase().includes('never')||!ls;
+    const yearsAgo=lastYear?currentYear-lastYear:null;
+
+    let urgency=null,label='',color='',dot='';
+    if(neverDone){
+      urgency=3;label='Never serviced';color='#A84E2A';dot='#A84E2A';
+    } else if(yearsAgo>=5){
+      urgency=3;label=yearsAgo+' yrs since last service';color='#A84E2A';dot='#A84E2A';
+    } else if(yearsAgo>=3){
+      urgency=2;label='Due this season';color='#B88000';dot='#E8A800';
+    } else if(yearsAgo>=2){
+      urgency=1;label='Coming up soon';color='#2A7A52';dot='#4CAF80';
+    }
+    return urgency?{...c,urgency,label,color,dot}:null;
+  }).filter(Boolean).sort((a,b)=>b.urgency-a.urgency);
+
+  const ac=document.getElementById('alerts-count');
+  const urgent=alerts.filter(a=>a.urgency>=2);
+  if(urgent.length>0){ac.textContent=urgent.length+' due';ac.style.display='inline';}
+  else ac.style.display='none';
+
+  document.getElementById('d-alerts').innerHTML=alerts.length===0
+    ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All courts up to date ✓</div>'
+    :alerts.slice(0,6).map(a=>`
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
+        <div style="width:8px;height:8px;border-radius:50%;background:${a.dot};flex-shrink:0;margin-top:4px"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal);line-height:1.3">${a.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">${a.surface||''}${a.courts?' · '+a.courts+' court'+(a.courts!==1?'s':''):''}</div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:${a.color};white-space:nowrap;margin-top:2px">${a.label}</div>
+      </div>`).join('');
 }
 
 async function loadInvoices(){
