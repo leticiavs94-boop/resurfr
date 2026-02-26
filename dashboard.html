@@ -475,6 +475,25 @@ select option{color:var(–charcoal)!important}
 
 <div class="toast" id="toast"></div>
 
+<!-- PDF PREVIEW OVERLAY -->
+
+<div id="pdf-preview-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:800;flex-direction:column;align-items:center;justify-content:flex-start">
+  <!-- Header bar -->
+  <div style="width:100%;max-width:600px;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-shrink:0">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Invoice Preview</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button id="pdf-download-btn" style="background:#4CAF82;color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
+        ⬇ Download PDF
+      </button>
+      <button onclick="document.getElementById('pdf-preview-overlay').style.display='none'" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:10px;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300">✕</button>
+    </div>
+  </div>
+  <!-- PDF iframe -->
+  <div style="flex:1;width:100%;max-width:600px;padding:0 12px 24px;overflow:hidden">
+    <iframe id="pdf-preview-frame" style="width:100%;height:100%;border:none;border-radius:12px;background:white"></iframe>
+  </div>
+</div>
+
 <!-- FULL SCREEN PHOTO VIEWER -->
 
 <div id="photo-viewer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:900;align-items:center;justify-content:center;flex-direction:column" onclick="document.getElementById('photo-viewer').style.display='none'">
@@ -1386,8 +1405,24 @@ async function exportInvoicePDF(id){
   }
 
   const filename=clientName.replace(/[^a-z0-9]/gi,'_')+'_Invoice_'+invNum+'.pdf';
-  doc.save(filename);
-  toast('PDF downloaded! 📄','ok');
+  
+  // Show preview overlay
+  const pdfBlob=doc.output('blob');
+  const pdfUrl=URL.createObjectURL(pdfBlob);
+  const frame=document.getElementById('pdf-preview-frame');
+  frame.src=pdfUrl;
+  
+  // Wire download button
+  const dlBtn=document.getElementById('pdf-download-btn');
+  dlBtn.onclick=()=>{
+    const a=document.createElement('a');
+    a.href=pdfUrl;
+    a.download=filename;
+    a.click();
+    toast('PDF downloaded! 📄','ok');
+  };
+  
+  document.getElementById('pdf-preview-overlay').style.display='flex';
 }
 
 // ── DELETE ──
