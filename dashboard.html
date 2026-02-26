@@ -225,8 +225,9 @@ select option{color:var(–charcoal)!important}
           <div class="topbar-date" id="today-date" style="font-size:11px;color:var(--lmuted);margin-top:1px"></div>
         </div>
       </div>
-      <div class="topbar-right">
+      <div class="topbar-right" style="gap:8px">
         <button class="btn btn-yellow" onclick="openModal('client')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Client</button>
+        <button class="btn" style="background:var(--charcoal);color:white" onclick="openModal('job')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Job</button>
       </div>
     </div>
     <div class="content">
@@ -694,7 +695,7 @@ function renderDashboard(){
   const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
 
   document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
-  document.getElementById('s-revenue-sub').textContent='completed jobs';
+  document.getElementById('s-revenue-sub').textContent='';
   document.getElementById('s-clients').textContent=clients.length;
   document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
   document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
