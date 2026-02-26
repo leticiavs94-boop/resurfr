@@ -219,10 +219,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     </div>
     <div class="content">
       <div class="stats">
-        <div class="stat s1"><div class="stat-lbl">Total Billed</div><div class="stat-val" id="s-revenue">$0</div><div class="stat-sub">All time</div></div>
+        <div class="stat s1"><div class="stat-lbl">YTD Revenue</div><div class="stat-val" id="s-revenue">$0</div><div class="stat-sub" id="s-revenue-sub">this year</div></div>
         <div class="stat s2"><div class="stat-lbl">Active Clients</div><div class="stat-val" id="s-clients">0</div><div class="stat-sub" id="s-clients-sub">0 courts</div></div>
-        <div class="stat s3"><div class="stat-lbl">Unpaid</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 invoices</div></div>
-        <div class="stat s4"><div class="stat-lbl">This Month</div><div class="stat-val" id="s-month">$0</div><div class="stat-sub" id="s-month-sub">0 jobs</div></div>
+        <div class="stat s3"><div class="stat-lbl">Pending Invoices</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 unpaid</div></div>
+        <div class="stat s4"><div class="stat-lbl">Jobs This Month</div><div class="stat-val" id="s-month">0</div><div class="stat-sub" id="s-month-sub">$0 revenue</div></div>
       </div>
       <!-- Upcoming + Service Alerts side by side on desktop -->
       <div class="grid2" style="margin-bottom:16px">
@@ -376,11 +376,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <!-- Page 3: Invoice -->
 <div id="qa-page-3" style="display:none">
   <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
-  <div style="background:var(--off);border-radius:10px;padding:14px;margin-bottom:14px">
-    <div style="font-size:11px;color:var(--lmuted);margin-bottom:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase">Invoice Amount</div>
-    <div style="font-size:28px;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:var(--charcoal)" id="qa-inv-preview">$0</div>
-    <div style="font-size:11px;color:var(--lmuted);margin-top:2px">Pulled from job amount — tap to change</div>
-    <input type="number" class="fi" id="i-amount" style="margin-top:8px;display:none" placeholder="Override amount">
+  <div class="fg">
+    <label class="fl">Invoice Amount ($)</label>
+    <input type="number" class="fi" id="i-amount" placeholder="0">
+    <div style="font-size:11px;color:var(--lmuted);margin-top:4px">Pre-filled from job — edit if different</div>
   </div>
   <div class="fg"><label class="fl">Payment Status</label>
     <select class="fi" id="i-status">
@@ -402,7 +401,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <div class="overlay" id="m-job">
   <div class="modal">
     <div class="modal-title" id="job-modal-title">Add Job</div>
-    <div class="modal-sub" id="job-modal-sub"></div>
+    <div class="modal-sub" id="job-modal-sub" style="display:none"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="j-client"></select></div>
     <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="j-service" placeholder="Har-Tru topdressing"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -429,7 +428,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <div class="overlay" id="m-invoice">
   <div class="modal">
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
-    <div class="modal-sub" id="invoice-modal-sub"></div>
+    <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
     <div class="fg"><label class="fl">Client</label><select class="fi" id="i-client"></select></div>
     <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
     <div class="fg"><label class="fl">Status</label>
@@ -457,6 +456,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- CLIENT DETAIL OVERLAY -->
+
+<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center">
+  <div style="background:white;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;padding-bottom:40px">
+    <div style="padding:16px 20px 0;display:flex;justify-content:space-between;align-items:center">
+      <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 4px"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 20px 14px;border-bottom:1px solid var(--border)">
+      <div id="cd-avatar" style="width:48px;height:48px;border-radius:12px;background:var(--charcoal);color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">TE</div>
+      <div style="flex:1;min-width:0">
+        <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
+        <div id="cd-meta" style="font-size:12px;color:var(--lmuted);margin-top:2px"></div>
+      </div>
+      <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)">
+      <div style="background:white;padding:14px 20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted)">Total Billed</div>
+        <div id="cd-total" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);margin-top:2px">$0</div>
+      </div>
+      <div style="background:white;padding:14px 20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted)">Jobs</div>
+        <div id="cd-jobcount" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);margin-top:2px">0</div>
+      </div>
+    </div>
+    <div style="padding:14px 20px 6px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">JOB HISTORY</div>
+    </div>
+    <div id="cd-jobs"></div>
+    <div style="padding:14px 20px 6px;margin-top:4px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">INVOICES</div>
+    </div>
+    <div id="cd-invoices"></div>
+  </div>
+</div>
 
 <script>
 const{createClient}=supabase;
@@ -526,35 +561,57 @@ async function loadFollowups(){
 }
 
 async function loadServiceAlerts(){
-  const{data}=await sb.from('courts').select('id,name,location,surface,courts,status,last_service,notes').order('name',{ascending:true});
-  const allCourts=data||[];
-  const currentYear=new Date().getFullYear();
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const alerts = [];
 
-  // Score each court by urgency
-  // Also pull next_visit from jobs for courts that are clients
-  const clientNextVisits={};
-  jobs.forEach(j=>{if(j.next_visit&&j.clients){const name=j.clients.name;if(!clientNextVisits[name]||j.next_visit>clientNextVisits[name])clientNextVisits[name]=j.next_visit;}});
+  // 1. Clients with a next_visit date that is overdue or coming up within 60 days
+  const cutoff = new Date(today.getTime() + 60*24*60*60*1000);
+  clients.forEach(c=>{
+    // Find their latest job with a next_visit
+    const clientJobs = jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
+    const withVisit = clientJobs.filter(j=>j.next_visit).sort((a,b)=>b.next_visit.localeCompare(a.next_visit));
+    if(withVisit.length>0){
+      const nv = new Date(withVisit[0].next_visit+'T00:00:00');
+      const isOverdue = nv < today;
+      const isSoon = nv <= cutoff;
+      if(isOverdue){
+        const days=Math.floor((today-nv)/(86400000));
+        alerts.push({name:c.name,surface:c.surface,sub:days+' day'+(days!==1?'s':'')+' overdue',dot:'#A84E2A',color:'#A84E2A',urgency:3});
+      } else if(isSoon){
+        const days=Math.floor((nv-today)/(86400000));
+        const label=days===0?'Today':days===1?'Tomorrow':'In '+days+' days';
+        alerts.push({name:c.name,surface:c.surface,sub:'Next visit: '+label,dot:'#E8A800',color:'#B88000',urgency:2});
+      }
+    }
+  });
 
-  const alerts=allCourts.map(c=>{
+  // 2. Clients with no jobs at all — never been serviced
+  clients.forEach(c=>{
+    const clientJobs = jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
+    if(clientJobs.length===0){
+      alerts.push({name:c.name,surface:c.surface,sub:'No jobs recorded yet',dot:'#aaa',color:'#888',urgency:1});
+    }
+  });
+
+  // 3. Also pull from prospect map courts with overdue last_service
+  const{data:courts}=await sb.from('courts').select('name,surface,last_service,status').neq('status','client').order('name');
+  (courts||[]).forEach(c=>{
     const ls=c.last_service||'';
-    // Extract year from last_service string
     const yearMatch=ls.match(/\b(20\d{2}|19\d{2})\b/);
     const lastYear=yearMatch?parseInt(yearMatch[0]):null;
-    const neverDone=ls.toLowerCase().includes('never')||!ls;
-    const yearsAgo=lastYear?currentYear-lastYear:null;
-
-    let urgency=null,label='',color='',dot='';
+    const neverDone=!ls||ls.toLowerCase().includes('never');
+    const yearsAgo=lastYear?today.getFullYear()-lastYear:null;
     if(neverDone){
-      urgency=3;label='Never serviced';color='#A84E2A';dot='#A84E2A';
+      alerts.push({name:c.name,surface:c.surface,sub:'Never serviced — prospect',dot:'#A84E2A',color:'#A84E2A',urgency:3});
     } else if(yearsAgo>=5){
-      urgency=3;label=yearsAgo+' yrs since last service';color='#A84E2A';dot='#A84E2A';
+      alerts.push({name:c.name,surface:c.surface,sub:yearsAgo+' yrs since last service',dot:'#A84E2A',color:'#A84E2A',urgency:3});
     } else if(yearsAgo>=3){
-      urgency=2;label='Due this season';color='#B88000';dot='#E8A800';
-    } else if(yearsAgo>=2){
-      urgency=1;label='Coming up soon';color='#2A7A52';dot='#4CAF80';
+      alerts.push({name:c.name,surface:c.surface,sub:'Due this season',dot:'#E8A800',color:'#B88000',urgency:2});
     }
-    return urgency?{...c,urgency,label,color,dot}:null;
-  }).filter(Boolean).sort((a,b)=>b.urgency-a.urgency);
+  });
+
+  alerts.sort((a,b)=>b.urgency-a.urgency);
 
   const ac=document.getElementById('alerts-count');
   const urgent=alerts.filter(a=>a.urgency>=2);
@@ -562,15 +619,15 @@ async function loadServiceAlerts(){
   else ac.style.display='none';
 
   document.getElementById('d-alerts').innerHTML=alerts.length===0
-    ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All courts up to date ✓</div>'
-    :alerts.slice(0,6).map(a=>`
-      <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
-        <div style="width:8px;height:8px;border-radius:50%;background:${a.dot};flex-shrink:0;margin-top:4px"></div>
+    ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
+    :alerts.slice(0,8).map(a=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
+        <div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--charcoal);line-height:1.3">${a.name}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">${a.surface||''}${a.courts?' · '+a.courts+' court'+(a.courts!==1?'s':''):''}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${a.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div>
         </div>
-        <div style="font-size:10px;font-weight:700;color:${a.color};white-space:nowrap;margin-top:2px">${a.label}</div>
+        ${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}
       </div>`).join('');
 }
 
@@ -590,23 +647,25 @@ function renderDashboard(){
   document.getElementById('today-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   // Stats
-  const rev = clients.reduce((s,c)=>s+(c.total_billed||0),0);
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
   const totalCourts = clients.reduce((s,c)=>s+(c.courts||1),0);
+  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date).getFullYear()===thisYear;});
+  const ytdRev = ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
   const pend = invoices.filter(i=>i.status==='pending'||i.status==='overdue');
   const pendAmt = pend.reduce((s,i)=>s+(i.amount||0),0);
   const overdue = invoices.filter(i=>i.status==='overdue');
-  const thisMonth = now.getMonth();
-  const thisYear = now.getFullYear();
   const monthJobs = jobs.filter(j=>{if(!j.date)return false;const d=new Date(j.date);return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;});
   const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
 
-  document.getElementById('s-revenue').textContent='$'+rev.toLocaleString();
+  document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
+  document.getElementById('s-revenue-sub').textContent=ytdJobs.length+' job'+(ytdJobs.length!==1?'s':'')+' this year';
   document.getElementById('s-clients').textContent=clients.length;
   document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
   document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
-  document.getElementById('s-pending-sub').textContent=pend.length+' invoice'+(pend.length!==1?'s':'');
-  document.getElementById('s-month').textContent='$'+monthRev.toLocaleString();
-  document.getElementById('s-month-sub').textContent=monthJobs.length+' job'+(monthJobs.length!==1?'s':'');
+  document.getElementById('s-pending-sub').textContent=pend.length+' unpaid invoice'+(pend.length!==1?'s':'');
+  document.getElementById('s-month').textContent=monthJobs.length;
+  document.getElementById('s-month-sub').textContent='$'+monthRev.toLocaleString()+' revenue';
 
   // Overdue badge
   const od = document.getElementById('overdue-count');
@@ -614,7 +673,7 @@ function renderDashboard(){
   else od.style.display='none';
 
   // Upcoming jobs (scheduled, future dates)
-  const upcoming = jobs.filter(j=>j.status==='scheduled').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const upcoming = jobs.filter(j=>j.status==='scheduled'||j.status==='Scheduled').sort((a,b)=>new Date(a.date||'9999')-new Date(b.date||'9999'));
   const uc = document.getElementById('upcoming-count');
   uc.textContent = upcoming.length > 0 ? upcoming.length : '';
   document.getElementById('d-upcoming').innerHTML = upcoming.length===0
@@ -658,7 +717,7 @@ function renderDashboard(){
   // Active clients
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>{const jobTotal=jobs.filter(j=>j.client_id==c.id||(j.clients&&j.clients.name===c.name)).reduce((s,j)=>s+(j.amount||0),0);return`<div class="c-row"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${jobTotal.toLocaleString()}</div></div>`;}).join('');
+    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 
   // Recently completed jobs
   const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
@@ -681,22 +740,63 @@ function renderDashboard(){
 }
 
 // ── CLIENTS TABLE ──
+function clientTotal(c){
+  return jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name)).reduce((s,j)=>s+(j.amount||0),0);
+}
+
 function renderClients(){
   if(clients.length===0){document.getElementById('clients-list').innerHTML=empty('No clients yet — tap "Add Client" to get started');return;}
   const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Billed</th><th></th></tr></thead><tbody>`+
-    clients.map(c=>`<tr>
+    clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
       <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
-      <td><strong>$${jobs.filter(j=>j.client_id==c.id||(j.clients&&j.clients.name===c.name)).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</strong></td>
-      <td><div class="row-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
+      <td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
+      <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
-  const cards=clients.map(c=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${jobs.filter(j=>j.client_id==c.id||(j.clients&&j.clients.name===c.name)).reduce((s,j)=>s+(j.amount||0),0).toLocaleString()}</div></div>
+  const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
+    <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
     <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
     <div class="m-card-tags">${stag(c.surface)}</div>
-    <div class="m-card-actions"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
+    <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
   </div>`).join('');
   document.getElementById('clients-list').innerHTML=tbl+cards;
+}
+
+function showClientDetail(id){
+  const c=clients.find(x=>String(x.id)===String(id));if(!c)return;
+  const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
+  const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id)||(i.clients&&i.clients.name===c.name));
+  const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
+  const fmt=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const el=document.getElementById('client-detail-overlay');
+  document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
+  document.getElementById('cd-name').textContent=c.name;
+  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':'')+( c.surface||'')+(c.courts?' · '+c.courts+' court'+(c.courts!==1?'s':''):'');
+  document.getElementById('cd-total').textContent='$'+total.toLocaleString();
+  document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
+  document.getElementById('cd-jobs').innerHTML=cJobs.length===0
+    ?'<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
+    :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
+      <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${j.service||'—'}</div>
+          <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(j.date)}${j.notes?' · '+j.notes:''}</div>
+          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">↩ Next visit: ${fmt(j.next_visit)}</div>`:''}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
+          ${jbadge(j.status)}
+        </div>
+      </div>`).join('');
+  document.getElementById('cd-invoices').innerHTML=cInvoices.length===0
+    ?'<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No invoices</div>'
+    :cInvoices.map(i=>`
+      <div style="display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);gap:10px">
+        <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
+        ${ibadge(i.status)}
+      </div>`).join('');
+  el.style.display='flex';
 }
 
 // ── JOBS TABLE ──
@@ -779,7 +879,7 @@ function editJob(id){
   const j=jobs.find(x=>x.id===id);if(!j)return;
   editingId.job=id;
   document.getElementById('job-modal-title').textContent='Edit Job';
-  document.getElementById('job-modal-sub').textContent='Changes save immediately';
+  document.getElementById('job-modal-sub').textContent='Changes save immediately';document.getElementById('job-modal-sub').style.display='block';
   const sel=document.getElementById('j-client');
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=j.client_id||'';
@@ -798,7 +898,7 @@ function editInvoice(id){
   const i=invoices.find(x=>x.id===id);if(!i)return;
   editingId.invoice=id;
   document.getElementById('invoice-modal-title').textContent='Edit Invoice';
-  document.getElementById('invoice-modal-sub').textContent='Changes save immediately';
+  document.getElementById('invoice-modal-sub').textContent='Changes save immediately';document.getElementById('invoice-modal-sub').style.display='block';
   const sel=document.getElementById('i-client');
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=i.client_id||'';
@@ -831,7 +931,7 @@ function openModal(type){
   }
   if(type==='job'){
     document.getElementById('job-modal-title').textContent='Add Job';
-    document.getElementById('job-modal-sub').textContent='';
+    document.getElementById('job-modal-sub').textContent='';document.getElementById('job-modal-sub').style.display='none';
     document.getElementById('save-job-btn').textContent='Save Job';
     ['j-service','j-amount','j-notes','j-next-visit'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('j-status').value='scheduled';
@@ -841,7 +941,7 @@ function openModal(type){
   }
   if(type==='invoice'){
     document.getElementById('invoice-modal-title').textContent='New Invoice';
-    document.getElementById('invoice-modal-sub').textContent='';
+    document.getElementById('invoice-modal-sub').textContent='';document.getElementById('invoice-modal-sub').style.display='none';
     document.getElementById('save-invoice-btn').textContent='Save Invoice';
     const el=document.getElementById('i-client');
     el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
