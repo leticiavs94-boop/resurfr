@@ -904,7 +904,7 @@ function renderInvoices(){
   const cards=invoices.map(i=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
     <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
-    ${i.photo_url?`<img src="${i.photo_url}" style="width:100%;border-radius:6px;margin-top:6px;max-height:120px;object-fit:cover">`:''}
+    ${i.photo_url?`<div style='margin-top:6px'><img src='${i.photo_url}' style='width:100%;border-radius:8px;max-height:150px;object-fit:cover'></div>`:''}
     <div class="m-card-tags" style="display:flex;align-items:center;gap:6px">${ibadge(i.status)}${i.photo_url?'<span style="font-size:14px" title="Has photo">📎</span>':''}</div>
     <div class="m-card-actions">
       ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
@@ -1193,7 +1193,7 @@ async function saveJob(){
   if(error){toast('Error: '+error.message,'err');return;}
   // Auto-create invoice for new jobs
   if(newJobId&&amt>0){
-    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',notes:svc});
+    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending'});
   }
   closeModal('job');
   toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
@@ -1208,7 +1208,17 @@ async function saveInvoice(){
   const btn=document.getElementById('save-invoice-btn');
   btn.disabled=true;btn.textContent='Saving...';
   const notes=document.getElementById('i-notes')?document.getElementById('i-notes').value.trim()||null:null;
-  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value,notes:notes};
+  // Handle photo as base64
+  let photoUrl=invoicePhotoUrl||null;
+  const photoFile=document.getElementById('i-photo')?.files[0];
+  if(photoFile){
+    photoUrl=await new Promise(res=>{
+      const r=new FileReader();
+      r.onload=e=>res(e.target.result);
+      r.readAsDataURL(photoFile);
+    });
+  }
+  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value,notes:notes,photo_url:photoUrl};
   let error;
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
@@ -1217,6 +1227,7 @@ async function saveInvoice(){
   }
   btn.disabled=false;btn.textContent=editingId.invoice?'Save Changes':'Save Invoice';
   if(error){toast('Error: '+error.message,'err');return;}
+  invoicePhotoUrl=null;
   closeModal('invoice');
   toast(editingId.invoice?'Invoice updated!':'Invoice created!','ok');
   await loadInvoices();renderDashboard();
