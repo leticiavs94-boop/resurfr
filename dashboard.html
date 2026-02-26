@@ -589,7 +589,7 @@ async function loadClients(){
   document.getElementById('nb-clients').textContent=clients.length;
 }
 async function loadJobs(){
-  const{data}=await sb.from('jobs').select('*,clients(name)').order('date',{ascending:true});
+  const{data}=await sb.from('jobs').select('*,clients(name)').order('created_at',{ascending:false});
   jobs=data||[];
   renderJobs();
 }
@@ -736,7 +736,7 @@ function renderDashboard(){
   else od.style.display='none';
 
   // Upcoming jobs (scheduled, future dates)
-  const upcoming = jobs.filter(j=>j.status==='scheduled'||j.status==='Scheduled').sort((a,b)=>new Date(a.date||'9999')-new Date(b.date||'9999'));
+  const upcoming = jobs.filter(j=>j.status&&j.status.toLowerCase()==='scheduled').sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date+'T00:00:00')-new Date(b.date+'T00:00:00');});
   const uc = document.getElementById('upcoming-count');
   uc.textContent = upcoming.length > 0 ? upcoming.length : '';
   document.getElementById('d-upcoming').innerHTML = upcoming.length===0
@@ -904,8 +904,8 @@ function renderInvoices(){
   const cards=invoices.map(i=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
     <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
-    ${i.photo_url?`<img src="${i.photo_url}" style="width:100%;border-radius:6px;margin-top:6px;max-height:120px;object-fit:cover">`:''}'
-    <div class="m-card-tags">${ibadge(i.status)}</div>
+    ${i.photo_url?`<img src="${i.photo_url}" style="width:100%;border-radius:6px;margin-top:6px;max-height:120px;object-fit:cover">`:''}
+    <div class="m-card-tags" style="display:flex;align-items:center;gap:6px">${ibadge(i.status)}${i.photo_url?'<span style="font-size:14px" title="Has photo">📎</span>':''}</div>
     <div class="m-card-actions">
       ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
       <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
