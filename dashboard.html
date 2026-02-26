@@ -470,6 +470,22 @@ select option{color:var(–charcoal)!important}
 
 <div class="toast" id="toast"></div>
 
+<!-- PAYMENT CONFIRMATION POPUP -->
+
+<div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:24px">
+  <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="font-size:36px;margin-bottom:12px">✅</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:6px">Job Complete!</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:4px">Was payment received from</div>
+    <div id="pay-confirm-client" style="font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">—</div>
+    <div id="pay-confirm-amount" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--green);margin-bottom:24px">$0</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none">💰 Yes — Payment Received</button>
+      <button onclick="completeJobWithPayment(false)" style="width:100%;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Not Yet — Keep Invoice Pending</button>
+    </div>
+  </div>
+</div>
+
 <!-- JOB DETAIL OVERLAY -->
 
 <div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center">
@@ -969,7 +985,7 @@ function editInvoice(id){
 }
 
 // ── QUICK ADD STATE ──
-let qaMode=false, qaClientId=null, qaJobSaved=false, invoicePhotoUrl=null;
+let qaMode=false, qaClientId=null, qaJobSaved=false, invoicePhotoUrl=null, pendingCompleteJobId=null;
 
 // Photo preview
 document.addEventListener('DOMContentLoaded',()=>{
@@ -1163,18 +1179,25 @@ async function saveJob(){
   if(!cid||!svc){toast('Please fill in all fields','err');return;}
   const btn=document.getElementById('save-job-btn');
   btn.disabled=true;btn.textContent='Saving...';
-  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,amount:parseFloat(document.getElementById('j-amount').value)||0,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
-  let error;
+  const amt=parseFloat(document.getElementById('j-amount').value)||0;
+  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,amount:amt,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
+  let error,newJobId=null;
   if(editingId.job){
     ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
   } else {
-    ({error}=await sb.from('jobs').insert(payload));
+    const{data,error:err}=await sb.from('jobs').insert(payload).select().single();
+    error=err;
+    if(data)newJobId=data.id;
   }
   btn.disabled=false;btn.textContent=editingId.job?'Save Changes':'Save Job';
   if(error){toast('Error: '+error.message,'err');return;}
+  // Auto-create invoice for new jobs
+  if(newJobId&&amt>0){
+    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',notes:svc});
+  }
   closeModal('job');
-  toast(editingId.job?'Job updated!':'Job saved!','ok');
-  await loadJobs();renderClients();renderDashboard();
+  toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
+  await loadJobs();await loadInvoices();renderClients();renderDashboard();
 }
 
 // ── SAVE INVOICE (add or edit) ──
@@ -1276,13 +1299,37 @@ function showJobDetail(id){
   else{doneBtn.style.display='block';}
   el.style.display='flex';
 }
-async function markJobDone(id){
-  const{error}=await sb.from('jobs').update({status:'completed'}).eq('id',id);
-  if(error){toast('Error: '+error.message,'err');return;}
-  const j=jobs.find(x=>x.id===id);if(j)j.status='completed';
+function markJobDone(id){
+  // Close job detail if open
   document.getElementById('job-detail-overlay').style.display='none';
-  toast('Job marked complete! ✓','ok');
-  await loadJobs();renderClients();renderDashboard();loadServiceAlerts();
+  // Show payment confirmation popup
+  pendingCompleteJobId=id;
+  const j=jobs.find(x=>x.id===id);
+  const client=j?.clients?.name||clients.find(c=>c.id==j?.client_id)?.name||'this client';
+  document.getElementById('pay-confirm-client').textContent=client;
+  document.getElementById('pay-confirm-amount').textContent='$'+(j?.amount||0).toLocaleString();
+  document.getElementById('pay-confirm-overlay').style.display='flex';
+}
+async function completeJobWithPayment(paid){
+  document.getElementById('pay-confirm-overlay').style.display='none';
+  const id=pendingCompleteJobId;
+  pendingCompleteJobId=null;
+  if(!id)return;
+  // Mark job completed
+  await sb.from('jobs').update({status:'completed'}).eq('id',id);
+  const j=jobs.find(x=>x.id===id);
+  if(j)j.status='completed';
+  // Find and update the linked invoice
+  const cid=j?.client_id;
+  if(cid){
+    // Find most recent pending invoice for this client
+    const inv=invoices.filter(i=>String(i.client_id)===String(cid)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+    if(inv){
+      await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
+    }
+  }
+  toast(paid?'Job complete & payment recorded! 💰':'Job complete — invoice marked pending.','ok');
+  await loadJobs();await loadInvoices();renderClients();renderDashboard();loadServiceAlerts();
 }
 function showClientDetailByName(name){
   const c=clients.find(x=>x.name===name);
