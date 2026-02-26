@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -80,9 +81,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 /* Row action buttons */
 .row-actions{display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .15s}
 .tbl tbody tr:hover .row-actions{opacity:1}
-.act-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
-.act-edit{background:var(--off);color:var(--muted);border:1px solid var(--border)}
-.act-edit:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.act-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:‘DM Sans’,sans-serif;transition:all .15s;white-space:nowrap}
+.act-edit{background:var(–off);color:var(–muted);border:1px solid var(–border)}
+.act-edit:hover{border-color:var(–charcoal);color:var(–charcoal)}
 .act-delete{background:#FDF0EE;color:#A84E2A;border:1px solid #F5D4CF}
 .act-delete:hover{background:#FDEEE8}
 .act-paid{background:#E8F5EE;color:#2A7A52;border:1px solid #C8E8D8}
@@ -94,53 +95,54 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .modal{background:white;border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:4px}
-.modal-sub{font-size:12px;color:var(--lmuted);margin-bottom:16px}
+.modal-title{font-family:‘Barlow Condensed’,sans-serif;font-size:22px;font-weight:800;color:var(–charcoal);margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(–lmuted);margin-bottom:16px}
 .fg{margin-bottom:12px}
-.fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.5px;color:var(--lmuted);margin-bottom:4px;text-transform:uppercase}
-.fi{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal);outline:none;transition:border-color .2s;background:var(--off);-webkit-appearance:none}
-.fi:focus{border-color:var(--green);background:white}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.5px;color:var(–lmuted);margin-bottom:4px;text-transform:uppercase}
+.fi{width:100%;padding:10px 14px;border:1.5px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:15px;color:var(–charcoal);outline:none;transition:border-color .2s;background:var(–off);-webkit-appearance:none}
+.fi:focus{border-color:var(–green);background:white}
 .fi::placeholder{color:#C8D0C2}
 .modal-btns{display:flex;gap:10px;margin-top:18px}
-.modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
-.b-cancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
-.b-save{background:var(--yellow);color:var(--charcoal)}.b-save:hover{background:#d4f030}.b-save:disabled{opacity:0.6;cursor:not-allowed}
+.modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.b-cancel{background:var(–off);color:var(–muted);border:1px solid var(–border)}
+.b-save{background:var(–yellow);color:var(–charcoal)}.b-save:hover{background:#d4f030}.b-save:disabled{opacity:0.6;cursor:not-allowed}
 .b-danger{background:#FDEEE8;color:#A84E2A;border:1px solid #F5D4CF}.b-danger:hover{background:#F9E0DA}
 
 /* Confirm dialog */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:white;border-radius:16px;padding:28px 24px;max-width:360px;width:100%;text-align:center}
-.confirm-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:8px}
-.confirm-msg{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+.confirm-title{font-family:‘Barlow Condensed’,sans-serif;font-size:22px;font-weight:800;color:var(–charcoal);margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(–muted);margin-bottom:24px;line-height:1.5}
 .confirm-btns{display:flex;gap:10px}
-.confirm-btns button{flex:1;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.confirm-btns button{flex:1;padding:12px;border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:all .3s;white-space:nowrap}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.ok{background:var(--green)}
-.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
-.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(--lmuted);font-size:13px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(–charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:all .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.ok{background:var(–green)}
+.spinner{width:14px;height:14px;border:2px solid var(–border);border-top-color:var(–green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(–lmuted);font-size:13px}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
-.m-card{background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:none}
+.m-card{background:white;border-bottom:1px solid var(–border);padding:14px 16px;display:none}
 .m-card:last-child{border-bottom:none}
 .m-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;gap:8px}
-.m-card-name{font-size:14px;font-weight:700;color:var(--charcoal);line-height:1.3}
-.m-card-amount{font-size:14px;font-weight:700;color:var(--charcoal);white-space:nowrap}
-.m-card-meta{font-size:12px;color:var(--lmuted);margin-bottom:8px;line-height:1.4}
+.m-card-name{font-size:14px;font-weight:700;color:var(–charcoal);line-height:1.3}
+.m-card-amount{font-size:14px;font-weight:700;color:var(–charcoal);white-space:nowrap}
+.m-card-meta{font-size:12px;color:var(–lmuted);margin-bottom:8px;line-height:1.4}
 .m-card-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px}
 .m-card-actions{display:flex;gap:6px;flex-wrap:wrap}
 .m-card-actions .act-btn{padding:8px 14px;font-size:12px;border-radius:6px}
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.open{display:block}.main{margin-left:0}.menu-btn{display:flex}
-  .stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
-  .content{padding:14px}.topbar{padding:0 14px}
-  .topbar-date{display:none}
-  .desktop-table{display:none}
-  .m-card{display:block}
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+.sidebar-overlay.open{display:block}.main{margin-left:0}.menu-btn{display:flex}
+.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
+.content{padding:14px}.topbar{padding:0 14px}
+.topbar-date{display:none}
+.desktop-table{display:none}
+.m-card{display:block}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr}.stat-val{font-size:28px}}
 </style>
+
 </head>
 <body>
 
@@ -201,6 +203,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <div class="main">
 
   <!-- DASHBOARD -->
+
   <div id="view-dashboard" class="view active">
     <div class="topbar">
       <div class="topbar-left">
@@ -277,8 +280,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     </div>
   </div>
 
-
   <!-- CLIENTS -->
+
   <div id="view-clients" class="view">
     <div class="topbar">
       <div class="topbar-left"><button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="page-title">Clients</div></div>
@@ -288,6 +291,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   </div>
 
   <!-- JOBS -->
+
   <div id="view-jobs" class="view">
     <div class="topbar">
       <div class="topbar-left"><button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="page-title">Jobs</div></div>
@@ -297,6 +301,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   </div>
 
   <!-- INVOICES -->
+
   <div id="view-invoices" class="view">
     <div class="topbar">
       <div class="topbar-left"><button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="page-title">Invoices</div></div>
@@ -310,82 +315,90 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 </div>
 
 <!-- QUICK ADD MODAL -->
+
 <div class="overlay" id="m-client">
   <div class="modal">
     <div class="modal-title" id="client-modal-title">Add Client</div>
 
-    <!-- Step indicators -->
-    <div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
-      <div style="display:flex;align-items:center">
-        <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
-        <div id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 · Job</div>
-        <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
-      </div>
-    </div>
+```
+<!-- Step indicators -->
+<div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
+  <div style="display:flex;align-items:center">
+    <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
+    <div id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 · Job</div>
+    <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
+  </div>
+</div>
 
-    <!-- Page 1: Client info -->
-    <div id="qa-page-1">
-      <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="Westport Tennis Club"></div>
-      <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="Westport, CT"></div>
-      <div class="fg"><label class="fl">Surface Type</label>
-        <select class="fi" id="c-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="c-courts" placeholder="4" min="1"></div>
-        <div class="fg"><label class="fl">Status</label>
-          <select class="fi" id="c-status">
-            <option value="active">Active Client</option>
-            <option value="prospect">Prospect</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..."></div>
-      <div class="modal-btns" id="edit-client-btns" style="display:none">
-        <button class="b-cancel" onclick="closeModal('client')">Cancel</button>
-        <button class="b-save" id="save-client-btn" onclick="saveClient()">Save Client</button>
-      </div>
-      <div id="qa-new-btns" style="margin-top:4px">
-        <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job →</button>
-        <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClientOnly()">Save Client Only</button>
-        <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeModal('client')">Cancel</button>
-      </div>
+<!-- Page 1: Client info -->
+<div id="qa-page-1">
+  <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="Westport Tennis Club"></div>
+  <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="Westport, CT"></div>
+  <div class="fg"><label class="fl">Surface Type</label>
+    <select class="fi" id="c-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="c-courts" placeholder="4" min="1"></div>
+    <div class="fg"><label class="fl">Status</label>
+      <select class="fi" id="c-status">
+        <option value="active">Active Client</option>
+        <option value="prospect">Prospect</option>
+        <option value="inactive">Inactive</option>
+      </select>
     </div>
+  </div>
+  <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..."></div>
+  <div class="modal-btns" id="edit-client-btns" style="display:none">
+    <button class="b-cancel" onclick="closeModal('client')">Cancel</button>
+    <button class="b-save" id="save-client-btn" onclick="saveClient()">Save Client</button>
+  </div>
+  <div id="qa-new-btns" style="margin-top:4px">
+    <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job →</button>
+    <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClientOnly()">Save Client Only</button>
+    <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeModal('client')">Cancel</button>
+  </div>
+</div>
 
-    <!-- Page 2: Job -->
-    <div id="qa-page-2" style="display:none">
-      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
-      <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="Har-Tru topdressing"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
-        <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800"></div>
-      </div>
-      <div class="fg"><label class="fl">Job Status</label>
-        <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
-      </div>
-      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaNext(3)">Save Job &amp; Add Invoice →</button>
-      <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
-      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
-    </div>
+<!-- Page 2: Job -->
+<div id="qa-page-2" style="display:none">
+  <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
+  <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="Har-Tru topdressing"></div>
+  <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
+  <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800"></div>
+  <div class="fg"><label class="fl">Job Status</label>
+    <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+  </div>
+  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaNext(3)">Save Job &amp; Add Invoice →</button>
+  <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
+  <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
+</div>
 
-    <!-- Page 3: Invoice -->
-    <div id="qa-page-3" style="display:none">
-      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Now add an invoice for <span id="qa-client-name-display2"></span></div>
-      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="i-amount" placeholder="3800"></div>
-      <div class="fg"><label class="fl">Payment Status</label>
-        <select class="fi" id="i-status">
-          <option value="pending">Pending — not yet paid</option>
-          <option value="paid">Paid ✓</option>
-          <option value="overdue">Overdue</option>
-        </select>
-      </div>
-      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish ✓</button>
-      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without invoice</button>
-    </div>
+<!-- Page 3: Invoice -->
+<div id="qa-page-3" style="display:none">
+  <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
+  <div style="background:var(--off);border-radius:10px;padding:14px;margin-bottom:14px">
+    <div style="font-size:11px;color:var(--lmuted);margin-bottom:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase">Invoice Amount</div>
+    <div style="font-size:28px;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:var(--charcoal)" id="qa-inv-preview">$0</div>
+    <div style="font-size:11px;color:var(--lmuted);margin-top:2px">Pulled from job amount — tap to change</div>
+    <input type="number" class="fi" id="i-amount" style="margin-top:8px;display:none" placeholder="Override amount">
+  </div>
+  <div class="fg"><label class="fl">Payment Status</label>
+    <select class="fi" id="i-status">
+      <option value="pending">Pending — not yet paid</option>
+      <option value="paid">Paid ✓</option>
+      <option value="overdue">Overdue</option>
+    </select>
+  </div>
+  <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish ✓</button>
+  <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without invoice</button>
+</div>
+```
+
   </div>
 </div>
 
 <!-- JOB MODAL -->
+
 <div class="overlay" id="m-job">
   <div class="modal">
     <div class="modal-title" id="job-modal-title">Add Job</div>
@@ -412,6 +425,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 </div>
 
 <!-- INVOICE MODAL -->
+
 <div class="overlay" id="m-invoice">
   <div class="modal">
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
@@ -429,6 +443,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 </div>
 
 <!-- CONFIRM DELETE -->
+
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <div style="font-size:32px;margin-bottom:12px">🗑️</div>
@@ -477,7 +492,7 @@ async function loadClients(){
   document.getElementById('nb-clients').textContent=clients.length;
 }
 async function loadJobs(){
-  const{data}=await sb.from('jobs').select('*,clients(name)').order('date',{ascending:false});
+  const{data}=await sb.from('jobs').select('*,clients(name)').order('date',{ascending:true});
   jobs=data||[];
   renderJobs();
 }
@@ -615,7 +630,7 @@ function renderDashboard(){
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d.toLocaleDateString('en-US',{month:'short'})}</div>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="c-name">${j.clients?.name||'?'}</div>
+            <div class="c-name">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
             <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
@@ -839,6 +854,11 @@ function qaNext(page){
   document.getElementById('qa-page-2').style.display='none';
   document.getElementById('qa-page-3').style.display='none';
   document.getElementById('qa-page-'+page).style.display='block';
+  if(page===3){
+    const jobAmt=parseFloat(document.getElementById('qa-j-amount').value)||0;
+    document.getElementById('i-amount').value=jobAmt||'';
+    document.getElementById('qa-inv-preview').textContent='$'+jobAmt.toLocaleString();
+  }
   // Update step indicators
   [1,2,3].forEach(n=>{
     const el=document.getElementById('step-'+n);
@@ -894,7 +914,7 @@ async function qaFinish(saveJob, saveInvoice){
   closeModal('client');
   toast('All saved! 🎉','ok');
   await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
-  renderDashboard();
+  renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
 // ── SAVE CLIENT (add or edit) ──
@@ -1028,5 +1048,6 @@ function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue
 function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 </script>
+
 </body>
 </html>
