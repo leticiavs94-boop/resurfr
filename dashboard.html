@@ -312,65 +312,63 @@ select option{color:var(–charcoal)!important}
       </div>
 
 ```
-  <div class="dash-cols">
-    <!-- LEFT COLUMN: Upcoming + Recently Completed + Follow-ups -->
-    <div class="dash-col-left">
-      <div class="panel">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">Upcoming Jobs</div>
-            <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
-          </div>
-          <button class="panel-link" onclick="nav('jobs',null)">View all</button>
+  <!-- 2x2 grid: Upcoming | Service Alerts / Recently Completed | Active Clients -->
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="panel-title">Upcoming Jobs</div>
+          <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
         </div>
-        <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <button class="panel-link" onclick="nav('jobs',null)">View all</button>
       </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
-        <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-      </div>
-      <div class="panel" id="followups-panel" style="display:none">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">🔔 Follow-ups Due</div>
-            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
-          </div>
-          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
-        </div>
-        <div id="d-followups"></div>
-      </div>
+      <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
     </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="panel-title">⚠️ Service Alerts</div>
+          <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
+        </div>
+        <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+      </div>
+      <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
+      <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
+      <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
 
-    <!-- RIGHT COLUMN: Service Alerts + Active Clients + Revenue Chart -->
-    <div class="dash-col-right">
-      <div class="panel">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">⚠️ Service Alerts</div>
-            <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
-          </div>
-          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
-        </div>
-        <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  <!-- Follow-ups (full width, only shown when needed) -->
+  <div class="panel" id="followups-panel" style="display:none">
+    <div class="panel-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="panel-title">🔔 Follow-ups Due</div>
+        <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
       </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
-        <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-      </div>
-      <!-- hidden invoices container so JS still works -->
-      <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
-      <!-- REVENUE CHART -->
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">Monthly Revenue</div>
-          <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
-        </div>
-        <div style="position:relative;height:200px;padding:4px 0">
-          <canvas id="revenue-chart"></canvas>
-        </div>
-        <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
-      </div>
+      <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
     </div>
+    <div id="d-followups"></div>
+  </div>
+
+  <!-- hidden invoices container so JS still works -->
+  <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
+
+  <!-- REVENUE CHART - full width -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Monthly Revenue</div>
+      <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
+    </div>
+    <div style="position:relative;height:220px;padding:4px 0">
+      <canvas id="revenue-chart"></canvas>
+    </div>
+    <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
   </div>
 ```
 
@@ -914,7 +912,7 @@ function renderDashboard(){
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetailByName('${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||''}')">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
+            <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetail('${j.client_id}')">${j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||'?'}</div>
             <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
