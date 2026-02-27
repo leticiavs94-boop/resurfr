@@ -35,7 +35,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .user-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);line-height:1.2;word-break:break-all}
 .sign-out{font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer;margin-top:2px;transition:color .2s}
 .sign-out:hover{color:rgba(255,255,255,0.6)}
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));display:flex;flex-direction:column;min-height:100vh}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal)}
@@ -46,7 +46,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
 .btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}
-.content{padding:20px 24px;flex:1;max-width:1200px}
+.content{padding:20px 24px;flex:1;box-sizing:border-box}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}}
 .stat{background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
@@ -165,7 +165,7 @@ select option{color:var(–charcoal)!important}
 .m-card-actions .act-btn{padding:8px 14px;font-size:12px;border-radius:6px}
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
-.sidebar-overlay.open{display:block}.main{margin-left:0}.menu-btn{display:flex}
+.sidebar-overlay.open{display:block}.main{margin-left:0!important;width:100%!important}.menu-btn{display:flex}
 .stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
 .content{padding:14px}.topbar{padding:0 14px}
 .topbar-date{display:none}
