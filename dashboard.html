@@ -59,6 +59,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)}
 .panel-link{font-size:11px;font-weight:600;color:var(--green);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+/* Desktop dashboard 2-col layout */
+@media(min-width:768px){
+  .dash-col-left{display:flex;flex-direction:column;gap:16px;flex:1.2;min-width:0}
+  .dash-col-right{display:flex;flex-direction:column;gap:16px;flex:1;min-width:0}
+  .dash-cols{display:flex;gap:16px;align-items:flex-start}
+}
+@media(max-width:767px){
+  .dash-cols{display:flex;flex-direction:column;gap:0}
+  .dash-col-left,.dash-col-right{display:contents}
+}
+/* Mobile bottom nav */
+.mob-bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:white;border-top:1px solid var(--border);
+  padding:8px 0 max(16px,env(safe-area-inset-bottom));
+}
+@media(max-width:767px){
+  .mob-bottom-nav{display:flex}
+  .content{padding-bottom:90px!important}
+}
+.mob-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:4px 0;background:none;border:none;
+}
+.mob-nav-item svg{width:24px;height:24px;stroke:var(--lmuted);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mob-nav-item span{font-size:10px;font-weight:600;color:var(--lmuted);font-family:'DM Sans',sans-serif}
+.mob-nav-item.active svg{stroke:var(--green)}
+.mob-nav-item.active span{color:var(--green)}
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{padding:9px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--lmuted);background:var(--off);border-bottom:1px solid var(--border)}
 .tbl td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle}
@@ -241,9 +270,8 @@ select option{color:var(–charcoal)!important}
         <div class="stat s3"><div class="stat-lbl">Pending Invoices</div><div class="stat-val" id="s-pending">$0</div><div class="stat-sub" id="s-pending-sub">0 unpaid</div></div>
         <div class="stat s4"><div class="stat-lbl">Jobs This Month</div><div class="stat-val" id="s-month">0</div><div class="stat-sub" id="s-month-sub">$0 revenue</div></div>
       </div>
-      <!-- Upcoming + Service Alerts side by side on desktop -->
-      <div class="grid2" style="margin-bottom:16px">
-        <!-- ONBOARDING BANNER - shown only when no clients exist -->
+      <!-- Dashboard 2-col layout: left=jobs/completed, right=alerts/clients/chart -->
+      <!-- ONBOARDING BANNER - shown only when no clients exist -->
       <div id="onboarding-banner" style="display:none;background:linear-gradient(135deg,#1a4a32 0%,#2A7A52 100%);border-radius:16px;padding:24px;margin-bottom:0;color:white">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:6px">Welcome to Resurfr! 👋</div>
         <div style="font-size:13px;opacity:0.85;margin-bottom:20px;line-height:1.5">You're all set. Let's add your first client and get your business organized.</div>
@@ -284,62 +312,70 @@ select option{color:var(–charcoal)!important}
       </div>
 
 ```
-  <div class="panel">
-      <div class="panel-head">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="panel-title">Upcoming Jobs</div>
-          <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+  <div class="dash-cols">
+    <!-- LEFT COLUMN: Upcoming + Recently Completed + Follow-ups -->
+    <div class="dash-col-left">
+      <div class="panel">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">Upcoming Jobs</div>
+            <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+          </div>
+          <button class="panel-link" onclick="nav('jobs',null)">View all</button>
         </div>
-        <button class="panel-link" onclick="nav('jobs',null)">View all</button>
+        <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
-      <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-head">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="panel-title">⚠️ Service Alerts</div>
-          <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
+        <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      </div>
+      <div class="panel" id="followups-panel" style="display:none">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">🔔 Follow-ups Due</div>
+            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+          </div>
+          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
         </div>
-        <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+        <div id="d-followups"></div>
       </div>
-      <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
     </div>
-  </div>
-  <div class="panel">
-      <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
-      <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-    </div>
-  <!-- hidden invoices container so JS still works -->
-  <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
 
-  <!-- REVENUE CHART -->
-  <div class="panel">
-    <div class="panel-head">
-      <div class="panel-title">Monthly Revenue</div>
-      <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
-    </div>
-    <div style="position:relative;height:200px;padding:4px 0">
-      <canvas id="revenue-chart"></canvas>
-    </div>
-    <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
-  </div>
-  <div class="panel">
-    <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
-    <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-  </div>
-  <div class="panel" id="followups-panel" style="display:none">
-    <div class="panel-head">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="panel-title">🔔 Follow-ups Due</div>
-        <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+    <!-- RIGHT COLUMN: Service Alerts + Active Clients + Revenue Chart -->
+    <div class="dash-col-right">
+      <div class="panel">
+        <div class="panel-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="panel-title">⚠️ Service Alerts</div>
+            <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
+          </div>
+          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+        </div>
+        <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
-      <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
+        <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      </div>
+      <!-- hidden invoices container so JS still works -->
+      <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
+      <!-- REVENUE CHART -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Monthly Revenue</div>
+          <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
+        </div>
+        <div style="position:relative;height:200px;padding:4px 0">
+          <canvas id="revenue-chart"></canvas>
+        </div>
+        <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
+      </div>
     </div>
-    <div id="d-followups"></div>
   </div>
-</div>
 ```
 
+   </div>
+    </div>
   </div>
 
   <!-- CLIENTS -->
@@ -1865,8 +1901,38 @@ function cdDelete(){
   document.getElementById('client-detail-overlay').style.display='none';
   confirmDelete('client',id,c.name);
 }
+function setMobNav(page){
+  ['dashboard','clients','jobs','invoices','map'].forEach(p=>{
+    const el=document.getElementById('mob-nav-'+p);
+    if(el) el.classList.toggle('active', p===page);
+  });
+}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 </script>
 
+<!-- MOBILE BOTTOM NAV - phone only -->
+
+<div class="mob-bottom-nav" id="mob-bottom-nav">
+  <button class="mob-nav-item active" id="mob-nav-dashboard" onclick="nav('dashboard',null);setMobNav('dashboard')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Dashboard</span>
+  </button>
+  <button class="mob-nav-item" id="mob-nav-clients" onclick="nav('clients',null);setMobNav('clients')">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span>Clients</span>
+  </button>
+  <button class="mob-nav-item" id="mob-nav-jobs" onclick="nav('jobs',null);setMobNav('jobs')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    <span>Jobs</span>
+  </button>
+  <button class="mob-nav-item" id="mob-nav-invoices" onclick="nav('invoices',null);setMobNav('invoices')">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Invoices</span>
+  </button>
+  <button class="mob-nav-item" id="mob-nav-map" onclick="nav('map',null);setMobNav('map')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <span>Map</span>
+  </button>
+</div>
 </body>
 </html>
