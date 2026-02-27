@@ -414,7 +414,7 @@ select option{color:var(--charcoal)!important}
 
     <!-- Page 1: Client info -->
     <div id="qa-page-1">
-      <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="Westport Tennis Club"></div>
+      <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="e.g. Riverside Tennis Club"></div>
       <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="Westport, CT"></div>
       <div class="fg"><label class="fl">Surface Type</label>
         <select class="fi" id="c-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select>
@@ -914,7 +914,7 @@ function renderDashboard(){
   // Active clients
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':'' · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 
   renderRevenueChart();
 
@@ -945,17 +945,18 @@ function clientTotal(c){
 
 function renderClients(){
   if(clients.length===0){document.getElementById('clients-list').innerHTML=empty('No clients yet — tap "Add Client" to get started');return;}
-  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Billed</th><th></th></tr></thead><tbody>`+
+  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Status</th><th>Billed</th><th></th></tr></thead><tbody>`+
     clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
       <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
+      <td>${cstatusbadge(c.status)}</td>
       <td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
       <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
     <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
     <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
-    <div class="m-card-tags">${stag(c.surface)}</div>
+    <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
     <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
   </div>`).join('');
   document.getElementById('clients-list').innerHTML=tbl+cards;
@@ -1758,6 +1759,15 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // ── HELPERS ──
 function stag(s){const m={'Har-Tru':'tag-hartru','Hard':'tag-hard','Hard Court':'tag-hard','Red Clay':'tag-clay'};return`<span class="tag ${m[s]||'tag-def'}">${s||'—'}</span>`;}
+function cstatusbadge(s){
+  const map={
+    'active':  {label:'Active',   bg:'#E8F5EE',color:'#1E6640'},
+    'prospect':{label:'Prospect', bg:'#FFF8E1',color:'#B88000'},
+    'inactive':{label:'Inactive', bg:'#F2F2F2',color:'#888888'},
+  };
+  const st=map[(s||'active').toLowerCase()]||map['active'];
+  return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.bg};color:${st.color}">${st.label}</span>`;
+}
 function jbadge(s){const m={scheduled:'b-scheduled',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
 function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
