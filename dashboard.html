@@ -606,6 +606,10 @@ select option{color:var(–charcoal)!important}
     <div style="padding:14px 20px 6px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">JOB HISTORY</div>
     </div>
+    <div id="cd-files" style="display:none;border-bottom:1px solid var(--border)">
+      <div style="padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Files & Photos</div>
+      <div id="cd-files-content" style="display:flex;flex-wrap:wrap;gap:10px;padding:0 16px 14px"></div>
+    </div>
     <div id="cd-jobs"></div>
     <div style="padding:14px 20px 6px;margin-top:4px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">INVOICES</div>
@@ -742,13 +746,14 @@ async function loadServiceAlerts(){
   document.getElementById('d-alerts').innerHTML=alerts.length===0
     ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
     :alerts.slice(0,8).map(a=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer':''}" onclick="${a.clientId?`showClientDetail('${a.clientId}')`:'' }">
         <div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${a.name}</div>
+          <div style="font-size:13px;font-weight:600;color:${a.clientId?'var(--green)':'var(--charcoal)' }">${a.name}</div>
           <div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div>
         </div>
         ${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}
+        ${a.clientId?'<span style="font-size:14px;color:var(--lmuted)">›</span>':''}
       </div>`).join('');
 }
 
@@ -899,6 +904,37 @@ function showClientDetail(id){
   document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':'')+( c.surface||'')+(c.courts?' · '+c.courts+' court'+(c.courts!==1?'s':''):'');
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
   document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
+  // ── Unified Files: client uploads + invoice photos ──
+  const cFiles=JSON.parse(c.files||'[]');
+  const invPhotos=cInvoices.filter(i=>i.photo_url).map(i=>({
+    isImg:true, data:i.photo_url,
+    label:'Invoice $'+(i.amount||0).toLocaleString()+' · '+(i.status||'')
+  }));
+  const clientFileMapped=cFiles.map(f=>({
+    isImg:!!(f.type&&f.type.startsWith('image/')),
+    data:f.data, label:f.name||'File', name:f.name
+  }));
+  const allFiles=[...clientFileMapped,...invPhotos];
+  const cdFilesEl=document.getElementById('cd-files');
+  const cdFilesContent=document.getElementById('cd-files-content');
+  if(cdFilesEl&&cdFilesContent){
+    if(allFiles.length){
+      cdFilesEl.style.display='block';
+      cdFilesContent.innerHTML=allFiles.map(f=>{
+        if(f.isImg){
+          return `<div style="text-align:center;cursor:pointer" onclick="openPhoto('${f.data}','${(f.label||'').replace(/'/g,'')}')">
+            <img src="${f.data}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">
+            <div style="font-size:9px;color:var(--lmuted);margin-top:4px;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.label}</div>
+          </div>`;
+        } else {
+          return `<a href="${f.data}" download="${f.name}" style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;font-weight:600;color:var(--charcoal);text-decoration:none;display:flex;align-items:center;gap:8px">📄 ${f.name}</a>`;
+        }
+      }).join('');
+    } else {
+      cdFilesEl.style.display='none';
+    }
+  }
+
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
     ?'<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
     :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
@@ -925,7 +961,7 @@ function showClientDetail(id){
           ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700">✓ Paid</button>`:''}
         </div>
         ${i.notes?`<div style="font-size:11px;color:var(--lmuted);margin-top:4px">${i.notes}</div>`:''}
-        ${i.photo_url?`<div style="margin-top:8px;position:relative;cursor:pointer" onclick="openPhoto('${i.photo_url}','${(i.clients?.name||'').replace(/'/g,'')} · Invoice')"><img src="${i.photo_url}" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif">Tap to expand</div></div>`:''}
+        ${i.photo_url?`<div style="margin-top:8px;cursor:pointer;position:relative" onclick="openPhoto('${i.photo_url}','Invoice · $${(i.amount||0).toLocaleString()}')"><img src="${i.photo_url}" style="width:100%;border-radius:8px;max-height:130px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px">🔍 Expand</div></div>`:''}
       </div>`).join('');
   el.style.display='flex';
 }
@@ -936,7 +972,7 @@ function renderJobs(){
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
-      <td><strong>${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td>
+      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${j.clients?.name||''}')">${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td>
       <td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
       <td>${jbadge(j.status)}</td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div></td>
@@ -1254,7 +1290,22 @@ async function saveClient(){
   if(!name){toast('Enter a client name','err');return;}
   const btn=document.getElementById('save-client-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
-  const payload={name,location:document.getElementById('c-loc').value.trim(),surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()};
+
+  // Build files array: existing + newly selected
+  const cfe=document.getElementById('c-files-existing');
+  const existingFiles=JSON.parse(cfe?.dataset?.files||'[]');
+  const allFiles=[...existingFiles,...clientFiles];
+
+  const payload={
+    name,
+    location:document.getElementById('c-loc').value.trim(),
+    surface:document.getElementById('c-surface').value,
+    courts:parseInt(document.getElementById('c-courts').value)||1,
+    notes:document.getElementById('c-notes').value.trim()||null,
+    status:document.getElementById('c-status').value||'active',
+    files:allFiles.length?JSON.stringify(allFiles):null
+  };
+
   let error,data;
   if(editingId.client){
     ({error}=await sb.from('clients').update(payload).eq('id',editingId.client));
@@ -1263,6 +1314,8 @@ async function saveClient(){
   }
   if(btn){btn.disabled=false;btn.textContent=editingId.client?'Save Changes':'Save Client';}
   if(error){toast('Error: '+error.message,'err');return;}
+
+  clientFiles=[];
 
   // If in quick-add mode (new client), go to job step
   if(!editingId.client && data){
@@ -1277,7 +1330,7 @@ async function saveClient(){
 
   closeModal('client');
   toast(editingId.client?'Client updated!':'Client saved!','ok');
-  await loadClients();renderDashboard();
+  await loadClients();renderClients();renderDashboard();
 }
 
 
@@ -1660,7 +1713,7 @@ function showJobDetail(id){
       ${ibadge(linkedInv.status)}
       ${linkedInv.notes?`<span style="font-size:11px;color:var(--lmuted)">${linkedInv.notes}</span>`:''}
     </div>
-    ${linkedInv.photo_url?`<div style="position:relative;cursor:pointer;margin-top:4px" onclick="openPhoto('${linkedInv.photo_url}','${(j.clients?.name||'').replace(/'/g,'')} · Job Invoice')"><img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif">Tap to expand</div></div>`:''}`;
+    ${linkedInv.photo_url?`<div style="cursor:pointer;margin-top:6px;position:relative" onclick="openPhoto('${linkedInv.photo_url}','Invoice · $${(linkedInv.amount||0).toLocaleString()}')"><img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px">🔍 Expand</div></div>`:''}`;
   } else {
     invSection.style.display='none';
   }
