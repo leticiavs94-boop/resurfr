@@ -914,7 +914,7 @@ function renderDashboard(){
   // Active clients
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':'' · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 
   renderRevenueChart();
 
