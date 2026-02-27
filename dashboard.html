@@ -47,7 +47,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
 .btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}
 .content{padding:20px 24px;flex:1}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}}
 .stat{background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .stat.s1::before{background:var(--yellow)}.stat.s2::before{background:var(--glight)}.stat.s3::before{background:#F0B429}.stat.s4::before{background:var(--green)}
@@ -58,17 +58,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .panel-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)}
 .panel-link{font-size:11px;font-weight:600;color:var(--green);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-/* Desktop dashboard 2-col layout */
-@media(min-width:768px){
-  .dash-col-left{display:flex;flex-direction:column;gap:16px;flex:1.2;min-width:0}
-  .dash-col-right{display:flex;flex-direction:column;gap:16px;flex:1;min-width:0}
-  .dash-cols{display:flex;gap:16px;align-items:flex-start}
-}
-@media(max-width:767px){
-  .dash-cols{display:flex;flex-direction:column;gap:0}
-  .dash-col-left,.dash-col-right{display:contents}
-}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+/* dash layout handled by grid2 */
 /* Mobile bottom nav */
 .mob-bottom-nav{
   display:none;
@@ -406,6 +397,23 @@ select option{color:var(–charcoal)!important}
     <div class="content"><div class="panel"><div class="tbl-wrap"><div id="invoices-list"><div class="loading"><div class="spinner"></div>Loading...</div></div></div></div></div>
   </div>
 
+  <!-- MAP VIEW - redirects to map.html -->
+
+  <div id="view-map" class="view">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="page-title">Court Map</div>
+      </div>
+    </div>
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center">
+      <div style="font-size:48px;margin-bottom:16px">🗺️</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:8px">Court Map</div>
+      <div style="font-size:14px;color:var(--lmuted);margin-bottom:24px;max-width:280px">View all courts, prospects, and plan your routes</div>
+      <button onclick="window.location.href='/map.html'" style="background:var(--green);color:white;border:none;border-radius:12px;padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer">Open Full Map →</button>
+    </div>
+  </div>
+
 </div>
 </div>
 </div>
@@ -617,7 +625,7 @@ select option{color:var(–charcoal)!important}
 
 <!-- JOB DETAIL OVERLAY -->
 
-<div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center">
+<div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding-bottom:40px">
     <div style="padding:12px 20px 0;text-align:center"><div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div></div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;border-bottom:1px solid var(--border)">
@@ -650,7 +658,7 @@ select option{color:var(–charcoal)!important}
 
 <!-- CLIENT DETAIL OVERLAY -->
 
-<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center">
+<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;padding-bottom:40px">
     <div style="padding:16px 20px 0;display:flex;justify-content:space-between;align-items:center">
       <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 4px"></div>
@@ -820,10 +828,10 @@ async function loadServiceAlerts(){
   document.getElementById('d-alerts').innerHTML=alerts.length===0
     ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
     :alerts.slice(0,8).map(a=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer':''}" onclick="${a.clientId?`showClientDetail('${a.clientId}')`:'' }">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer;':''}" ${a.clientId?'onclick="showClientDetail(\'' + a.clientId + '\')"':''}>
         <div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:${a.clientId?'var(--green)':'var(--charcoal)' }">${a.name}</div>
+          <div style="font-size:13px;font-weight:600;color:${a.clientId?'var(--green)':'var(--charcoal)'}">${a.name}</div>
           <div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div>
         </div>
         ${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}
@@ -1864,8 +1872,8 @@ function openPhoto(url, caption){
     a.click();
   };
   document.getElementById('photo-viewer').style.display='flex';
-  if(event)event.stopPropagation();
 }
+
 function removeClientFile(idx){
   const cfe=document.getElementById('c-files-existing');
   if(!cfe)return;
