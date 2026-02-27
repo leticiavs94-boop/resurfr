@@ -816,7 +816,7 @@ function renderDashboard(){
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="c-name">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
+            <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetailByName('${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||''}')">${j.clients?.name||clients.find(c=>c.id==j.client_id)?.name||'?'}</div>
             <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
@@ -852,13 +852,13 @@ function renderDashboard(){
   const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
   document.getElementById('d-completed').innerHTML = completed.length===0
     ? empty('No completed jobs yet')
-    : completed.map(j=>`<div class="c-row" style="align-items:center">
+    : completed.map(j=>`<div class="c-row" style="align-items:center;cursor:pointer" onclick="showJobDetail('${j.id}')">
         <div style="width:44px;text-align:center;flex-shrink:0">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--glight);line-height:1">${j.date?new Date(j.date+'T00:00:00').getDate():'—'}</div>
           <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${j.date?new Date(j.date+'T00:00:00').toLocaleDateString('en-US',{month:'short'}):''}</div>
         </div>
         <div style="flex:1;min-width:0">
-          <div class="c-name">${j.clients?.name||'?'}</div>
+          <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetailByName('${j.clients?.name||''}')">${j.clients?.name||'?'}</div>
           <div class="c-meta">${j.service||'—'}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
@@ -1756,10 +1756,19 @@ async function completeJobWithPayment(paid){
 }
 function openPhoto(url, caption){
   if(!url)return;
-  document.getElementById('photo-viewer-img').src=url;
+  const img=document.getElementById('photo-viewer-img');
+  img.src=url;
   document.getElementById('photo-viewer-caption').textContent=caption||'';
+  // Wire download button
+  const dlBtn=document.getElementById('photo-download-btn');
+  dlBtn.onclick=()=>{
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=(caption||'photo').replace(/[^a-z0-9]/gi,'_')+'.jpg';
+    a.click();
+  };
   document.getElementById('photo-viewer').style.display='flex';
-  event.stopPropagation();
+  if(event)event.stopPropagation();
 }
 function removeClientFile(idx){
   const cfe=document.getElementById('c-files-existing');
