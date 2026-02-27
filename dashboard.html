@@ -157,6 +157,8 @@ select option{color:var(–charcoal)!important}
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
 </head>
 <body>
 
@@ -268,21 +270,36 @@ select option{color:var(–charcoal)!important}
         </div>
       <!-- hidden invoices container so JS still works -->
       <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
-        <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-      </div>
-      <div class="panel" id="followups-panel" style="display:none">
-        <div class="panel-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">🔔 Follow-ups Due</div>
-            <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
-          </div>
-          <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
-        </div>
-        <div id="d-followups"></div>
-      </div>
+
+```
+  <!-- REVENUE CHART -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Monthly Revenue</div>
+      <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
     </div>
+    <div style="position:relative;height:200px;padding:4px 0">
+      <canvas id="revenue-chart"></canvas>
+    </div>
+    <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
+    <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+  <div class="panel" id="followups-panel" style="display:none">
+    <div class="panel-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="panel-title">🔔 Follow-ups Due</div>
+        <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+      </div>
+      <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+    </div>
+    <div id="d-followups"></div>
+  </div>
+</div>
+```
+
   </div>
 
   <!-- CLIENTS -->
@@ -817,6 +834,8 @@ function renderDashboard(){
   document.getElementById('d-clients').innerHTML = clients.length===0
     ? empty('No clients yet')
     : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+
+  renderRevenueChart();
 
   // Recently completed jobs
   const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
@@ -1423,6 +1442,94 @@ async function exportInvoicePDF(id){
   };
   
   document.getElementById('pdf-preview-overlay').style.display='flex';
+}
+
+// ── REVENUE CHART ──
+let revenueChart = null;
+function renderRevenueChart(){
+  const canvas = document.getElementById('revenue-chart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const thisYear = new Date().getFullYear();
+  document.getElementById('chart-year-label').textContent = thisYear;
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  
+  // Build monthly revenue from completed jobs
+  const monthlyRevenue = Array(12).fill(0);
+  const monthlyJobs = Array(12).fill(0);
+  jobs.forEach(j => {
+    if(!j.date || j.status !== 'completed') return;
+    const d = new Date(j.date + 'T00:00:00');
+    if(d.getFullYear() !== thisYear) return;
+    monthlyRevenue[d.getMonth()] += j.amount || 0;
+    monthlyJobs[d.getMonth()]++;
+  });
+
+  const currentMonth = new Date().getMonth();
+  const barColors = months.map((_,i) => 
+    i === currentMonth ? '#2A7A52' : i < currentMonth ? '#B8DEC8' : '#E8F5EE'
+  );
+
+  if(revenueChart) revenueChart.destroy();
+  revenueChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        data: monthlyRevenue,
+        backgroundColor: barColors,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => '$' + ctx.raw.toLocaleString(),
+            afterLabel: ctx => monthlyJobs[ctx.dataIndex] + ' job' + (monthlyJobs[ctx.dataIndex] !== 1 ? 's' : '')
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#888' }
+        },
+        y: {
+          grid: { color: '#f0f0f0' },
+          ticks: {
+            font: { family: 'DM Sans', size: 10 },
+            color: '#888',
+            callback: v => v >= 1000 ? '$' + (v/1000).toFixed(0) + 'k' : '$' + v
+          }
+        }
+      }
+    }
+  });
+
+  // Summary stats below chart
+  const totalYTD = monthlyRevenue.reduce((a,b) => a+b, 0);
+  const bestMonth = monthlyRevenue.indexOf(Math.max(...monthlyRevenue));
+  const totalJobs = monthlyJobs.reduce((a,b) => a+b, 0);
+  document.getElementById('chart-summary').innerHTML = `
+    <div style="text-align:center">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">$${totalYTD.toLocaleString()}</div>
+      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">YTD Revenue</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalJobs}</div>
+      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Jobs Done</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalYTD > 0 ? months[bestMonth] : '—'}</div>
+      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div>
+    </div>
+  `;
 }
 
 // ── DELETE ──
