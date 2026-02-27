@@ -414,13 +414,13 @@ select option{color:var(--charcoal)!important}
 
     <!-- Page 1: Client info -->
     <div id="qa-page-1">
-      <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="e.g. Riverside Tennis Club"></div>
-      <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="Westport, CT"></div>
+      <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="Facility name" autocomplete="off"></div>
+      <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="City, State" autocomplete="off"></div>
       <div class="fg"><label class="fl">Surface Type</label>
         <select class="fi" id="c-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="c-courts" placeholder="4" min="1"></div>
+        <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="c-courts" placeholder="1" min="1" autocomplete="off"></div>
         <div class="fg"><label class="fl">Status</label>
           <select class="fi" id="c-status">
             <option value="active">Active Client</option>
@@ -429,7 +429,7 @@ select option{color:var(--charcoal)!important}
           </select>
         </div>
       </div>
-      <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..."></div>
+      <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..." autocomplete="off"></div>
       <div class="fg">
         <label class="fl">Files <span style="font-weight:400;color:var(--lmuted);text-transform:none;letter-spacing:0">(photos or PDFs)</span></label>
         <input type="file" accept="image/*,.pdf" multiple id="c-files" style="width:100%;padding:8px 0;font-size:13px;color:var(--muted)">
@@ -1229,7 +1229,7 @@ function openModal(type){
     document.getElementById('qa-page-1').style.display='block';
     document.getElementById('qa-page-2').style.display='none';
     document.getElementById('qa-page-3').style.display='none';
-    ['c-name','c-loc','c-courts','c-notes','j-service','j-amount','i-amount'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['c-name','c-loc','c-courts','c-notes','j-service','j-amount','i-amount','j-date','i-issued-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('c-surface').value='';
     document.getElementById('c-status').value='active';
     document.getElementById('j-status').value='scheduled';
