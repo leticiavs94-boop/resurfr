@@ -3,6 +3,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resurfr — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,7 +15,7 @@
 :root{–yellow:#C8E62B;–ydim:rgba(200,230,43,0.12);–green:#1E4D35;–glight:#4CAF80;–off:#F4F6F1;–border:#E2E8DC;–charcoal:#181C17;–text:#1A1F18;–muted:#6B7A65;–lmuted:#9DAA96;–sw:240px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{height:100%}
-body{font-family:‘DM Sans’,sans-serif;background:var(–off);color:var(–text);min-height:100vh}
+body{font-family:‘DM Sans’,sans-serif;background:var(–off);color:var(–text);min-height:100vh;overflow-x:hidden}
 #loading-screen{position:fixed;inset:0;background:var(–charcoal);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px}
 #loading-screen .logo{font-family:‘Barlow Condensed’,sans-serif;font-size:32px;font-weight:900;color:white}
 #loading-screen .spin{width:24px;height:24px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(–yellow);border-radius:50%;animation:spin .7s linear infinite}
