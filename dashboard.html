@@ -243,35 +243,75 @@ select option{color:var(–charcoal)!important}
       </div>
       <!-- Upcoming + Service Alerts side by side on desktop -->
       <div class="grid2" style="margin-bottom:16px">
-        <div class="panel">
-          <div class="panel-head">
-            <div style="display:flex;align-items:center;gap:8px">
-              <div class="panel-title">Upcoming Jobs</div>
-              <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+        <!-- ONBOARDING BANNER - shown only when no clients exist -->
+      <div id="onboarding-banner" style="display:none;background:linear-gradient(135deg,#1a4a32 0%,#2A7A52 100%);border-radius:16px;padding:24px;margin-bottom:0;color:white">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:6px">Welcome to Resurfr! 👋</div>
+        <div style="font-size:13px;opacity:0.85;margin-bottom:20px;line-height:1.5">You're all set. Let's add your first client and get your business organized.</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button onclick="openModal('client')" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">👤</span>
+            <div>
+              <div>Add your first client</div>
+              <div style="font-size:11px;font-weight:500;opacity:0.7">Name, location, courts, surface type</div>
             </div>
-            <button class="panel-link" onclick="nav('jobs',null)">View all</button>
-          </div>
-          <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+          </button>
+          <button onclick="openModal('job')" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">🔧</span>
+            <div>
+              <div>Schedule a job</div>
+              <div style="font-size:11px;font-weight:500;opacity:0.7">Service, date, amount</div>
+            </div>
+          </button>
+          <button onclick="nav('map',null)" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">🗺️</span>
+            <div>
+              <div>Explore the court map</div>
+              <div style="font-size:11px;font-weight:500;opacity:0.7">Find prospects near you</div>
+            </div>
+          </button>
         </div>
-        <div class="panel">
-          <div class="panel-head">
-            <div style="display:flex;align-items:center;gap:8px">
-              <div class="panel-title">⚠️ Service Alerts</div>
-              <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
-            </div>
-            <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+        <!-- Progress dots -->
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.2)">
+          <div style="font-size:11px;opacity:0.7;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Getting started</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="ob-step1" style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.7"><span id="ob-dot1" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0"></span>Add a client</div>
+            <div style="opacity:0.4;font-size:10px">→</div>
+            <div id="ob-step2" style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.7"><span id="ob-dot2" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0"></span>Schedule a job</div>
+            <div style="opacity:0.4;font-size:10px">→</div>
+            <div id="ob-step3" style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.7"><span id="ob-dot3" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0"></span>Create invoice</div>
           </div>
-          <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
       </div>
-      <div class="panel">
-          <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
-          <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-        </div>
-      <!-- hidden invoices container so JS still works -->
-      <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
 
 ```
+  <div class="panel">
+      <div class="panel-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="panel-title">Upcoming Jobs</div>
+          <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
+        </div>
+        <button class="panel-link" onclick="nav('jobs',null)">View all</button>
+      </div>
+      <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="panel-title">⚠️ Service Alerts</div>
+          <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
+        </div>
+        <a href="/map.html" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none">Open Map</a>
+      </div>
+      <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
+  <div class="panel">
+      <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
+      <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  <!-- hidden invoices container so JS still works -->
+  <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
+
   <!-- REVENUE CHART -->
   <div class="panel">
     <div class="panel-head">
@@ -770,6 +810,28 @@ function renderDashboard(){
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   document.getElementById('dash-greeting').textContent = greeting;
+
+  // Onboarding banner
+  const banner=document.getElementById('onboarding-banner');
+  if(banner){
+    const hasClients=clients.length>0;
+    const hasJobs=jobs.length>0;
+    const hasInvoices=invoices.length>0;
+    banner.style.display=hasClients?'none':'block';
+    // Update progress dots
+    const dot1=document.getElementById('ob-dot1');
+    const dot2=document.getElementById('ob-dot2');
+    const dot3=document.getElementById('ob-dot3');
+    if(dot1)dot1.style.background=hasClients?'var(--yellow)':'rgba(255,255,255,0.3)';
+    if(dot2)dot2.style.background=hasJobs?'var(--yellow)':'rgba(255,255,255,0.3)';
+    if(dot3)dot3.style.background=hasInvoices?'var(--yellow)':'rgba(255,255,255,0.3)';
+    const step1=document.getElementById('ob-step1');
+    const step2=document.getElementById('ob-step2');
+    const step3=document.getElementById('ob-step3');
+    if(step1)step1.style.opacity=hasClients?'1':'0.7';
+    if(step2)step2.style.opacity=hasJobs?'1':'0.7';
+    if(step3)step3.style.opacity=hasInvoices?'1':'0.7';
+  }
   document.getElementById('today-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   // Stats
