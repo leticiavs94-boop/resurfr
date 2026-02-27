@@ -18,9 +18,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 #loading-screen{position:fixed;inset:0;background:var(--charcoal);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px}
 #loading-screen .logo{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:white}
 #loading-screen .spin{width:24px;height:24px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite}
-#app{display:none}
+#app{display:none;width:100%}
 @keyframes spin{to{transform:rotate(360deg)}}
-.layout{display:flex;min-height:100vh}
+.layout{display:flex;min-height:100vh;width:100%}
 .sidebar{width:var(--sw);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
 .sidebar-logo{padding:20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:8px}
 .logo-badge{background:var(--yellow);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -32,13 +32,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .nav-item.active{background:var(--ydim);color:var(--yellow);border-color:rgba(200,230,43,0.2)}
 .nav-item.active svg{stroke:var(--yellow)}
 .nav-badge{margin-left:auto;background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 6px;line-height:1.4}
-.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.07)}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.07);padding-bottom:max(16px,env(safe-area-inset-bottom))}
 .user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:10px}
 .user-av{width:32px;height:32px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:white;flex-shrink:0}
 .user-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);line-height:1.2;word-break:break-all}
 .sign-out{font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer;margin-top:2px;transition:color .2s}
 .sign-out:hover{color:rgba(255,255,255,0.6)}
-.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.main{margin-left:var(--sw);width:calc(100vw - var(--sw));min-height:100vh;display:flex;flex-direction:column}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal)}
@@ -73,7 +73,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 @media(max-width:767px){
   .mob-bottom-nav{display:flex}
   .content{padding-bottom:90px!important}
-  .overlay{padding-bottom:90px!important}
+  .overlay{padding-bottom:90px!important
+  .sidebar-footer{padding-bottom:100px}
 }
 .mob-nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -169,7 +170,7 @@ select option{color:var(--charcoal)!important}
 .m-card-actions .act-btn{padding:8px 14px;font-size:12px;border-radius:6px}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.open{display:block}.main{margin-left:0!important}.menu-btn{display:flex}
+  .sidebar-overlay.open{display:block}.main{margin-left:0!important;width:100vw!important}.menu-btn{display:flex}
   .stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
   .content{padding:14px}.topbar{padding:0 14px}
   .topbar-date{display:none}
@@ -688,7 +689,7 @@ async function boot(){
   renderDashboard();
   loadServiceAlerts();
   document.getElementById('loading-screen').style.display='none';
-  document.getElementById('app').style.display='block';
+  document.getElementById('app').style.display='flex';
 }
 boot();
 
