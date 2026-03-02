@@ -37,7 +37,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;min-width:0}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -143,7 +143,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}
-  .main{margin-left:0}
+  .main{margin-left:0;width:100%}
   .menu-btn{display:flex}
   .topbar{padding:0 14px}
   .topbar-date{display:none}
