@@ -687,7 +687,7 @@ let editingId={client:null,job:null,invoice:null};
 // ── BOOT ──
 async function boot(){
   const{data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='/login.html';return;}
+  if(!session){document.getElementById('loading-screen').style.display='none';document.getElementById('app').style.display='block';return;}
   const email=session.user.email;
   document.getElementById('user-email').textContent=email;
   document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
@@ -1362,7 +1362,6 @@ async function qaFinish(saveJob, saveInvoice){
   closeModal('client');
   qaJobSaved=false;
   toast('All saved! 🎉','ok');
-  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadServiceAlerts()]);
   renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
