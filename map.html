@@ -325,6 +325,7 @@ function initMap(){
     minZoom:9,
     maxZoom:18
   });
+  map.on('load',()=>{ setTimeout(()=>map.resize(),100); });
   map.addControl(new mapboxgl.NavigationControl(),'top-right');
   // Close sheet when tapping map background
   map.on('click',()=>{
