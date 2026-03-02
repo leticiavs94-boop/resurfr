@@ -8,43 +8,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* ── VARIABLES ── */
-:root{
-  --yellow:#C8E62B;
-  --green:#1E4D35;
-  --off:#F4F6F1;
-  --border:#E2E8DC;
-  --charcoal:#181C17;
-  --text:#1A1F18;
-  --muted:#6B7A65;
-  --lmuted:#9DAA96;
-  --sw:240px;
-}
+:root{--yellow:#C8E62B;--green:#1E4D35;--off:#F4F6F1;--border:#E2E8DC;--charcoal:#181C17;--text:#1A1F18;--muted:#6B7A65;--lmuted:#9DAA96;--sw:240px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);overflow-x:hidden}
-
-/* ── LOADING ── */
 #loading-screen{position:fixed;inset:0;background:var(--charcoal);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px}
 .ls-logo{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:white;letter-spacing:1px}
 .ls-spin{width:24px;height:24px;border:3px solid rgba(255,255,255,0.15);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── LAYOUT ── */
 #app{display:none}
 .layout{display:flex;min-height:100vh}
-
-/* ── SIDEBAR ── */
-.sidebar{
-  width:var(--sw);
-  background:var(--charcoal);
-  display:flex;
-  flex-direction:column;
-  position:fixed;
-  top:0;left:0;bottom:0;
-  z-index:300;
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;
-}
+.sidebar{width:var(--sw);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
 .logo-icon{width:36px;height:36px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-icon svg{width:20px;height:20px}
@@ -64,11 +37,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-
-/* ── MAIN CONTENT ── */
 .main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;min-width:0}
-
-/* ── TOPBAR ── */
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -76,27 +45,18 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .page-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)}
 .topbar-date{font-size:12px;color:var(--lmuted);margin-left:4px}
 .topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-
-/* ── BUTTONS ── */
 .btn{padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
-.btn-ghost{background:var(--off);color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{background:var(--border)}
-
-/* ── CONTENT AREA ── */
 .content{padding:24px;flex:1;min-width:0}
 .view{display:none}
 .view.active{display:block}
-
-/* ── STATS GRID ── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal);line-height:1}
 .stat-lbl{font-size:11px;color:var(--lmuted);margin-top:3px}
 .stat-sub{font-size:11px;color:var(--lmuted);margin-top:2px}
-
-/* ── ONBOARDING BANNER ── */
 .onboarding{background:linear-gradient(135deg,var(--green) 0%,#2A6B47 100%);border-radius:16px;padding:24px;margin-bottom:20px;color:white}
 .ob-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
 .ob-sub{font-size:13px;opacity:0.8;margin-bottom:18px}
@@ -109,52 +69,36 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .ob-step-text{font-size:13px;font-weight:600}
 .ob-step-sub{font-size:11px;opacity:0.7;margin-top:1px}
 .ob-footer{font-size:11px;opacity:0.6;display:flex;gap:16px;flex-wrap:wrap}
-.ob-footer a{color:inherit;opacity:0.8;cursor:pointer;text-decoration:none}
-.ob-footer a:hover{opacity:1}
-
-/* ── DASHBOARD GRID ── */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-
-/* ── PANELS ── */
 .panel{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
 .panel:last-child{margin-bottom:0}
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
 .panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)}
 .panel-link{font-size:11px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:0}
 .panel-link:hover{text-decoration:underline}
-
-/* ── CLIENT/JOB ROWS ── */
 .c-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .15s}
 .c-row:last-child{border-bottom:none}
 .c-row:hover{background:#F8FAF6}
 .c-av{width:34px;height:34px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--charcoal);flex-shrink:0}
 .c-name{font-size:13px;font-weight:600;color:var(--charcoal)}
 .c-meta{font-size:11px;color:var(--lmuted);margin-top:1px}
-.c-amt{font-size:13px;font-weight:700;color:var(--charcoal);margin-left:auto;white-space:nowrap}
-
-/* ── TAGS ── */
 .tag{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.3px;display:inline-block}
 .tag-hartru{background:#E8F5EE;color:#2A7A52}
 .tag-hard{background:#FDF3E0;color:#B8842A}
 .tag-clay{background:#FDEEE8;color:#A84E2A}
 .tag-def{background:var(--off);color:var(--muted)}
-
-/* ── DESKTOP TABLE ── */
 .desktop-table{width:100%;border-collapse:collapse}
 .desktop-table th{font-size:10px;font-weight:700;color:var(--lmuted);text-transform:uppercase;letter-spacing:.5px;padding:10px 16px;text-align:left;background:var(--off);border-bottom:1px solid var(--border)}
 .desktop-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--charcoal);vertical-align:middle}
 .desktop-table tr:last-child td{border-bottom:none}
 .desktop-table tr:hover td{background:#F8FAF6}
-.c-av-sm{width:30px;height:30px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--charcoal);flex-shrink:0}
 .row-actions{display:flex;gap:6px;opacity:0;transition:opacity .15s}
 .desktop-table tr:hover .row-actions{opacity:1}
-.act-btn{padding:5px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.act-btn{padding:5px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'DM Sans',sans-serif}
 .act-edit{background:var(--off);color:var(--muted);border:1px solid var(--border)}
 .act-edit:hover{background:var(--border)}
 .act-delete{background:#FDEEE8;color:#A84E2A}
 .act-delete:hover{background:#F9E0DA}
-
-/* ── MOBILE CARDS ── */
 .m-card{background:white;border-bottom:1px solid var(--border);padding:14px 16px;display:none}
 .m-card:last-child{border-bottom:none}
 .m-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;gap:8px}
@@ -164,79 +108,37 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .m-card-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px}
 .m-card-actions{display:flex;gap:6px;flex-wrap:nowrap;align-items:center}
 .m-card-actions .act-btn{padding:8px 14px;font-size:12px;border-radius:6px}
-
-/* ── INVOICES ── */
-.inv-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .15s}
-.inv-row:last-child{border-bottom:none}
-.inv-row:hover{background:#F8FAF6}
-.inv-num{font-size:11px;font-weight:700;color:var(--lmuted);width:52px;flex-shrink:0}
-.inv-info{flex:1;min-width:0}
-.inv-client{font-size:13px;font-weight:600;color:var(--charcoal)}
-.inv-date{font-size:11px;color:var(--lmuted);margin-top:1px}
-.inv-amt{font-size:14px;font-weight:700;color:var(--charcoal);white-space:nowrap}
-.inv-badge{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700}
-.ib-paid{background:#E8F5EE;color:#2A7A52}
-.ib-pending{background:#FFF8E1;color:#B88000}
-.ib-overdue{background:#FDEEE8;color:#A84E2A}
-
-/* ── JOB BADGES ── */
-.jb-scheduled{background:#E8F0FE;color:#2040A0}
-.jb-inprogress{background:#FFF8E1;color:#B88000}
-.jb-completed{background:#E8F5EE;color:#2A7A52}
-.jb-cancelled{background:#F2F2F2;color:#888}
-
-/* ── LOADING / EMPTY ── */
+.badge{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;display:inline-block}
+.b-scheduled{background:#E8F0FE;color:#2040A0}
+.b-inprogress{background:#FFF8E1;color:#B88000}
+.b-completed{background:#E8F5EE;color:#2A7A52}
+.b-cancelled{background:#F2F2F2;color:#888}
+.b-paid{background:#E8F5EE;color:#2A7A52}
+.b-pending{background:#FFF8E1;color:#B88000}
+.b-overdue{background:#FDEEE8;color:#A84E2A}
 .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(--lmuted);font-size:13px}
 .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
-.empty-state{padding:32px;text-align:center;color:var(--lmuted);font-size:13px}
-
-/* ── OVERLAYS & MODALS ── */
+.empty{padding:32px;text-align:center;color:var(--lmuted);font-size:13px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
 .overlay.open{display:flex}
 .modal{background:white;border-radius:24px;padding:24px 20px 32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)}
 .modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:4px}
 .modal-sub{font-size:13px;color:var(--lmuted);margin-bottom:18px}
-
-/* ── FORMS ── */
 .fg{margin-bottom:12px}
 .fl{display:block;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--lmuted);margin-bottom:4px;text-transform:uppercase}
 .fi{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--charcoal)!important;outline:none;transition:border-color .2s;background:var(--off);-webkit-appearance:none;-webkit-text-fill-color:var(--charcoal)!important}
 .fi:focus{border-color:var(--green);background:white}
-select.fi,select.fi:focus{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal)!important}
-select option{color:var(--charcoal)!important}
+select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal)!important}
 .fi::placeholder{color:#C8D0C2}
-input[type=date].fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal)!important}
-input[type=date]::-webkit-datetime-edit{color:var(--charcoal)!important}
-input[type=date]::-webkit-datetime-edit-month-field,input[type=date]::-webkit-datetime-edit-day-field,input[type=date]::-webkit-datetime-edit-year-field{color:var(--charcoal)!important}
-input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .modal-btns{display:flex;gap:10px;margin-top:18px}
 .modal-btns button{flex:1;padding:13px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .b-cancel{background:var(--off);color:var(--muted);border:1px solid var(--border)}
 .b-save{background:var(--yellow);color:var(--charcoal)}.b-save:hover{background:#d4f030}.b-save:disabled{opacity:.6;cursor:not-allowed}
 .b-danger{background:#FDEEE8;color:#A84E2A;border:1px solid #F5D4CF}.b-danger:hover{background:#F9E0DA}
-.b-dark{background:var(--charcoal);color:white}.b-dark:hover{background:var(--green)}
-
-/* ── CONFIRM DIALOG ── */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
-.confirm-overlay.open{display:flex}
-.confirm-box{background:white;border-radius:16px;padding:28px 24px;max-width:360px;width:100%;text-align:center}
-.confirm-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:8px}
-.confirm-msg{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
-.confirm-btns{display:flex;gap:10px}
-.confirm-btns button{flex:1;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
-
-/* ── QA STEPS ── */
-.qa-step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
-.qa-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .2s}
-.qa-dot.active{background:var(--green)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:700;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:9000;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:var(--green)}
-
-/* ── MOBILE RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
@@ -252,66 +154,46 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   .m-card{display:block}
   .row-actions{opacity:1}
 }
-@media(max-width:400px){
-  .stats{grid-template-columns:1fr 1fr}
-}
 </style>
 </head>
 <body>
-
-<div id="loading-screen">
-  <div class="ls-logo">Resurfr</div>
-  <div class="ls-spin"></div>
-</div>
-
+<div id="loading-screen"><div class="ls-logo">Resurfr</div><div class="ls-spin"></div></div>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div id="app">
 <div class="layout">
 
-<!-- ══ SIDEBAR ══ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </div>
+    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
     <span class="logo-text">Resurfr</span>
   </div>
-
   <div class="sidebar-section">Main</div>
   <nav class="sidebar-nav">
     <button class="nav-item active" id="nav-dashboard" onclick="nav('dashboard',this)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
     </button>
     <button class="nav-item" id="nav-clients" onclick="nav('clients',this)">
-      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Clients
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients
       <span class="nav-badge" id="nb-clients" style="display:none"></span>
     </button>
     <button class="nav-item" id="nav-jobs" onclick="nav('jobs',this)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Jobs
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs
     </button>
   </nav>
-
   <div class="sidebar-section">Finance</div>
   <nav class="sidebar-nav">
     <button class="nav-item" id="nav-invoices" onclick="nav('invoices',this)">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Invoices
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Invoices
       <span class="nav-badge" id="nb-invoices" style="display:none"></span>
     </button>
   </nav>
-
   <div class="sidebar-section">Tools</div>
   <nav class="sidebar-nav">
     <a class="nav-item" href="/map.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 0 0-8-8z"/></svg>
-      Court Map
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 0 0-8-8z"/></svg>Court Map
     </a>
   </nav>
-
   <div class="sidebar-footer">
     <div class="user-card">
       <div class="user-av" id="user-av">?</div>
@@ -323,10 +205,9 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </aside>
 
-<!-- ══ MAIN ══ -->
 <div class="main">
 
-<!-- ── DASHBOARD ── -->
+<!-- DASHBOARD VIEW -->
 <div id="view-dashboard" class="view active">
   <div class="topbar">
     <div class="topbar-left">
@@ -348,9 +229,7 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
       <div class="stat-card"><div class="stat-val" id="s-invoices">$0</div><div class="stat-lbl">Pending Invoices</div><div class="stat-sub" id="s-inv-count"></div></div>
       <div class="stat-card"><div class="stat-val" id="s-jobs">0</div><div class="stat-lbl">Jobs This Month</div><div class="stat-sub" id="s-jobs-sub"></div></div>
     </div>
-
     <div id="onboarding-banner"></div>
-
     <div class="grid2">
       <div class="panel">
         <div class="panel-head">
@@ -380,33 +259,18 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
         <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
     </div>
-
-    <div class="panel" id="followups-panel" style="display:none">
-      <div class="panel-head">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="panel-title">🔔 Follow-ups Due</div>
-          <span id="fu-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
-        </div>
-      </div>
-      <div id="d-followups"></div>
-    </div>
-
-    <div style="display:none"><div id="d-invoices"></div><span id="overdue-count"></span></div>
-
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">Monthly Revenue</div>
         <div id="chart-year-label" style="font-size:11px;color:var(--lmuted);font-weight:600"></div>
       </div>
-      <div style="position:relative;height:220px;padding:4px 0">
-        <canvas id="revenue-chart"></canvas>
-      </div>
+      <div style="position:relative;height:220px;padding:4px 0"><canvas id="revenue-chart"></canvas></div>
       <div id="chart-summary" style="display:flex;justify-content:space-around;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px"></div>
     </div>
   </div>
 </div>
 
-<!-- ── CLIENTS ── -->
+<!-- CLIENTS VIEW -->
 <div id="view-clients" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -422,7 +286,7 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- ── JOBS ── -->
+<!-- JOBS VIEW -->
 <div id="view-jobs" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -438,7 +302,7 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- ── INVOICES ── -->
+<!-- INVOICES VIEW -->
 <div id="view-invoices" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -458,11 +322,7 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
 </div><!-- end .layout -->
 </div><!-- end #app -->
 
-
-
-<!-- ══ MODALS & OVERLAYS ══ -->
-
-<!-- confirm-overlay -->
+<!-- CONFIRM DELETE -->
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <div style="font-size:32px;margin-bottom:12px">🗑️</div>
@@ -475,25 +335,7 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- pdf-preview-overlay -->
-<div id="pdf-preview-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:800;flex-direction:column;align-items:center;justify-content:flex-start">
-  <!-- Header bar -->
-  <div style="width:100%;max-width:600px;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-shrink:0">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Invoice Preview</div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <button id="pdf-download-btn" style="background:#4CAF82;color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
-        ⬇ Download PDF
-      </button>
-      <button onclick="document.getElementById('pdf-preview-overlay').style.display='none'" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:10px;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300">✕</button>
-    </div>
-  </div>
-  <!-- PDF iframe -->
-  <div style="flex:1;width:100%;max-width:600px;padding:0 12px 24px;overflow:hidden">
-    <iframe id="pdf-preview-frame" style="width:100%;height:100%;border:none;border-radius:12px;background:white"></iframe>
-  </div>
-</div>
-
-<!-- pay-confirm-overlay -->
+<!-- PAY CONFIRM -->
 <div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:24px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <div style="font-size:36px;margin-bottom:12px">✅</div>
@@ -508,10 +350,10 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- job-detail-overlay -->
-<div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px"><div style="background:white;border-radius:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
-    <div style="padding:12px 20px 0;text-align:center"><div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;border-bottom:1px solid var(--border)">
+<!-- JOB DETAIL -->
+<div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border)">
       <div>
         <div id="jd-client" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
         <div id="jd-service" style="font-size:13px;color:var(--muted);margin-top:2px">Service</div>
@@ -528,10 +370,6 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:6px">Notes</div>
       <div id="jd-notes" style="font-size:13px;color:var(--muted);line-height:1.5">—</div>
     </div>
-    <div id="jd-invoice-section" style="padding:14px 20px;border-bottom:1px solid var(--border);display:none">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:8px">Invoice</div>
-      <div id="jd-invoice-content"></div>
-    </div>
     <div style="padding:16px 20px;display:flex;gap:10px">
       <button id="jd-done-btn" onclick="markJobDone(document.getElementById('job-detail-overlay').dataset.jobId)" style="flex:1;padding:13px;border-radius:10px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✓ Mark as Done</button>
       <button onclick="editJob(document.getElementById('job-detail-overlay').dataset.jobId);document.getElementById('job-detail-overlay').style.display='none'" style="flex:1;padding:13px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Edit Job</button>
@@ -539,20 +377,18 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- client-detail-overlay -->
-<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px"><div style="background:white;border-radius:24px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
-    <div style="padding:16px 20px 0;display:flex;justify-content:space-between;align-items:center">
-      <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 4px"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:14px;padding:16px 20px 14px;border-bottom:1px solid var(--border)">
+<!-- CLIENT DETAIL -->
+<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:24px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
+    <div style="display:flex;align-items:center;gap:14px;padding:20px 20px 14px;border-bottom:1px solid var(--border)">
       <div id="cd-avatar" style="width:48px;height:48px;border-radius:12px;background:var(--charcoal);color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">TE</div>
       <div style="flex:1;min-width:0">
         <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
         <div id="cd-meta" style="font-size:12px;color:var(--lmuted);margin-top:2px"></div>
       </div>
-      <div style="display:flex;gap:6px">
-        <button id="cd-edit-btn" onclick="cdEdit()" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer">Edit</button>
-        <button id="cd-delete-btn" onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:#A84E2A;cursor:pointer">Delete</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="cdEdit()" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer">Edit</button>
+        <button onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:#A84E2A;cursor:pointer">Delete</button>
         <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
       </div>
     </div>
@@ -566,28 +402,17 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
         <div id="cd-jobcount" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);margin-top:2px">0</div>
       </div>
     </div>
-    <div style="padding:14px 20px 6px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">JOB HISTORY</div>
-    </div>
-    <div id="cd-files" style="display:none;border-bottom:1px solid var(--border)">
-      <div style="padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Files & Photos</div>
-      <div id="cd-files-content" style="display:flex;flex-wrap:wrap;gap:10px;padding:0 16px 14px"></div>
-    </div>
+    <div style="padding:14px 20px 6px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal)">JOB HISTORY</div></div>
     <div id="cd-jobs"></div>
-    <div style="padding:14px 20px 6px;margin-top:4px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);margin-bottom:4px">INVOICES</div>
-    </div>
+    <div style="padding:14px 20px 6px;margin-top:4px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal)">INVOICES</div></div>
     <div id="cd-invoices"></div>
   </div>
 </div>
 
-<!-- client-modal -->
-<!-- QUICK ADD MODAL v5 -->
+<!-- CLIENT MODAL -->
 <div class="overlay" id="m-client">
   <div class="modal">
     <div class="modal-title" id="client-modal-title">Add Client</div>
-
-    <!-- Step indicators -->
     <div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
       <div style="display:flex;align-items:center">
         <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
@@ -595,48 +420,34 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
         <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
       </div>
     </div>
-
-    <!-- Page 1: Client info -->
     <div id="qa-page-1">
       <div class="fg"><label class="fl">Facility Name *</label><input type="text" class="fi" id="c-name" placeholder="Facility name" autocomplete="off"></div>
       <div class="fg"><label class="fl">Location</label><input type="text" class="fi" id="c-loc" placeholder="City, State" autocomplete="off"></div>
       <div class="fg"><label class="fl">Surface Type</label>
         <select class="fi" id="c-surface"><option value="">Select surface</option><option value="Har-Tru">Har-Tru</option><option value="Hard">Hard Court</option><option value="Red Clay">Red Clay</option></select>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="row2">
         <div class="fg"><label class="fl">Courts</label><input type="number" class="fi" id="c-courts" placeholder="1" min="1" autocomplete="off"></div>
         <div class="fg"><label class="fl">Status</label>
-          <select class="fi" id="c-status">
-            <option value="active">Active Client</option>
-            <option value="prospect">Prospect</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <select class="fi" id="c-status"><option value="active">Active Client</option><option value="prospect">Prospect</option><option value="inactive">Inactive</option></select>
         </div>
       </div>
       <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..." autocomplete="off"></div>
-      <div class="fg">
-        <label class="fl">Files <span style="font-weight:400;color:var(--lmuted);text-transform:none;letter-spacing:0">(photos or PDFs)</span></label>
-        <input type="file" accept="image/*,.pdf" multiple id="c-files" style="width:100%;padding:8px 0;font-size:13px;color:var(--muted)">
-        <div id="c-files-preview" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px"></div>
-        <div id="c-files-existing" style="margin-top:8px"></div>
-      </div>
       <div class="modal-btns" id="edit-client-btns" style="display:none">
         <button class="b-cancel" onclick="closeModal('client')">Cancel</button>
         <button class="b-save" id="save-client-btn" onclick="saveClient()">Save Client</button>
       </div>
-      <div id="qa-new-btns" style="margin-top:4px">
+      <div id="qa-new-btns">
         <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job →</button>
         <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClientOnly()">Save Client Only</button>
         <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeModal('client')">Cancel</button>
       </div>
     </div>
-
-    <!-- Page 2: Job -->
     <div id="qa-page-2" style="display:none">
       <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
-      <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="Har-Tru topdressing"></div>
+      <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="Har-Tru topdressing" autocomplete="off"></div>
       <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
-      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800"></div>
+      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800" autocomplete="off"></div>
       <div class="fg"><label class="fl">Job Status</label>
         <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
       </div>
@@ -644,21 +455,11 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
       <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
       <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
     </div>
-
-    <!-- Page 3: Invoice -->
     <div id="qa-page-3" style="display:none">
       <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
-      <div class="fg">
-        <label class="fl">Invoice Amount ($)</label>
-        <input type="number" class="fi" id="qa-i-amount" placeholder="0">
-        <div style="font-size:11px;color:var(--lmuted);margin-top:4px">Pre-filled from job — edit if different</div>
-      </div>
+      <div class="fg"><label class="fl">Invoice Amount ($)</label><input type="number" class="fi" id="qa-i-amount" placeholder="0" autocomplete="off"></div>
       <div class="fg"><label class="fl">Payment Status</label>
-        <select class="fi" id="qa-i-status">
-          <option value="pending">Pending — not yet paid</option>
-          <option value="paid">Paid ✓</option>
-          <option value="overdue">Overdue</option>
-        </select>
+        <select class="fi" id="qa-i-status"><option value="pending">Pending — not yet paid</option><option value="paid">Paid ✓</option><option value="overdue">Overdue</option></select>
       </div>
       <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish ✓</button>
       <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without invoice</button>
@@ -666,357 +467,336 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
   </div>
 </div>
 
-<!-- photo-viewer -->
+<!-- JOB MODAL -->
+<div class="overlay" id="m-job">
+  <div class="modal">
+    <div class="modal-title" id="job-modal-title">Add Job</div>
+    <div class="modal-sub" id="job-modal-sub" style="display:none"></div>
+    <div class="fg"><label class="fl">Client *</label>
+      <select class="fi" id="j-client"><option value="">Select client</option></select>
+    </div>
+    <div class="fg"><label class="fl">Service *</label><input type="text" class="fi" id="j-service" placeholder="Har-Tru topdressing" autocomplete="off"></div>
+    <div class="row2">
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
+      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="j-amount" placeholder="0" autocomplete="off"></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label>
+      <select class="fi" id="j-status"><option value="scheduled">Scheduled</option><option value="inprogress">In Progress</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="j-notes" placeholder="Optional..." autocomplete="off"></div>
+    <div class="fg"><label class="fl">Next Visit Date</label><input type="date" class="fi" id="j-next-visit"></div>
+    <div class="modal-btns">
+      <button class="b-cancel" onclick="closeModal('job')">Cancel</button>
+      <button class="b-save" id="save-job-btn" onclick="saveJob()">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE MODAL -->
+<div class="overlay" id="m-invoice">
+  <div class="modal">
+    <div class="modal-title" id="invoice-modal-title">New Invoice</div>
+    <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
+    <div class="fg"><label class="fl">Client *</label>
+      <select class="fi" id="i-client"><option value="">Select client</option></select>
+    </div>
+    <div class="row2">
+      <div class="fg"><label class="fl">Amount ($) *</label><input type="number" class="fi" id="i-amount" placeholder="0" autocomplete="off"></div>
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="i-date"></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label>
+      <select class="fi" id="i-status"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="i-notes" placeholder="Optional..." autocomplete="off"></div>
+    <div class="fg"><label class="fl">Photo / Receipt</label>
+      <input type="file" accept="image/*" id="i-photo" style="width:100%;padding:8px 0;font-size:13px;color:var(--muted)">
+      <div id="i-photo-preview" style="display:none;margin-top:8px"><img id="i-photo-img" src="" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
+      <div id="i-photo-existing" style="display:none;margin-top:8px">
+        <img id="i-photo-existing-img" src="" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
+        <button onclick="removeInvoicePhoto()" style="margin-top:6px;background:none;border:none;color:#A84E2A;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕ Remove photo</button>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="b-cancel" onclick="closeModal('invoice')">Cancel</button>
+      <button class="b-save" id="save-invoice-btn" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO VIEWER -->
 <div id="photo-viewer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:900;align-items:center;justify-content:center;flex-direction:column" onclick="document.getElementById('photo-viewer').style.display='none'">
-  <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300;line-height:1">✕</div>
+  <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300">✕</div>
   <img id="photo-viewer-img" src="" style="max-width:95vw;max-height:85vh;object-fit:contain;border-radius:8px">
   <div id="photo-viewer-caption" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:12px;font-family:'DM Sans',sans-serif"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-
 <script>
-
 const{createClient}=supabase;
 const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
 
 let clients=[],jobs=[],invoices=[];
 let editingId={client:null,job:null,invoice:null};
+let qaClientId=null,qaJobSaved=false,invoicePhotoUrl=null,pendingCompleteJobId=null,clientFiles=[];
+let pendingDelete={type:null,id:null};
+let revenueChart=null;
 
 // ── BOOT ──
 async function boot(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(!session){document.getElementById('loading-screen').style.display='none';document.getElementById('app').style.display='block';return;}
-  const email=session.user.email;
-  document.getElementById('user-email').textContent=email;
-  document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
-  document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'});
-  await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadFollowups(),loadServiceAlerts()]);
-  renderClients();
-  renderJobs();
-  renderInvoices();
-  renderDashboard();
-  loadServiceAlerts();
-  document.getElementById('loading-screen').style.display='none';
-  document.getElementById('app').style.display='block';
+  try {
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){
+      document.getElementById('loading-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      return;
+    }
+    const email=session.user.email;
+    document.getElementById('user-email').textContent=email;
+    document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
+    const h=new Date().getHours();
+    document.getElementById('greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+    document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+    renderClients();renderJobs();renderInvoices();renderDashboard();
+    loadServiceAlerts();
+  } catch(e) {
+    console.error('Boot error:',e);
+  } finally {
+    document.getElementById('loading-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+  }
 }
 boot();
 
-async function signOut(){await sb.auth.signOut();window.location.href='/login.html';}
+async function signOut(){await sb.auth.signOut();window.location.reload();}
 
-// ── LOAD ──
 async function loadClients(){
   const{data}=await sb.from('clients').select('*').order('created_at',{ascending:false});
   clients=data||[];
-  document.getElementById('nb-clients').textContent=clients.length;
+  const nb=document.getElementById('nb-clients');
+  if(nb){nb.textContent=clients.length;nb.style.display=clients.length?'inline':'none';}
 }
 async function loadJobs(){
   const{data}=await sb.from('jobs').select('*,clients(name)').order('created_at',{ascending:false});
   jobs=data||[];
 }
-async function loadFollowups(){
-  const today=new Date(new Date().toDateString());
-  const nextWeek=new Date(today.getTime()+7*86400000);
-  const{data}=await sb.from('courts').select('id,name,location,status,followup_date,followup_status').not('followup_date','is',null).order('followup_date',{ascending:true});
-  const due=(data||[]).filter(c=>{const d=new Date(c.followup_date);return d<=nextWeek;});
-  const fuPanel=document.getElementById('followups-panel');
-  const fuCount=document.getElementById('fu-count');
-  if(due.length>0){
-    fuPanel.style.display='block';
-    fuCount.textContent=due.length+' due';
-    document.getElementById('d-followups').innerHTML=due.map(c=>{
-      const d=new Date(c.followup_date+'T00:00:00');
-      const isOverdue=d<today;
-      const isToday=d.toDateString()===today.toDateString();
-      const dayLabel=isOverdue?'Overdue':isToday?'Today':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-      const color=isOverdue?'#A84E2A':isToday?'#B88000':'#2A7A52';
-      return`<div style="display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);gap:10px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${c.name}</div>
-          <div style="font-size:11px;color:var(--lmuted);margin-top:1px">${c.location||'—'} · ${c.followup_status||'Not contacted'}</div>
-        </div>
-        <div style="font-size:12px;font-weight:700;color:${color};white-space:nowrap">${dayLabel}</div>
-      </div>`;
-    }).join('');
-  } else {
-    fuPanel.style.display='none';
-  }
-}
-
-async function loadServiceAlerts(){
-  const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-  const alerts = [];
-
-  // 1. Clients with a next_visit date that is overdue or coming up within 60 days
-  const cutoff = new Date(today.getTime() + 60*24*60*60*1000);
-  clients.forEach(c=>{
-    // Find their latest job with a next_visit
-    const clientJobs = jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
-    const withVisit = clientJobs.filter(j=>j.next_visit).sort((a,b)=>b.next_visit.localeCompare(a.next_visit));
-    if(withVisit.length>0){
-      const nv = new Date(withVisit[0].next_visit+'T00:00:00');
-      const isOverdue = nv < today;
-      const isSoon = nv <= cutoff;
-      if(isOverdue){
-        const days=Math.floor((today-nv)/(86400000));
-        alerts.push({name:c.name,surface:c.surface,sub:days+' day'+(days!==1?'s':'')+' overdue',dot:'#A84E2A',color:'#A84E2A',urgency:3});
-      } else if(isSoon){
-        const days=Math.floor((nv-today)/(86400000));
-        const label=days===0?'Today':days===1?'Tomorrow':'In '+days+' days';
-        alerts.push({name:c.name,surface:c.surface,sub:'Next visit: '+label,dot:'#E8A800',color:'#B88000',urgency:2});
-      }
-    }
-  });
-
-  // 2. Clients with no jobs at all — never been serviced
-  clients.forEach(c=>{
-    const clientJobs = jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
-    if(clientJobs.length===0){
-      alerts.push({name:c.name,surface:c.surface,sub:'No jobs recorded yet',dot:'#aaa',color:'#888',urgency:1});
-    }
-  });
-
-  // 3. Also pull from prospect map courts with overdue last_service
-  const{data:courts}=await sb.from('courts').select('name,surface,last_service,status').neq('status','client').order('name');
-  (courts||[]).forEach(c=>{
-    const ls=c.last_service||'';
-    const yearMatch=ls.match(/\b(20\d{2}|19\d{2})\b/);
-    const lastYear=yearMatch?parseInt(yearMatch[0]):null;
-    const neverDone=!ls||ls.toLowerCase().includes('never');
-    const yearsAgo=lastYear?today.getFullYear()-lastYear:null;
-    if(neverDone){
-      alerts.push({name:c.name,surface:c.surface,sub:'Never serviced — prospect',dot:'#A84E2A',color:'#A84E2A',urgency:3});
-    } else if(yearsAgo>=5){
-      alerts.push({name:c.name,surface:c.surface,sub:yearsAgo+' yrs since last service',dot:'#A84E2A',color:'#A84E2A',urgency:3});
-    } else if(yearsAgo>=3){
-      alerts.push({name:c.name,surface:c.surface,sub:'Due this season',dot:'#E8A800',color:'#B88000',urgency:2});
-    }
-  });
-
-  alerts.sort((a,b)=>b.urgency-a.urgency);
-
-  const ac=document.getElementById('alerts-count');
-  const urgent=alerts.filter(a=>a.urgency>=2);
-  if(urgent.length>0){ac.textContent=urgent.length+' due';ac.style.display='inline';}
-  else ac.style.display='none';
-
-  document.getElementById('d-alerts').innerHTML=alerts.length===0
-    ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
-    :alerts.slice(0,8).map(a=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer;':''}" ${a.clientId?'onclick="showClientDetail(\'' + a.clientId + '\')"':''}>
-        <div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:${a.clientId?'var(--green)':'var(--charcoal)'}">${a.name}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div>
-        </div>
-        ${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}
-        ${a.clientId?'<span style="font-size:14px;color:var(--lmuted)">›</span>':''}
-      </div>`).join('');
-}
-
 async function loadInvoices(){
   const{data}=await sb.from('invoices').select('*,clients(name)').order('created_at',{ascending:false});
   invoices=data||[];
-  document.getElementById('nb-invoices').textContent=invoices.filter(i=>i.status==='pending').length;
-  renderInvoices();
+  const nb=document.getElementById('nb-invoices');
+  const pending=invoices.filter(i=>i.status==='pending').length;
+  if(nb){nb.textContent=pending;nb.style.display=pending?'inline':'none';}
 }
 
-// ── DASHBOARD ──
+async function loadServiceAlerts(){
+  try {
+    const today=new Date();
+    const cutoff=new Date(today.getTime()+60*24*60*60*1000);
+    const alerts=[];
+    clients.forEach(c=>{
+      const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
+      const withVisit=cJobs.filter(j=>j.next_visit).sort((a,b)=>b.next_visit.localeCompare(a.next_visit));
+      if(withVisit.length>0){
+        const nv=new Date(withVisit[0].next_visit+'T00:00:00');
+        if(nv<today){
+          const days=Math.floor((today-nv)/86400000);
+          alerts.push({name:c.name,surface:c.surface,sub:days+' day'+(days!==1?'s':'')+' overdue',dot:'#A84E2A',color:'#A84E2A',urgency:3,clientId:c.id});
+        } else if(nv<=cutoff){
+          const days=Math.floor((nv-today)/86400000);
+          alerts.push({name:c.name,surface:c.surface,sub:'Next visit: '+(days===0?'Today':days===1?'Tomorrow':'In '+days+' days'),dot:'#E8A800',color:'#B88000',urgency:2,clientId:c.id});
+        }
+      } else if(cJobs.length===0){
+        alerts.push({name:c.name,surface:c.surface,sub:'No jobs recorded yet',dot:'#aaa',color:'#888',urgency:1});
+      }
+    });
+    alerts.sort((a,b)=>b.urgency-a.urgency);
+    const ac=document.getElementById('alerts-count');
+    const urgent=alerts.filter(a=>a.urgency>=2);
+    if(ac){if(urgent.length>0){ac.textContent=urgent.length+' due';ac.style.display='inline';}else ac.style.display='none';}
+    const el=document.getElementById('d-alerts');
+    if(el) el.innerHTML=alerts.length===0
+      ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
+      :alerts.slice(0,8).map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer':''};" ${a.clientId?`onclick="showClientDetail('${a.clientId}')"`:''}><div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--charcoal)">${a.name}</div><div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div></div>${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}</div>`).join('');
+  } catch(e){console.error('alerts error',e);}
+}
+
 function renderDashboard(){
-  const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('dash-greeting').textContent = greeting;
+  const now=new Date();
+  const thisYear=now.getFullYear();
+  const thisMonth=now.getMonth();
+  const totalCourts=clients.reduce((s,c)=>s+(parseInt(c.courts)||1),0);
+  const ytdJobs=jobs.filter(j=>j.status==='completed'&&j.date&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
+  const ytdRev=ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
+  const pend=invoices.filter(i=>i.status==='pending'||i.status==='overdue');
+  const pendAmt=pend.reduce((s,i)=>s+(i.amount||0),0);
+  const monthJobs=jobs.filter(j=>j.date&&new Date(j.date+'T00:00:00').getMonth()===thisMonth&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
+  const yearJobs=jobs.filter(j=>j.date&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
+
+  document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
+  document.getElementById('s-clients').textContent=clients.length;
+  document.getElementById('s-courts').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
+  document.getElementById('s-invoices').textContent='$'+pendAmt.toLocaleString();
+  document.getElementById('s-inv-count').textContent=pend.length+' unpaid';
+  document.getElementById('s-jobs').textContent=monthJobs.length;
+  document.getElementById('s-jobs-sub').textContent=yearJobs.length+' this year';
 
   // Onboarding banner
   const banner=document.getElementById('onboarding-banner');
-  if(banner){
-    const hasClients=clients.length>0;
-    const hasJobs=jobs.length>0;
-    const hasInvoices=invoices.length>0;
-    banner.style.display=hasClients?'none':'block';
-    // Update progress dots
-    const dot1=document.getElementById('ob-dot1');
-    const dot2=document.getElementById('ob-dot2');
-    const dot3=document.getElementById('ob-dot3');
-    if(dot1)dot1.style.background=hasClients?'var(--yellow)':'rgba(255,255,255,0.3)';
-    if(dot2)dot2.style.background=hasJobs?'var(--yellow)':'rgba(255,255,255,0.3)';
-    if(dot3)dot3.style.background=hasInvoices?'var(--yellow)':'rgba(255,255,255,0.3)';
-    const step1=document.getElementById('ob-step1');
-    const step2=document.getElementById('ob-step2');
-    const step3=document.getElementById('ob-step3');
-    if(step1)step1.style.opacity=hasClients?'1':'0.7';
-    if(step2)step2.style.opacity=hasJobs?'1':'0.7';
-    if(step3)step3.style.opacity=hasInvoices?'1':'0.7';
+  if(banner && clients.length===0){
+    banner.innerHTML=`<div class="onboarding">
+      <div class="ob-title">Welcome to Resurfr 👋</div>
+      <div class="ob-sub">You're all set. Let's add your first client and get your business organized.</div>
+      <div class="ob-steps">
+        <div class="ob-step" onclick="openModal('client')"><div class="ob-step-icon">👤</div><div><div class="ob-step-text">Add your first client</div><div class="ob-step-sub">Name, location, courts, surface type</div></div></div>
+        <div class="ob-step" onclick="openModal('job')"><div class="ob-step-icon">🔧</div><div><div class="ob-step-text">Schedule a job</div><div class="ob-step-sub">Service, date, amount</div></div></div>
+        <div class="ob-step" onclick="nav('clients',null)"><div class="ob-step-icon">🗺️</div><div><div class="ob-step-text">Explore the court map</div><div class="ob-step-sub">Find prospects near you</div></div></div>
+      </div>
+    </div>`;
+  } else if(banner) {
+    banner.innerHTML='';
   }
-  document.getElementById('today-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
-  // Stats
-  const thisMonth = now.getMonth();
-  const thisYear = now.getFullYear();
-  const totalCourts = clients.reduce((s,c)=>s+(c.courts||1),0);
-  const ytdJobs = jobs.filter(j=>{if(!j.date)return false;return new Date(j.date+'T00:00:00').getFullYear()===thisYear&&j.status==='completed';});
-  const ytdRev = ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
-  const pend = invoices.filter(i=>i.status==='pending'||i.status==='overdue');
-  const pendAmt = pend.reduce((s,i)=>s+(i.amount||0),0);
-  const overdue = invoices.filter(i=>i.status==='overdue');
-  const monthJobs = jobs.filter(j=>{if(!j.date)return false;const d=new Date(j.date+'T00:00:00');return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;});
-  const monthRev = monthJobs.reduce((s,j)=>s+(j.amount||0),0);
+  // Upcoming jobs
+  const upcoming=jobs.filter(j=>j.status==='scheduled').sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date+'T00:00:00')-new Date(b.date+'T00:00:00');});
+  const uc=document.getElementById('upcoming-count');
+  if(uc)uc.textContent=upcoming.length>0?upcoming.length:'';
+  const upEl=document.getElementById('d-upcoming');
+  if(upEl) upEl.innerHTML=upcoming.length===0?`<div class="empty">No upcoming jobs — tap "Add Job" to schedule one</div>`:upcoming.slice(0,5).map(j=>{
+    const d=j.date?new Date(j.date+'T00:00:00'):null;
+    const isToday=d&&d.toDateString()===now.toDateString();
+    const isTomorrow=d&&d.toDateString()===new Date(Date.now()+86400000).toDateString();
+    const dayLabel=!d?'No date':isToday?'<span style="color:#2A7A52;font-weight:700">Today</span>':isTomorrow?'<span style="color:#B88000;font-weight:700">Tomorrow</span>':d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const cname=j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||'?';
+    return`<div class="c-row" style="cursor:pointer" onclick="showJobDetail('${j.id}')">
+      <div style="width:44px;text-align:center;flex-shrink:0">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="c-name" style="color:var(--green)">${cname}</div>
+        <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
+        <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
+        <button onclick="markJobDone('${j.id}')" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Done</button>
+      </div>
+    </div>`;
+  }).join('');
 
-  document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
-  document.getElementById('s-revenue-sub').textContent='';
-  document.getElementById('s-clients').textContent=clients.length;
-  document.getElementById('s-clients-sub').textContent=totalCourts+' court'+(totalCourts!==1?'s':'');
-  document.getElementById('s-pending').textContent='$'+pendAmt.toLocaleString();
-  document.getElementById('s-pending-sub').textContent=pend.length+' unpaid invoice'+(pend.length!==1?'s':'');
-  const yearJobs=jobs.filter(j=>{if(!j.date)return false;return new Date(j.date+'T00:00:00').getFullYear()===thisYear;});
-  document.getElementById('s-month').textContent=monthJobs.length;
-  document.getElementById('s-month-sub').textContent=yearJobs.length+' job'+(yearJobs.length!==1?'s':'')+' this year';
-
-  // Overdue badge
-  const od = document.getElementById('overdue-count');
-  if(overdue.length>0){od.textContent=overdue.length+' overdue';od.style.display='inline';}
-  else od.style.display='none';
-
-  // Upcoming jobs (scheduled, future dates)
-  const upcoming = jobs.filter(j=>j.status&&j.status.toLowerCase()==='scheduled').sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date+'T00:00:00')-new Date(b.date+'T00:00:00');});
-  const uc = document.getElementById('upcoming-count');
-  uc.textContent = upcoming.length > 0 ? upcoming.length : '';
-  document.getElementById('d-upcoming').innerHTML = upcoming.length===0
-    ? empty('No upcoming jobs — tap "Add Job" to schedule one')
-    : upcoming.slice(0,5).map(j=>{
-        const d = j.date ? new Date(j.date+'T00:00:00') : null;
-        const isToday = d && d.toDateString()===new Date().toDateString();
-        const isTomorrow = d && d.toDateString()===new Date(Date.now()+86400000).toDateString();
-        const dayLabel = !d ? '<span style="color:var(--lmuted)">No date set</span>' : isToday ? '<span style="color:#2A7A52;font-weight:700">Today</span>' : isTomorrow ? '<span style="color:#B88000;font-weight:700">Tomorrow</span>' : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-        return `<div class="c-row" style="align-items:center;cursor:pointer" onclick="showJobDetail('${j.id}')">
-          <div style="width:44px;text-align:center;flex-shrink:0">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetail('${j.client_id}')">${j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||'?'}</div>
-            <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
-            <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
-            <button onclick="markJobDone('${j.id}')" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">✓ Done</button>
-          </div>
-        </div>`;
-      }).join('');
-
-  // Outstanding invoices
-  document.getElementById('d-invoices').innerHTML = pend.length===0
-    ? `<div class="empty" style="padding:24px"><p>🎉 All invoices paid!</p></div>`
-    : pend.slice(0,5).map(i=>`<div class="c-row" style="align-items:center">
-        <div style="flex:1;min-width:0">
-          <div class="c-name">${i.clients?.name||'?'}</div>
-          <div class="c-meta">${i.issued_date?new Date(i.issued_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
-          ${ibadge(i.status)}
-          <button class="act-btn act-paid" style="padding:4px 10px;font-size:11px" onclick="markPaid('${i.id}')">✓ Paid</button>
-        </div>
-      </div>`).join('');
+  // Recently completed
+  const completed=jobs.filter(j=>j.status==='completed').slice(0,4);
+  const compEl=document.getElementById('d-completed');
+  if(compEl) compEl.innerHTML=completed.length===0?`<div class="empty">No completed jobs yet</div>`:completed.map(j=>{
+    const d=j.date?new Date(j.date+'T00:00:00'):null;
+    const cname=j.clients?.name||'?';
+    return`<div class="c-row" style="cursor:pointer" onclick="showJobDetail('${j.id}')">
+      <div style="width:44px;text-align:center;flex-shrink:0">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="c-name" style="color:var(--green)">${cname}</div>
+        <div class="c-meta">${j.service||'—'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
+        ${jbadge(j.status)}
+      </div>
+    </div>`;
+  }).join('');
 
   // Active clients
-  document.getElementById('d-clients').innerHTML = clients.length===0
-    ? empty('No clients yet')
-    : clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':''} · ${c.location||'—'}</div></div><div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+  const clEl=document.getElementById('d-clients');
+  if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 
   renderRevenueChart();
-
-  // Recently completed jobs
-  const completed = jobs.filter(j=>j.status==='completed').slice(0,4);
-  document.getElementById('d-completed').innerHTML = completed.length===0
-    ? empty('No completed jobs yet')
-    : completed.map(j=>`<div class="c-row" style="align-items:center;cursor:pointer" onclick="showJobDetail('${j.id}')">
-        <div style="width:44px;text-align:center;flex-shrink:0">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--glight);line-height:1">${j.date?new Date(j.date+'T00:00:00').getDate():'—'}</div>
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${j.date?new Date(j.date+'T00:00:00').toLocaleDateString('en-US',{month:'short'}):''}</div>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div class="c-name" style="color:var(--green);cursor:pointer" onclick="event.stopPropagation();showClientDetailByName('${j.clients?.name||''}')">${j.clients?.name||'?'}</div>
-          <div class="c-meta">${j.service||'—'}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
-          ${jbadge(j.status)}
-        </div>
-      </div>`).join('');
 }
 
-// ── CLIENTS TABLE ──
-function clientTotal(c){
-  return jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name)).reduce((s,j)=>s+(j.amount||0),0);
-}
+function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
 
 function renderClients(){
-  if(clients.length===0){document.getElementById('clients-list').innerHTML=empty('No clients yet — tap "Add Client" to get started');return;}
-  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Status</th><th>Billed</th><th></th></tr></thead><tbody>`+
+  if(clients.length===0){document.getElementById('clients-list').innerHTML=`<div class="empty">No clients yet — tap "Add Client" to get started</div>`;return;}
+  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Surface</th><th>Courts</th><th>Status</th><th>Billed</th><th></th></tr></thead><tbody>`+
     clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
       <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
-      <td>${cstatusbadge(c.status)}</td>
-      <td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
-      <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div></td>
+      <td>${cstatusbadge(c.status)}</td><td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
+      <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
     <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
     <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
     <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
-    <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\'")}')">Delete</button></div>
+    <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div>
   </div>`).join('');
   document.getElementById('clients-list').innerHTML=tbl+cards;
 }
 
+function renderJobs(){
+  if(jobs.length===0){document.getElementById('jobs-list').innerHTML=`<div class="empty">No jobs yet — tap "Add Job" to schedule one</div>`;return;}
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
+    jobs.map(j=>`<tr>
+      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</strong></td>
+      <td>${j.service||'—'}</td><td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
+      <td>${jbadge(j.status)}</td>
+      <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div></td>
+    </tr>`).join('')+`</tbody></table>`;
+  const cards=jobs.map(j=>`<div class="m-card">
+    <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-meta">${j.service||'—'} · ${fmt(j.date)}</div>
+    <div class="m-card-tags">${jbadge(j.status)}</div>
+    <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div>
+  </div>`).join('');
+  document.getElementById('jobs-list').innerHTML=tbl+cards;
+}
+
+function renderInvoices(){
+  if(invoices.length===0){document.getElementById('invoices-list').innerHTML=`<div class="empty">No invoices yet</div>`;return;}
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
+    invoices.map(i=>`<tr>
+      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</strong></td>
+      <td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
+      <td><div class="row-actions">
+        ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+        <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
+        <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
+      </div></td>
+    </tr>`).join('')+`</tbody></table>`;
+  const cards=invoices.map(i=>`<div class="m-card">
+    <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
+    <div class="m-card-tags">${ibadge(i.status)}</div>
+    <div class="m-card-actions">
+      ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+      <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
+      <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
+    </div>
+  </div>`).join('');
+  document.getElementById('invoices-list').innerHTML=tbl+cards;
+}
+
+async function markPaid(id){
+  await sb.from('invoices').update({status:'paid'}).eq('id',id);
+  toast('Invoice marked as paid! 💰','ok');
+  await loadInvoices();renderDashboard();
+}
+
 function showClientDetail(id){
   const c=clients.find(x=>String(x.id)===String(id));if(!c)return;
-  const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id)||(j.clients&&j.clients.name===c.name));
-  const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id)||(i.clients&&i.clients.name===c.name));
+  const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
+  const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id));
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
   const el=document.getElementById('client-detail-overlay');
   el.dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
-  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':'')+( c.surface||'')+(c.courts?' · '+c.courts+' court'+(c.courts!==1?'s':''):'');
+  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':''+(c.surface||''))+(c.courts?' · '+c.courts+' court'+(c.courts!==1?'s':''):'');
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
   document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
-  // ── Unified Files: client uploads + invoice photos ──
-  const cFiles=JSON.parse(c.files||'[]');
-  const invPhotos=cInvoices.filter(i=>i.photo_url).map(i=>({
-    isImg:true, data:i.photo_url,
-    label:'Invoice $'+(i.amount||0).toLocaleString()+' · '+(i.status||'')
-  }));
-  const clientFileMapped=cFiles.map(f=>({
-    isImg:!!(f.type&&f.type.startsWith('image/')),
-    data:f.data, label:f.name||'File', name:f.name
-  }));
-  const allFiles=[...clientFileMapped,...invPhotos];
-  const cdFilesEl=document.getElementById('cd-files');
-  const cdFilesContent=document.getElementById('cd-files-content');
-  if(cdFilesEl&&cdFilesContent){
-    if(allFiles.length){
-      cdFilesEl.style.display='block';
-      cdFilesContent.innerHTML=allFiles.map(f=>{
-        if(f.isImg){
-          return `<div style="text-align:center;cursor:pointer" onclick="openPhoto('${f.data}','${(f.label||'').replace(/'/g,'')}')">
-            <img src="${f.data}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">
-            <div style="font-size:9px;color:var(--lmuted);margin-top:4px;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.label}</div>
-          </div>`;
-        } else {
-          return `<a href="${f.data}" download="${f.name}" style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;font-weight:600;color:var(--charcoal);text-decoration:none;display:flex;align-items:center;gap:8px">📄 ${f.name}</a>`;
-        }
-      }).join('');
-    } else {
-      cdFilesEl.style.display='none';
-    }
-  }
-
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
     ?'<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
     :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
@@ -1024,89 +804,67 @@ function showClientDetail(id){
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${j.service||'—'}</div>
           <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(j.date)}${j.notes?' · '+j.notes:''}</div>
-          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">↩ Next visit: ${fmt(j.next_visit)}</div>`:''}
+          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">↩ Next: ${fmt(j.next_visit)}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
+          <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
           ${jbadge(j.status)}
         </div>
       </div>`).join('');
   document.getElementById('cd-invoices').innerHTML=cInvoices.length===0
     ?'<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No invoices</div>'
     :cInvoices.map(i=>`
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
-          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(i.amount||0).toLocaleString()}</div>
-          ${ibadge(i.status)}
-          ${i.photo_url?'<span style="font-size:14px">📎</span>':''}
-          ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700">✓ Paid</button>`:''}
-        </div>
-        ${i.notes?`<div style="font-size:11px;color:var(--lmuted);margin-top:4px">${i.notes}</div>`:''}
-        ${i.photo_url?`<div style="margin-top:8px;cursor:pointer;position:relative" onclick="openPhoto('${i.photo_url}','Invoice · $${(i.amount||0).toLocaleString()}')"><img src="${i.photo_url}" style="width:100%;border-radius:8px;max-height:130px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px">🔍 Expand</div></div>`:''}
+      <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px">
+        <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
+        <div style="font-size:13px;font-weight:700">$${(i.amount||0).toLocaleString()}</div>
+        ${ibadge(i.status)}
+        ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif">✓ Paid</button>`:''}
       </div>`).join('');
   el.style.display='flex';
 }
 
-// ── JOBS TABLE ──
-function renderJobs(){
-  if(jobs.length===0){document.getElementById('jobs-list').innerHTML=empty('No jobs yet — tap "Add Job" to schedule one');return;}
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
-  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
-    jobs.map(j=>`<tr>
-      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${j.clients?.name||''}')">${j.clients?.name||'?'}</strong></td><td>${j.service||'—'}</td>
-      <td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
-      <td>${jbadge(j.status)}</td>
-      <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div></td>
-    </tr>`).join('')+`</tbody></table>`;
-  const cards=jobs.map(j=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name" style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${j.clients?.name||""}')"> ${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
-    <div class="m-card-meta">${j.service||'—'} · ${fmt(j.date)}</div>
-    <div class="m-card-tags">${jbadge(j.status)}</div>
-    <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\'")}')">Delete</button></div>
-  </div>`).join('');
-  document.getElementById('jobs-list').innerHTML=tbl+cards;
+function showJobDetail(id){
+  const j=jobs.find(x=>x.id===id);if(!j)return;
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'Not set';
+  const el=document.getElementById('job-detail-overlay');
+  el.dataset.jobId=id;
+  document.getElementById('jd-client').textContent=j.clients?.name||'Unknown';
+  document.getElementById('jd-service').textContent=j.service||'—';
+  document.getElementById('jd-date').textContent=fmt(j.date);
+  document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
+  document.getElementById('jd-status').innerHTML=jbadge(j.status);
+  document.getElementById('jd-notes').textContent=j.notes||'No notes';
+  document.getElementById('jd-next').textContent=j.next_visit?fmt(j.next_visit):'Not set';
+  const doneBtn=document.getElementById('jd-done-btn');
+  if(doneBtn)doneBtn.style.display=j.status==='completed'?'none':'block';
+  el.style.display='flex';
 }
 
-// ── INVOICES TABLE ──
-function renderInvoices(){
-  if(invoices.length===0){document.getElementById('invoices-list').innerHTML=empty('No invoices yet — tap "New Invoice" to create one');return;}
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
-  const tbl=`<table class="tbl desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
-    invoices.map(i=>`<tr>
-      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${i.clients?.name||''}')"> ${i.clients?.name||'?'}</strong></td><td><strong>$${(i.amount||0).toLocaleString()}</strong></td>
-      <td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
-      <td><div class="row-actions">
-        ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
-        <button class="act-btn" style="background:#E8F0FE;color:#1a56db;border:1px solid #c3d4f7" onclick="exportInvoicePDF('${i.id}')">⬇ PDF</button>
-        <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
-        <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
-      </div></td>
-    </tr>`).join('')+`</tbody></table>`;
-  const cards=invoices.map(i=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name" style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${i.clients?.name||''}')"> ${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
-    <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
-    ${i.photo_url?`<div style='margin-top:6px;position:relative' onclick="openPhoto('${i.photo_url}','${(i.clients?.name||'').replace(/'/g,'')} · Invoice')"><img src='${i.photo_url}' style='width:100%;border-radius:8px;max-height:150px;object-fit:cover;cursor:pointer'><div style='position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px;font-family:DM Sans,sans-serif'>Tap to expand</div></div>`:''}
-    <div class="m-card-tags" style="display:flex;align-items:center;gap:6px">${ibadge(i.status)}${i.photo_url?'<span style="font-size:14px" title="Has photo">📎</span>':''}</div>
-    <div class="m-card-actions">
-      ${i.status!=='paid'?`<button class="act-btn act-paid" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
-      <button class="act-btn" style="background:#E8F0FE;color:#1a56db;border:1px solid #c3d4f7" onclick="exportInvoicePDF('${i.id}')">⬇ PDF</button>
-      <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
-      <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','$${(i.amount||0).toLocaleString()} invoice')">Delete</button>
-    </div>
-  </div>`).join('');
-  document.getElementById('invoices-list').innerHTML=tbl+cards;
+function markJobDone(id){
+  document.getElementById('job-detail-overlay').style.display='none';
+  pendingCompleteJobId=id;
+  const j=jobs.find(x=>x.id===id);
+  const cname=j?.clients?.name||clients.find(c=>String(c.id)===String(j?.client_id))?.name||'this client';
+  document.getElementById('pay-confirm-client').textContent=cname;
+  document.getElementById('pay-confirm-amount').textContent='$'+(j?.amount||0).toLocaleString();
+  document.getElementById('pay-confirm-overlay').style.display='flex';
 }
 
-// ── MARK AS PAID ──
-async function markPaid(id){
-  const{error}=await sb.from('invoices').update({status:'paid'}).eq('id',id);
-  if(error){toast('Error: '+error.message,'err');return;}
-  toast('Invoice marked as paid! 💰','ok');
-  await loadInvoices();renderDashboard();
+async function completeJobWithPayment(paid){
+  document.getElementById('pay-confirm-overlay').style.display='none';
+  const id=pendingCompleteJobId;pendingCompleteJobId=null;
+  if(!id)return;
+  await sb.from('jobs').update({status:'completed'}).eq('id',id);
+  const j=jobs.find(x=>x.id===id);
+  if(j)j.status='completed';
+  if(j?.client_id){
+    const inv=invoices.filter(i=>String(i.client_id)===String(j.client_id)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+    if(inv) await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
+  }
+  toast(paid?'Job complete & payment recorded! 💰':'Job complete — invoice still pending.','ok');
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
 }
 
-// ── EDIT CLIENT ──
 function editClient(id){
   const c=clients.find(x=>x.id===id);if(!c)return;
   editingId.client=id;
@@ -1122,33 +880,17 @@ function editClient(id){
   document.getElementById('c-surface').value=c.surface||'';
   document.getElementById('c-courts').value=c.courts||1;
   document.getElementById('c-notes').value=c.notes||'';
+  document.getElementById('c-status').value=c.status||'active';
   clientFiles=[];
-  const cfi=document.getElementById('c-files');if(cfi)cfi.value='';
-  const cfp=document.getElementById('c-files-preview');if(cfp)cfp.innerHTML='';
-  const cfe=document.getElementById('c-files-existing');
-  if(cfe){
-    const existingFiles=JSON.parse(c.files||'[]');
-    cfe.dataset.files=JSON.stringify(existingFiles);
-    if(existingFiles.length){
-      cfe.innerHTML='<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);margin-bottom:6px">Existing files</div>'+
-        existingFiles.map((f,idx)=>f.type&&f.type.startsWith('image/')?
-          `<div style="position:relative;display:inline-block;margin-right:8px;margin-bottom:8px"><img src="${f.data}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="openPhoto('${f.data}','${f.name}')"><button onclick="removeClientFile(${idx})" style="position:absolute;top:-4px;right:-4px;background:#e53;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:18px;text-align:center">✕</button></div>`:
-          `<div style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--charcoal);font-weight:600;display:inline-flex;align-items:center;gap:8px;margin-right:8px;margin-bottom:8px"><a href="${f.data}" download="${f.name}" style="color:var(--charcoal);text-decoration:none">📄 ${f.name}</a><button onclick="removeClientFile(${idx})" style="background:none;border:none;color:#e53;cursor:pointer;font-size:12px">✕</button></div>`
-        ).join('');
-    } else {
-      cfe.innerHTML='';
-    }
-  }
   document.getElementById('save-client-btn').textContent='Save Changes';
   document.getElementById('m-client').classList.add('open');
 }
 
-// ── EDIT JOB ──
 function editJob(id){
   const j=jobs.find(x=>x.id===id);if(!j)return;
   editingId.job=id;
   document.getElementById('job-modal-title').textContent='Edit Job';
-  document.getElementById('job-modal-sub').textContent='Changes save immediately';document.getElementById('job-modal-sub').style.display='block';
+  const jmsub=document.getElementById('job-modal-sub');if(jmsub){jmsub.textContent='Changes save immediately';jmsub.style.display='block';}
   const sel=document.getElementById('j-client');
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=j.client_id||'';
@@ -1162,77 +904,32 @@ function editJob(id){
   document.getElementById('m-job').classList.add('open');
 }
 
-// ── EDIT INVOICE ──
 function editInvoice(id){
   const i=invoices.find(x=>x.id===id);if(!i)return;
   editingId.invoice=id;
   invoicePhotoUrl=i.photo_url||null;
   document.getElementById('invoice-modal-title').textContent='Edit Invoice';
-  document.getElementById('invoice-modal-sub').textContent='Changes save immediately';document.getElementById('invoice-modal-sub').style.display='block';
+  const imsub=document.getElementById('invoice-modal-sub');if(imsub){imsub.textContent='Changes save immediately';imsub.style.display='block';}
   const sel=document.getElementById('i-client');
   sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   sel.value=i.client_id||'';
-  const iamtEl=document.getElementById('i-amount');if(iamtEl)iamtEl.value=i.amount||'';
-  const idateEl=document.getElementById('i-date');if(idateEl)idateEl.value=i.issued_date||new Date().toISOString().split('T')[0];
-  const istatEl=document.getElementById('i-status');if(istatEl)istatEl.value=i.status||'pending';
+  document.getElementById('i-amount').value=i.amount||'';
+  document.getElementById('i-date').value=i.issued_date||new Date().toISOString().split('T')[0];
+  document.getElementById('i-status').value=i.status||'pending';
   document.getElementById('i-notes').value=i.notes||'';
   document.getElementById('i-photo').value='';
-  const existing=document.getElementById('i-photo-existing');
-  const existingImg=document.getElementById('i-photo-existing-img');
-  if(i.photo_url){existing.style.display='block';existingImg.src=i.photo_url;}
-  else{existing.style.display='none';}
+  const prev=document.getElementById('i-photo-preview');if(prev)prev.style.display='none';
+  const ex=document.getElementById('i-photo-existing');const eximg=document.getElementById('i-photo-existing-img');
+  if(i.photo_url){if(ex)ex.style.display='block';if(eximg)eximg.src=i.photo_url;}
+  else{if(ex)ex.style.display='none';}
   document.getElementById('save-invoice-btn').textContent='Save Changes';
   document.getElementById('m-invoice').classList.add('open');
 }
 
-// ── QUICK ADD STATE ──
-let qaMode=false, qaClientId=null, qaJobSaved=false, invoicePhotoUrl=null, pendingCompleteJobId=null, clientFiles=[];
-
-// Photo preview
-document.addEventListener('DOMContentLoaded',()=>{
-  // Client file uploads
-  const cFilesInput=document.getElementById('c-files');
-  if(cFilesInput){
-    cFilesInput.addEventListener('change',async function(){
-      const preview=document.getElementById('c-files-preview');
-      preview.innerHTML='';
-      clientFiles=[];
-      for(const file of this.files){
-        const b64=await new Promise(res=>{
-          const r=new FileReader();
-          r.onload=e=>res(e.target.result);
-          r.readAsDataURL(file);
-        });
-        clientFiles.push({name:file.name,type:file.type,data:b64});
-        if(file.type.startsWith('image/')){
-          preview.innerHTML+=`<div style="position:relative"><img src="${b64}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border)"></div>`;
-        } else {
-          preview.innerHTML+=`<div style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--charcoal);font-weight:600">📄 ${file.name}</div>`;
-        }
-      }
-    });
-  }
-  const photoInput=document.getElementById('i-photo');
-  if(photoInput){
-    photoInput.addEventListener('change',function(){
-      const file=this.files[0];
-      if(file){
-        const reader=new FileReader();
-        reader.onload=e=>{
-          document.getElementById('i-photo-img').src=e.target.result;
-          document.getElementById('i-photo-preview').style.display='block';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-});
-function removeInvoicePhoto(){invoicePhotoUrl=null;document.getElementById('i-photo-existing').style.display='none';}
-
 function openModal(type){
   editingId[type]=null;
   if(type==='client'){
-    qaClientId=null;qaJobSaved=false;
+    qaClientId=null;qaJobSaved=false;clientFiles=[];
     document.getElementById('client-modal-title').textContent='Add Client';
     document.getElementById('qa-steps').style.display='none';
     document.getElementById('edit-client-btns').style.display='none';
@@ -1240,153 +937,69 @@ function openModal(type){
     document.getElementById('qa-page-1').style.display='block';
     document.getElementById('qa-page-2').style.display='none';
     document.getElementById('qa-page-3').style.display='none';
-    ['c-name','c-loc','c-courts','c-notes','j-service','j-amount','i-amount','j-date','i-issued-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['c-name','c-loc','c-courts','c-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('c-surface').value='';
     document.getElementById('c-status').value='active';
-    document.getElementById('j-status').value='scheduled';
-    document.getElementById('i-status').value='pending';
-    document.getElementById('j-date').value=new Date().toISOString().split('T')[0];
   }
   if(type==='job'){
     document.getElementById('job-modal-title').textContent='Add Job';
-    document.getElementById('job-modal-sub').textContent='';document.getElementById('job-modal-sub').style.display='none';
+    const jmsub=document.getElementById('job-modal-sub');if(jmsub)jmsub.style.display='none';
     document.getElementById('save-job-btn').textContent='Save Job';
-    ['j-service','j-amount','j-notes','j-next-visit'].forEach(id=>document.getElementById(id).value='');
+    ['j-service','j-amount','j-notes','j-next-visit'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('j-status').value='scheduled';
     document.getElementById('j-date').value=new Date().toISOString().split('T')[0];
-    const el=document.getElementById('j-client');
-    el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    const sel=document.getElementById('j-client');
+    sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
   if(type==='invoice'){
     invoicePhotoUrl=null;
     document.getElementById('invoice-modal-title').textContent='New Invoice';
-    document.getElementById('invoice-modal-sub').textContent='';document.getElementById('invoice-modal-sub').style.display='none';
+    const imsub=document.getElementById('invoice-modal-sub');if(imsub)imsub.style.display='none';
     document.getElementById('save-invoice-btn').textContent='Save Invoice';
-    const iamt=document.getElementById('i-amount');if(iamt)iamt.value='';
-    const idate=document.getElementById('i-date');if(idate)idate.value=new Date().toISOString().split('T')[0];
-    const inst=document.getElementById('i-status');if(inst)inst.value='pending';
-    const inotes=document.getElementById('i-notes');if(inotes)inotes.value='';
-    const iphoto=document.getElementById('i-photo');if(iphoto)iphoto.value='';
+    ['i-amount','i-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('i-date').value=new Date().toISOString().split('T')[0];
+    document.getElementById('i-status').value='pending';
+    document.getElementById('i-photo').value='';
     const prev=document.getElementById('i-photo-preview');if(prev)prev.style.display='none';
-    const pex=document.getElementById('i-photo-existing');if(pex)pex.style.display='none';
-    const el=document.getElementById('i-client');
-    el.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    const ex=document.getElementById('i-photo-existing');if(ex)ex.style.display='none';
+    const sel=document.getElementById('i-client');
+    sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
   document.getElementById('m-'+type).classList.add('open');
 }
 
-function qaNext(page){
-  document.getElementById('qa-page-1').style.display='none';
-  document.getElementById('qa-page-2').style.display='none';
-  document.getElementById('qa-page-3').style.display='none';
-  document.getElementById('qa-page-'+page).style.display='block';
-  if(page===3){
-    const jobAmt=parseFloat(document.getElementById('qa-j-amount').value)||0;
-    document.getElementById('qa-i-amount').value=jobAmt||'';
-    document.getElementById('qa-inv-preview').textContent='$'+jobAmt.toLocaleString();
+function closeModal(type){document.getElementById('m-'+type).classList.remove('open');editingId[type]=null;}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const photoInput=document.getElementById('i-photo');
+  if(photoInput){
+    photoInput.addEventListener('change',function(){
+      const file=this.files[0];if(!file)return;
+      const r=new FileReader();
+      r.onload=e=>{document.getElementById('i-photo-img').src=e.target.result;document.getElementById('i-photo-preview').style.display='block';};
+      r.readAsDataURL(file);
+    });
   }
-  // Update step indicators
-  [1,2,3].forEach(n=>{
-    const el=document.getElementById('step-'+n);
-    if(n<page){el.style.borderBottomColor='var(--glight)';el.style.color='var(--green)';}
-    else if(n===page){el.style.borderBottomColor='var(--charcoal)';el.style.color='var(--charcoal)';}
-    else{el.style.borderBottomColor='var(--border)';el.style.color='var(--lmuted)';}
-  });
-}
+});
+
+function removeInvoicePhoto(){invoicePhotoUrl=null;const ex=document.getElementById('i-photo-existing');if(ex)ex.style.display='none';}
 
 async function saveClientOnly(){
-  // Save client and close without adding job/invoice
   const name=document.getElementById('c-name').value.trim();
   if(!name){toast('Enter a client name','err');return;}
-  const payload={name,location:document.getElementById('c-loc').value.trim(),surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()};
+  const payload={name,location:document.getElementById('c-loc').value.trim(),surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
   const{error}=await sb.from('clients').insert(payload);
   if(error){toast('Error: '+error.message,'err');return;}
-  closeModal('client');
-  toast('Client saved!','ok');
-  await loadClients();renderDashboard();
+  closeModal('client');toast('Client saved!','ok');
+  await loadClients();renderClients();renderDashboard();
 }
 
-async function qaSaveJobThenInvoice(){
-  // Save job first, then show invoice step
-  if(qaClientId){
-    const svc=document.getElementById('qa-j-service').value.trim();
-    if(svc){
-      const{error}=await sb.from('jobs').insert({
-        client_id:qaClientId,
-        service:svc,
-        date:document.getElementById('qa-j-date').value||null,
-        amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
-        status:document.getElementById('qa-j-status').value||'scheduled'
-      });
-      if(error){toast('Error saving job: '+error.message,'err');return;}
-      qaJobSaved=true;
-      // Pre-fill invoice amount from job
-      document.getElementById('qa-i-amount').value=document.getElementById('qa-j-amount').value||'';
-    }
-  }
-  qaNext(3);
-}
-
-async function qaFinish(saveJob, saveInvoice){
-  const btn=document.getElementById('qa-finish-btn')||document.getElementById('save-client-btn');
-  if(btn){btn.disabled=true;btn.textContent='Saving...';}
-
-  // Save job if requested and not already saved
-  if(saveJob && qaClientId && !qaJobSaved){
-    const svc=document.getElementById('qa-j-service').value.trim();
-    if(svc){
-      await sb.from('jobs').insert({
-        client_id:qaClientId,
-        service:svc,
-        date:document.getElementById('qa-j-date').value||null,
-        amount:parseFloat(document.getElementById('qa-j-amount').value)||0,
-        status:document.getElementById('qa-j-status').value||'scheduled'
-      });
-    }
-  }
-
-  // Save invoice if requested
-  if(saveInvoice && qaClientId){
-    const amt=parseFloat(document.getElementById('qa-i-amount').value);
-    if(amt){
-      await sb.from('invoices').insert({
-        client_id:qaClientId,
-        amount:amt,
-        status:document.getElementById('qa-i-status').value,
-        issued_date:new Date().toISOString().split('T')[0]
-      });
-    }
-  }
-
-  if(btn){btn.disabled=false;}
-  closeModal('client');
-  qaJobSaved=false;
-  toast('All saved! 🎉','ok');
-  renderClients();renderJobs();renderInvoices();renderDashboard();
-}
-
-// ── SAVE CLIENT (add or edit) ──
 async function saveClient(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){toast('Enter a client name','err');return;}
   const btn=document.getElementById('save-client-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
-
-  // Build files array: existing + newly selected
-  const cfe=document.getElementById('c-files-existing');
-  const existingFiles=JSON.parse(cfe?.dataset?.files||'[]');
-  const allFiles=[...existingFiles,...clientFiles];
-
-  const payload={
-    name,
-    location:document.getElementById('c-loc').value.trim(),
-    surface:document.getElementById('c-surface').value,
-    courts:parseInt(document.getElementById('c-courts').value)||1,
-    notes:document.getElementById('c-notes').value.trim()||null,
-    status:document.getElementById('c-status').value||'active',
-    files:allFiles.length?JSON.stringify(allFiles):null
-  };
-
+  const payload={name,location:document.getElementById('c-loc').value.trim(),surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
   let error,data;
   if(editingId.client){
     ({error}=await sb.from('clients').update(payload).eq('id',editingId.client));
@@ -1395,31 +1008,22 @@ async function saveClient(){
   }
   if(btn){btn.disabled=false;btn.textContent=editingId.client?'Save Changes':'Save Client';}
   if(error){toast('Error: '+error.message,'err');return;}
-
-  clientFiles=[];
-
-  // If in quick-add mode (new client), go to job step
-  if(!editingId.client && data){
+  if(!editingId.client&&data){
     qaClientId=data.id;
     document.getElementById('qa-client-name-display').textContent=name;
     document.getElementById('qa-client-name-display2').textContent=name;
     document.getElementById('qa-steps').style.display='block';
     document.getElementById('qa-new-btns').style.display='none';
-    qaNext(2);
-    return;
+    qaNext(2);return;
   }
-
-  closeModal('client');
-  toast(editingId.client?'Client updated!':'Client saved!','ok');
+  closeModal('client');toast(editingId.client?'Client updated!':'Client saved!','ok');
   await loadClients();renderClients();renderDashboard();
 }
 
-
-// ── SAVE JOB (add or edit) ──
 async function saveJob(){
   const cid=document.getElementById('j-client').value;
   const svc=document.getElementById('j-service').value.trim();
-  if(!cid||!svc){toast('Please fill in all fields','err');return;}
+  if(!cid||!svc){toast('Select a client and enter a service','err');return;}
   const btn=document.getElementById('save-job-btn');
   btn.disabled=true;btn.textContent='Saving...';
   const amt=parseFloat(document.getElementById('j-amount').value)||0;
@@ -1429,12 +1033,10 @@ async function saveJob(){
     ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
   } else {
     const{data,error:err}=await sb.from('jobs').insert(payload).select().single();
-    error=err;
-    if(data)newJobId=data.id;
+    error=err;if(data)newJobId=data.id;
   }
   btn.disabled=false;btn.textContent=editingId.job?'Save Changes':'Save Job';
   if(error){toast('Error: '+error.message,'err');return;}
-  // Auto-create invoice for new jobs
   if(newJobId&&amt>0){
     await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',issued_date:new Date().toISOString().split('T')[0]});
   }
@@ -1443,25 +1045,18 @@ async function saveJob(){
   await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
-// ── SAVE INVOICE (add or edit) ──
 async function saveInvoice(){
   const cid=document.getElementById('i-client').value;
-  const iamtField=document.getElementById('i-amount');const amt=iamtField?parseFloat(iamtField.value)||0:0;
-  if(!cid||!amt){toast('Please fill in all fields','err');return;}
+  const amt=parseFloat(document.getElementById('i-amount').value)||0;
+  if(!cid||!amt){toast('Select a client and enter an amount','err');return;}
   const btn=document.getElementById('save-invoice-btn');
   btn.disabled=true;btn.textContent='Saving...';
-  const notes=document.getElementById('i-notes')?document.getElementById('i-notes').value.trim()||null:null;
-  // Handle photo as base64
   let photoUrl=invoicePhotoUrl||null;
   const photoFile=document.getElementById('i-photo')?.files[0];
   if(photoFile){
-    photoUrl=await new Promise(res=>{
-      const r=new FileReader();
-      r.onload=e=>res(e.target.result);
-      r.readAsDataURL(photoFile);
-    });
+    photoUrl=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(photoFile);});
   }
-  const istatus=document.getElementById('i-status')?.value||'pending';const idate=document.getElementById('i-date')?.value||null;const payload={client_id:cid,amount:amt,status:istatus,notes:notes,photo_url:photoUrl,issued_date:idate};
+  const payload={client_id:cid,amount:amt,status:document.getElementById('i-status').value,notes:document.getElementById('i-notes').value.trim()||null,photo_url:photoUrl,issued_date:document.getElementById('i-date').value||null};
   let error;
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
@@ -1471,431 +1066,120 @@ async function saveInvoice(){
   btn.disabled=false;btn.textContent=editingId.invoice?'Save Changes':'Save Invoice';
   if(error){toast('Error: '+error.message,'err');return;}
   invoicePhotoUrl=null;
-  closeModal('invoice');
-  toast(editingId.invoice?'Invoice updated!':'Invoice created!','ok');
+  closeModal('invoice');toast(editingId.invoice?'Invoice updated!':'Invoice created!','ok');
   await loadInvoices();renderDashboard();
 }
 
-// ── PDF EXPORT ──
-async function exportInvoicePDF(id){
-  const i=invoices.find(x=>x.id===id);
-  if(!i){toast('Invoice not found','err');return;}
-  const c=clients.find(x=>String(x.id)===String(i.client_id));
-  const clientName=i.clients?.name||c?.name||'Client';
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—';
-
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({unit:'pt',format:'letter'});
-  const W=612, margin=50;
-
-  // ── Header bar ──
-  doc.setFillColor(42,122,82); // --green
-  doc.rect(0,0,W,80,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(28);
-  doc.text('INVOICE',margin,52);
-  doc.setFontSize(11);
-  doc.setFont('helvetica','normal');
-  doc.text('Resurfr · Tennis Court Services',W-margin,52,{align:'right'});
-
-  // ── Invoice meta ──
-  doc.setTextColor(80,80,80);
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-  const invNum='INV-'+String(id).substring(0,8).toUpperCase();
-  doc.text('Invoice #: '+invNum, margin, 110);
-  doc.text('Date: '+fmt(i.issued_date), margin, 126);
-  doc.text('Status: '+(i.status||'pending').toUpperCase(), margin, 142);
-
-  // ── Bill To ──
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
-  doc.setTextColor(42,122,82);
-  doc.text('BILL TO', margin, 180);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(14);
-  doc.setTextColor(30,30,30);
-  doc.text(clientName, margin, 198);
-  if(c?.location){
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(10);
-    doc.setTextColor(100,100,100);
-    doc.text(c.location, margin, 214);
-  }
-
-  // ── Divider ──
-  doc.setDrawColor(220,220,220);
-  doc.setLineWidth(1);
-  doc.line(margin, 240, W-margin, 240);
-
-  // ── Services table header ──
-  doc.setFillColor(245,245,245);
-  doc.rect(margin, 248, W-margin*2, 24, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
-  doc.setTextColor(80,80,80);
-  doc.text('DESCRIPTION', margin+10, 264);
-  doc.text('AMOUNT', W-margin-10, 264, {align:'right'});
-
-  // ── Service row ──
-  const linkedJob=jobs.find(j=>String(j.client_id)===String(i.client_id)&&j.amount===i.amount);
-  const serviceDesc=linkedJob?.service||i.notes||'Tennis Court Service';
-  const serviceDate=linkedJob?.date?fmt(linkedJob.date):'';
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(11);
-  doc.setTextColor(30,30,30);
-  doc.text(serviceDesc, margin+10, 294);
-  if(serviceDate){
-    doc.setFontSize(9);
-    doc.setTextColor(120,120,120);
-    doc.text(serviceDate, margin+10, 308);
-  }
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(13);
-  doc.setTextColor(30,30,30);
-  doc.text('$'+(i.amount||0).toLocaleString(), W-margin-10, 294, {align:'right'});
-
-  // ── Divider ──
-  doc.setDrawColor(220,220,220);
-  doc.line(margin, 325, W-margin, 325);
-
-  // ── Total ──
-  doc.setFillColor(42,122,82);
-  doc.rect(W-margin-180, 335, 180, 40, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(11);
-  doc.setTextColor(255,255,255);
-  doc.text('TOTAL DUE', W-margin-170, 351);
-  doc.setFontSize(16);
-  doc.text('$'+(i.amount||0).toLocaleString(), W-margin-10, 363, {align:'right'});
-
-  // ── Notes ──
-  if(i.notes){
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(10);
-    doc.setTextColor(42,122,82);
-    doc.text('NOTES', margin, 400);
-    doc.setFont('helvetica','normal');
-    doc.setTextColor(80,80,80);
-    const noteLines=doc.splitTextToSize(i.notes, W-margin*2);
-    doc.text(noteLines, margin, 416);
-  }
-
-  // ── Footer ──
-  doc.setFillColor(245,245,245);
-  doc.rect(0, 720, W, 72, 'F');
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.setTextColor(120,120,120);
-  doc.text('Thank you for your business!', W/2, 745, {align:'center'});
-  doc.text('Resurfr · Tennis Court Services · getresurfr.netlify.app', W/2, 761, {align:'center'});
-
-  // ── Status badge ──
-  if(i.status==='paid'){
-    doc.setFontSize(36);
-    doc.setTextColor(42,122,82);
-    doc.setFont('helvetica','bold');
-    doc.text('PAID', W/2, 500, {align:'center', angle:15});
-    doc.setDrawColor(42,122,82);
-    doc.setLineWidth(3);
-    doc.rect(W/2-60, 468, 120, 48);
-  }
-
-  const filename=clientName.replace(/[^a-z0-9]/gi,'_')+'_Invoice_'+invNum+'.pdf';
-  
-  // Show preview overlay
-  const pdfBlob=doc.output('blob');
-  const pdfUrl=URL.createObjectURL(pdfBlob);
-  const frame=document.getElementById('pdf-preview-frame');
-  frame.src=pdfUrl;
-  
-  // Wire download button
-  const dlBtn=document.getElementById('pdf-download-btn');
-  dlBtn.onclick=()=>{
-    const a=document.createElement('a');
-    a.href=pdfUrl;
-    a.download=filename;
-    a.click();
-    toast('PDF downloaded! 📄','ok');
-  };
-  
-  document.getElementById('pdf-preview-overlay').style.display='flex';
-}
-
-// ── REVENUE CHART ──
-let revenueChart = null;
-function renderRevenueChart(){
-  const canvas = document.getElementById('revenue-chart');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const thisYear = new Date().getFullYear();
-  document.getElementById('chart-year-label').textContent = thisYear;
-
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  
-  // Build monthly revenue from completed jobs
-  const monthlyRevenue = Array(12).fill(0);
-  const monthlyJobs = Array(12).fill(0);
-  jobs.forEach(j => {
-    if(!j.date || j.status !== 'completed') return;
-    const d = new Date(j.date + 'T00:00:00');
-    if(d.getFullYear() !== thisYear) return;
-    monthlyRevenue[d.getMonth()] += j.amount || 0;
-    monthlyJobs[d.getMonth()]++;
-  });
-
-  const currentMonth = new Date().getMonth();
-  const barColors = months.map((_,i) => 
-    i === currentMonth ? '#2A7A52' : i < currentMonth ? '#B8DEC8' : '#E8F5EE'
-  );
-
-  if(revenueChart) revenueChart.destroy();
-  revenueChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [{
-        data: monthlyRevenue,
-        backgroundColor: barColors,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => '$' + ctx.raw.toLocaleString(),
-            afterLabel: ctx => monthlyJobs[ctx.dataIndex] + ' job' + (monthlyJobs[ctx.dataIndex] !== 1 ? 's' : '')
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#888' }
-        },
-        y: {
-          grid: { color: '#f0f0f0' },
-          ticks: {
-            font: { family: 'DM Sans', size: 10 },
-            color: '#888',
-            callback: v => v >= 1000 ? '$' + (v/1000).toFixed(0) + 'k' : '$' + v
-          }
-        }
-      }
+async function qaSaveJobThenInvoice(){
+  if(qaClientId){
+    const svc=document.getElementById('qa-j-service').value.trim();
+    if(svc){
+      await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled'});
+      qaJobSaved=true;
+      document.getElementById('qa-i-amount').value=document.getElementById('qa-j-amount').value||'';
     }
-  });
-
-  // Summary stats below chart
-  const totalYTD = monthlyRevenue.reduce((a,b) => a+b, 0);
-  const bestMonth = monthlyRevenue.indexOf(Math.max(...monthlyRevenue));
-  const totalJobs = monthlyJobs.reduce((a,b) => a+b, 0);
-  document.getElementById('chart-summary').innerHTML = `
-    <div style="text-align:center">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">$${totalYTD.toLocaleString()}</div>
-      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">YTD Revenue</div>
-    </div>
-    <div style="text-align:center">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalJobs}</div>
-      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Jobs Done</div>
-    </div>
-    <div style="text-align:center">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalYTD > 0 ? months[bestMonth] : '—'}</div>
-      <div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div>
-    </div>
-  `;
+  }
+  qaNext(3);
 }
 
-// ── DELETE ──
-let pendingDelete={type:null,id:null};
+async function qaFinish(saveJob,saveInvoice){
+  const btn=document.getElementById('qa-finish-btn');
+  if(btn){btn.disabled=true;btn.textContent='Saving...';}
+  if(saveJob&&qaClientId&&!qaJobSaved){
+    const svc=document.getElementById('qa-j-service').value.trim();
+    if(svc) await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled'});
+  }
+  if(saveInvoice&&qaClientId){
+    const amt=parseFloat(document.getElementById('qa-i-amount').value);
+    if(amt) await sb.from('invoices').insert({client_id:qaClientId,amount:amt,status:document.getElementById('qa-i-status').value,issued_date:new Date().toISOString().split('T')[0]});
+  }
+  if(btn)btn.disabled=false;
+  closeModal('client');qaJobSaved=false;
+  toast('All saved! 🎉','ok');
+  await loadClients();await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
+}
+
+function qaNext(page){
+  [1,2,3].forEach(n=>{const el=document.getElementById('qa-page-'+n);if(el)el.style.display=n===page?'block':'none';});
+  [1,2,3].forEach(n=>{
+    const el=document.getElementById('step-'+n);if(!el)return;
+    if(n<page){el.style.borderBottomColor='var(--green)';el.style.color='var(--green)';}
+    else if(n===page){el.style.borderBottomColor='var(--charcoal)';el.style.color='var(--charcoal)';}
+    else{el.style.borderBottomColor='var(--border)';el.style.color='var(--lmuted)';}
+  });
+}
+
 function confirmDelete(type,id,label){
   pendingDelete={type,id};
-  const extra=type==='client'?' All jobs and invoices for this client will also be deleted.':'';
-  document.getElementById('confirm-msg').textContent=`Delete "${label}"? This cannot be undone.${extra}`;
-  const co=document.getElementById('confirm-overlay');co.style.display='flex';
+  document.getElementById('confirm-msg').textContent='Delete "'+label+'"? This cannot be undone.'+(type==='client'?' All jobs and invoices will also be deleted.':'');
+  document.getElementById('confirm-overlay').style.display='flex';
   document.getElementById('confirm-ok-btn').onclick=doDelete;
 }
 function closeConfirm(){document.getElementById('confirm-overlay').style.display='none';pendingDelete={type:null,id:null};}
 async function doDelete(){
-  const{type,id}=pendingDelete;
-  closeConfirm();
-  // Optimistically remove from local state immediately
+  const{type,id}=pendingDelete;closeConfirm();
   if(type==='client'){
-    clients=clients.filter(x=>x.id!=id);
-    jobs=jobs.filter(x=>x.client_id!=id);
-    invoices=invoices.filter(x=>x.client_id!=id);
-    document.getElementById('nb-clients').textContent=clients.length;
-  } else if(type==='job'){
-    jobs=jobs.filter(x=>x.id!=id);
-  } else {
-    invoices=invoices.filter(x=>x.id!=id);
-    document.getElementById('nb-invoices').textContent=invoices.filter(i=>i.status==='pending').length;
-  }
-  renderClients();renderJobs();renderInvoices();renderDashboard();
-  toast('Deleted','ok');
-  // Now delete from database in background
-  if(type==='client'){
+    clients=clients.filter(x=>x.id!=id);jobs=jobs.filter(x=>x.client_id!=id);invoices=invoices.filter(x=>x.client_id!=id);
     await sb.from('jobs').delete().eq('client_id',id);
     await sb.from('invoices').delete().eq('client_id',id);
     await sb.from('clients').delete().eq('id',id);
   } else if(type==='job'){
+    jobs=jobs.filter(x=>x.id!=id);
     await sb.from('jobs').delete().eq('id',id);
   } else {
+    invoices=invoices.filter(x=>x.id!=id);
     await sb.from('invoices').delete().eq('id',id);
   }
+  renderClients();renderJobs();renderInvoices();renderDashboard();
+  toast('Deleted','ok');
 }
 
-// ── MODALS ──
-function closeModal(type){document.getElementById('m-'+type).classList.remove('open');editingId[type]=null;}
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='confirm-overlay'){const t=o.id.replace('m-','');closeModal(t);}}));
+function renderRevenueChart(){
+  const canvas=document.getElementById('revenue-chart');if(!canvas)return;
+  const thisYear=new Date().getFullYear();
+  document.getElementById('chart-year-label').textContent=thisYear;
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const rev=Array(12).fill(0);const jcount=Array(12).fill(0);
+  jobs.forEach(j=>{
+    if(!j.date||j.status!=='completed')return;
+    const d=new Date(j.date+'T00:00:00');
+    if(d.getFullYear()!==thisYear)return;
+    rev[d.getMonth()]+=(j.amount||0);jcount[d.getMonth()]++;
+  });
+  const cur=new Date().getMonth();
+  const colors=months.map((_,i)=>i===cur?'#2A7A52':i<cur?'#B8DEC8':'#E8F5EE');
+  if(revenueChart)revenueChart.destroy();
+  revenueChart=new Chart(canvas.getContext('2d'),{
+    type:'bar',
+    data:{labels:months,datasets:[{data:rev,backgroundColor:colors,borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.raw.toLocaleString(),afterLabel:c=>jcount[c.dataIndex]+' job'+(jcount[c.dataIndex]!==1?'s':'')}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#888'}},y:{grid:{color:'#f0f0f0'},ticks:{font:{family:'DM Sans',size:10},color:'#888',callback:v=>v>=1000?'$'+(v/1000).toFixed(0)+'k':'$'+v}}}}
+  });
+  const total=rev.reduce((a,b)=>a+b,0);const best=rev.indexOf(Math.max(...rev));const totalJ=jcount.reduce((a,b)=>a+b,0);
+  document.getElementById('chart-summary').innerHTML=`
+    <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">$${total.toLocaleString()}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">YTD Revenue</div></div>
+    <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalJ}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Jobs Done</div></div>
+    <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${total>0?months[best]:'—'}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div></div>`;
+}
 
-// ── NAV ──
 function nav(name,el){
-  if(name==='map'){window.location.href='/map.html';return;}
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
-  else document.querySelector(`.nav-item[onclick*="'${name}'"]`)?.classList.add('active');
+  else{const btn=document.getElementById('nav-'+name);if(btn)btn.classList.add('active');}
   closeSidebar();window.scrollTo(0,0);
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
-
-// ── HELPERS ──
 function stag(s){const m={'Har-Tru':'tag-hartru','Hard':'tag-hard','Hard Court':'tag-hard','Red Clay':'tag-clay'};return`<span class="tag ${m[s]||'tag-def'}">${s||'—'}</span>`;}
-function cstatusbadge(s){
-  const map={
-    'active':  {label:'Active',   bg:'#E8F5EE',color:'#1E6640'},
-    'prospect':{label:'Prospect', bg:'#FFF8E1',color:'#B88000'},
-    'inactive':{label:'Inactive', bg:'#F2F2F2',color:'#888888'},
-  };
-  const st=map[(s||'active').toLowerCase()]||map['active'];
-  return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.bg};color:${st.color}">${st.label}</span>`;
-}
-function jbadge(s){const m={scheduled:'b-scheduled',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
+function cstatusbadge(s){const map={active:{label:'Active',bg:'#E8F5EE',color:'#1E6640'},prospect:{label:'Prospect',bg:'#FFF8E1',color:'#B88000'},inactive:{label:'Inactive',bg:'#F2F2F2',color:'#888888'}};const st=map[(s||'active').toLowerCase()]||map.active;return`<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.bg};color:${st.color}">${st.label}</span>`;}
+function jbadge(s){const m={scheduled:'b-scheduled',inprogress:'b-inprogress',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
-function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
-function showJobDetail(id){
-  const j=jobs.find(x=>x.id===id);if(!j)return;
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'Not set';
-  const el=document.getElementById('job-detail-overlay');
-  el.dataset.jobId=id;
-  document.getElementById('jd-client').textContent=j.clients?.name||'Unknown client';
-  document.getElementById('jd-service').textContent=j.service||'—';
-  document.getElementById('jd-date').textContent=fmt(j.date);
-  document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
-  document.getElementById('jd-status').innerHTML=jbadge(j.status);
-  document.getElementById('jd-notes').textContent=j.notes||'No notes';
-  document.getElementById('jd-next').textContent=j.next_visit?fmt(j.next_visit):'Not set';
-  // Show linked invoice + photo
-  const linkedInv=invoices.filter(i=>String(i.client_id)===String(j.client_id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-  const invSection=document.getElementById('jd-invoice-section');
-  const invContent=document.getElementById('jd-invoice-content');
-  if(linkedInv){
-    invSection.style.display='block';
-    invContent.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <span style="font-size:13px;font-weight:700;color:var(--charcoal)">$${(linkedInv.amount||0).toLocaleString()}</span>
-      ${ibadge(linkedInv.status)}
-      ${linkedInv.notes?`<span style="font-size:11px;color:var(--lmuted)">${linkedInv.notes}</span>`:''}
-    </div>
-    ${linkedInv.photo_url?`<div style="cursor:pointer;margin-top:6px;position:relative" onclick="openPhoto('${linkedInv.photo_url}','Invoice · $${(linkedInv.amount||0).toLocaleString()}')"><img src="${linkedInv.photo_url}" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 7px;border-radius:4px">🔍 Expand</div></div>`:''}`;
-  } else {
-    invSection.style.display='none';
-  }
-  const doneBtn=document.getElementById('jd-done-btn');
-  if(j.status==='completed'){doneBtn.style.display='none';}
-  else{doneBtn.style.display='block';}
-  el.style.display='flex';
-}
-function markJobDone(id){
-  // Close job detail if open
-  document.getElementById('job-detail-overlay').style.display='none';
-  // Show payment confirmation popup
-  pendingCompleteJobId=id;
-  const j=jobs.find(x=>x.id===id);
-  const client=j?.clients?.name||clients.find(c=>c.id==j?.client_id)?.name||'this client';
-  document.getElementById('pay-confirm-client').textContent=client;
-  document.getElementById('pay-confirm-amount').textContent='$'+(j?.amount||0).toLocaleString();
-  document.getElementById('pay-confirm-overlay').style.display='flex';
-}
-async function completeJobWithPayment(paid){
-  document.getElementById('pay-confirm-overlay').style.display='none';
-  const id=pendingCompleteJobId;
-  pendingCompleteJobId=null;
-  if(!id)return;
-  // Mark job completed
-  await sb.from('jobs').update({status:'completed'}).eq('id',id);
-  const j=jobs.find(x=>x.id===id);
-  if(j)j.status='completed';
-  // Find and update the linked invoice
-  const cid=j?.client_id;
-  if(cid){
-    // Find most recent pending invoice for this client
-    const inv=invoices.filter(i=>String(i.client_id)===String(cid)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-    if(inv){
-      await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
-    }
-  }
-  toast(paid?'Job complete & payment recorded! 💰':'Job complete — invoice marked pending.','ok');
-  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
-}
-function openPhoto(url, caption){
-  if(!url)return;
-  const img=document.getElementById('photo-viewer-img');
-  img.src=url;
-  document.getElementById('photo-viewer-caption').textContent=caption||'';
-  // Wire download button
-  const dlBtn=document.getElementById('photo-download-btn');
-  dlBtn.onclick=()=>{
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=(caption||'photo').replace(/[^a-z0-9]/gi,'_')+'.jpg';
-    a.click();
-  };
-  document.getElementById('photo-viewer').style.display='flex';
-}
-
-function removeClientFile(idx){
-  const cfe=document.getElementById('c-files-existing');
-  if(!cfe)return;
-  const files=JSON.parse(cfe.dataset.files||'[]');
-  files.splice(idx,1);
-  cfe.dataset.files=JSON.stringify(files);
-  // Re-render
-  if(files.length){
-    cfe.innerHTML='<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);margin-bottom:6px">Existing files</div>'+
-      files.map((f,i)=>f.type&&f.type.startsWith('image/')?
-        `<div style="position:relative;display:inline-block;margin-right:8px"><img src="${f.data}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer" onclick="openPhoto('${f.data}','${f.name}')"><button onclick="removeClientFile(${i})" style="position:absolute;top:-4px;right:-4px;background:#e53;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer">✕</button></div>`:
-        `<div style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;display:inline-flex;align-items:center;gap:8px;margin-right:8px"><a href="${f.data}" download="${f.name}" style="color:var(--charcoal);text-decoration:none">📄 ${f.name}</a><button onclick="removeClientFile(${i})" style="background:none;border:none;color:#e53;cursor:pointer">✕</button></div>`
-      ).join('');
-  } else {
-    cfe.innerHTML='';
-  }
-}
-function showClientDetailByName(name){
-  const c=clients.find(x=>x.name===name);
-  if(c) showClientDetail(c.id);
-}
-function cdEdit(){
-  const id=document.getElementById('client-detail-overlay').dataset.clientId;
-  document.getElementById('client-detail-overlay').style.display='none';
-  editClient(id);
-}
-function cdDelete(){
-  const id=document.getElementById('client-detail-overlay').dataset.clientId;
-  const c=clients.find(x=>String(x.id)===String(id));
-  if(!c)return;
-  document.getElementById('client-detail-overlay').style.display='none';
-  confirmDelete('client',id,c.name);
-}
+function showClientDetailByName(name){const c=clients.find(x=>x.name===name);if(c)showClientDetail(c.id);}
+function cdEdit(){const id=document.getElementById('client-detail-overlay').dataset.clientId;document.getElementById('client-detail-overlay').style.display='none';editClient(id);}
+function cdDelete(){const id=document.getElementById('client-detail-overlay').dataset.clientId;const c=clients.find(x=>String(x.id)===String(id));if(!c)return;document.getElementById('client-detail-overlay').style.display='none';confirmDelete('client',id,c.name);}
+function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
-
 </script>
 </body>
 </html>
