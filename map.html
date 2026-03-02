@@ -128,8 +128,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 
 @media(max-width:768px){
   .side{display:none}
-  .list-toggle{display:flex}
+  .list-toggle{display:flex;bottom:28px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 40px)}
   .topbar{padding:0 12px}
+  .filters{scrollbar-width:none;padding:8px 10px;gap:5px}
+  .filters .btn{flex-shrink:0;padding:7px 11px;font-size:12px;white-space:nowrap}
 }
 </style>
 </head>
