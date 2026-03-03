@@ -37,7 +37,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;min-width:0}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -571,6 +571,12 @@ let revenueChart=null;
 // ── BOOT ──
 async function boot(){
   try {
+    // Let Supabase process any auth token in the URL hash first
+    if(window.location.hash&&window.location.hash.includes('access_token')){
+      await sb.auth.getSession(); // triggers hash processing
+      // Clean the URL
+      history.replaceState(null,'',window.location.pathname);
+    }
     const{data:{session}}=await sb.auth.getSession();
     const h=new Date().getHours();
     document.getElementById('greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
@@ -580,8 +586,11 @@ async function boot(){
       document.getElementById('user-email').textContent=email;
       document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
     } else {
-      document.getElementById('user-email').textContent='Guest';
-      document.getElementById('user-av').textContent='G';
+      // No session — redirect to login on production
+      const isLocal=window.location.protocol==='file:'||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1';
+      if(!isLocal){window.location.href='/login.html';return;}
+      document.getElementById('user-email').textContent='Local Preview';
+      document.getElementById('user-av').textContent='LP';
     }
     await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
     renderClients();renderJobs();renderInvoices();renderDashboard();
