@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -143,7 +144,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}
-  .main{margin-left:0}
+  .main{margin-left:0;width:100%}
   .menu-btn{display:flex}
   .topbar{padding:0 14px}
   .topbar-date{display:none}
@@ -209,6 +210,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="main">
 
 <!-- DASHBOARD VIEW -->
+
 <div id="view-dashboard" class="view active">
   <div class="topbar">
     <div class="topbar-left">
@@ -246,7 +248,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <div class="panel">
         <div class="panel-head">
           <div style="display:flex;align-items:center;gap:8px">
-            <div class="panel-title">🔁 Follow-ups</div>
+            <div class="panel-title">&#128260; Follow-ups</div>
             <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
           </div>
         </div>
@@ -273,6 +275,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- CLIENTS VIEW -->
+
 <div id="view-clients" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -289,6 +292,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- JOBS VIEW -->
+
 <div id="view-jobs" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -305,6 +309,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- INVOICES VIEW -->
+
 <div id="view-invoices" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -320,8 +325,8 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   </div>
 </div>
 
-
 <!-- QUOTES VIEW -->
+
 <div id="view-quotes" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -349,9 +354,10 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div><!-- end #app -->
 
 <!-- CONFIRM DELETE -->
+
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    <div style="font-size:32px;margin-bottom:12px">??️</div>
+    <div style="font-size:32px;margin-bottom:12px">🗑️</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:8px">Are you sure?</div>
     <div id="confirm-msg" style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5">This cannot be undone.</div>
     <div style="display:flex;gap:10px">
@@ -362,6 +368,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- PAY CONFIRM -->
+
 <div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:24px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <div style="font-size:36px;margin-bottom:12px">✅</div>
@@ -370,13 +377,14 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div id="pay-confirm-client" style="font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">—</div>
     <div id="pay-confirm-amount" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--green);margin-bottom:24px">$0</div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none">?? Yes — Payment Received</button>
+      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none">💰 Yes — Payment Received</button>
       <button onclick="completeJobWithPayment(false)" style="width:100%;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Not Yet — Keep Invoice Pending</button>
     </div>
   </div>
 </div>
 
 <!-- JOB DETAIL -->
+
 <div id="job-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border)">
@@ -404,6 +412,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- CLIENT DETAIL -->
+
 <div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:24px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
     <div style="display:flex;align-items:center;gap:14px;padding:20px 20px 14px;border-bottom:1px solid var(--border)">
@@ -436,6 +445,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- CLIENT MODAL -->
+
 <div class="overlay" id="m-client">
   <div class="modal">
     <div class="modal-title" id="client-modal-title">Add Client</div>
@@ -494,6 +504,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- JOB MODAL -->
+
 <div class="overlay" id="m-job">
   <div class="modal">
     <div class="modal-title" id="job-modal-title">Add Job</div>
@@ -519,6 +530,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- INVOICE MODAL -->
+
 <div class="overlay" id="m-invoice">
   <div class="modal">
     <div class="modal-title" id="invoice-modal-title">New Invoice</div>
@@ -550,6 +562,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- PHOTO VIEWER -->
+
 <div id="photo-viewer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:900;align-items:center;justify-content:center;flex-direction:column" onclick="document.getElementById('photo-viewer').style.display='none'">
   <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300">✕</div>
   <img id="photo-viewer-img" src="" style="max-width:95vw;max-height:85vh;object-fit:contain;border-radius:8px">
@@ -680,12 +693,12 @@ function renderDashboard(){
   const banner=document.getElementById('onboarding-banner');
   if(banner && clients.length===0){
     banner.innerHTML=`<div class="onboarding">
-      <div class="ob-title">Welcome to Resurfr ??</div>
+      <div class="ob-title">Welcome to Resurfr &#128075;</div>
       <div class="ob-sub">You're all set. Let's add your first client and get your business organized.</div>
       <div class="ob-steps">
-        <div class="ob-step" onclick="openModal('client')"><div class="ob-step-icon">??</div><div><div class="ob-step-text">Add your first client</div><div class="ob-step-sub">Name, location, service type</div></div></div>
-        <div class="ob-step" onclick="openModal('job')"><div class="ob-step-icon">??</div><div><div class="ob-step-text">Schedule a job</div><div class="ob-step-sub">Service, date, amount</div></div></div>
-        <div class="ob-step" onclick="openModal('invoice')"><div class="ob-step-icon">??</div><div><div class="ob-step-text">Create your first invoice</div><div class="ob-step-sub">Track payments and revenue</div></div></div>
+        <div class="ob-step" onclick="openModal('client')"><div class="ob-step-icon">&#128100;</div><div><div class="ob-step-text">Add your first client</div><div class="ob-step-sub">Name, location, service type</div></div></div>
+        <div class="ob-step" onclick="openModal('job')"><div class="ob-step-icon">&#128295;</div><div><div class="ob-step-text">Schedule a job</div><div class="ob-step-sub">Service, date, amount</div></div></div>
+        <div class="ob-step" onclick="openModal('invoice')"><div class="ob-step-icon">&#128176;</div><div><div class="ob-step-text">Create your first invoice</div><div class="ob-step-sub">Track payments and revenue</div></div></div>
       </div>
     </div>`;
   } else if(banner) {
@@ -815,7 +828,7 @@ function renderInvoices(){
 
 async function markPaid(id){
   await sb.from('invoices').update({status:'paid'}).eq('id',id);
-  toast('Invoice marked as paid! ??','ok');
+  toast('Invoice marked as paid! ✓','ok');
   await loadInvoices();renderDashboard();
 }
 
@@ -896,7 +909,7 @@ async function completeJobWithPayment(paid){
     const inv=invoices.filter(i=>String(i.client_id)===String(j.client_id)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
     if(inv) await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
   }
-  toast(paid?'Job complete & payment recorded! ??':'Job complete — invoice still pending.','ok');
+  toast(paid?'Job complete & payment recorded! ✓':'Job complete — invoice still pending.','ok');
   await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
 }
 
@@ -1130,7 +1143,7 @@ async function qaFinish(saveJob,saveInvoice){
   }
   if(btn)btn.disabled=false;
   closeModal('client');qaJobSaved=false;
-  toast('All saved! ??','ok');
+  toast('All saved! ✓','ok');
   await loadClients();await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
 }
 
@@ -1216,5 +1229,6 @@ function cdDelete(){const id=document.getElementById('client-detail-overlay').da
 function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 </script>
+
 </body>
 </html>
