@@ -165,7 +165,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+    <div class="logo-icon" style="background:var(--yellow);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#181C17;letter-spacing:-1px">R</div>
     <span class="logo-text">Resurfr</span>
   </div>
   <div class="sidebar-section">Main</div>
@@ -239,7 +239,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
           </div>
           <button class="panel-link" onclick="nav('jobs',null)">View all</button>
         </div>
-        <div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <div id="d-upcoming"><div></div></div>
       </div>
       <div class="panel">
         <div class="panel-head">
@@ -248,15 +248,15 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
             <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
           </div>
         </div>
-        <div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <div id="d-alerts"><div></div></div>
       </div>
       <div class="panel">
         <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
-        <div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <div id="d-completed"><div></div></div>
       </div>
       <div class="panel">
         <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
-        <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+        <div id="d-clients"><div></div></div>
       </div>
     </div>
     <div class="panel">
@@ -282,7 +282,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
   <div class="content" style="padding:0">
-    <div id="clients-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    <div id="clients-list"><div></div></div>
   </div>
 </div>
 
@@ -298,7 +298,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
   <div class="content" style="padding:0">
-    <div id="jobs-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    <div id="jobs-list"><div></div></div>
   </div>
 </div>
 
@@ -314,7 +314,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
   <div class="content" style="padding:0">
-    <div id="invoices-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    <div id="invoices-list"><div></div></div>
   </div>
 </div>
 
@@ -545,23 +545,22 @@ let revenueChart=null;
 // ── BOOT ──
 async function boot(){
   try {
-    const{data:{session}}=await sb.auth.getSession();
-    if(!session){
-      document.getElementById('loading-screen').style.display='none';
-      document.getElementById('app').style.display='block';
-      return;
-    }
-    const email=session.user.email;
-    document.getElementById('user-email').textContent=email;
-    document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
     const h=new Date().getHours();
     document.getElementById('greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
     document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-    await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+    const{data:{session}}=await sb.auth.getSession();
+    if(session){
+      const email=session.user.email;
+      document.getElementById('user-email').textContent=email;
+      document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
+      await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
+    }
     renderClients();renderJobs();renderInvoices();renderDashboard();
     loadServiceAlerts();
   } catch(e) {
     console.error('Boot error:',e);
+    renderClients();renderJobs();renderInvoices();renderDashboard();
+    loadServiceAlerts();
   } finally {
     document.getElementById('loading-screen').style.display='none';
     document.getElementById('app').style.display='block';
