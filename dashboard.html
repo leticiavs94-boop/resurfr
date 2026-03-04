@@ -965,13 +965,23 @@ let revenueChart=null;
 // ── BOOT ──
 async function boot(){
   try {
-    // Let Supabase process any auth token in the URL hash first
+    // Handle email magic link / token in URL hash
     if(window.location.hash&&window.location.hash.includes('access_token')){
-      await sb.auth.getSession(); // triggers hash processing
-      // Clean the URL
+      await sb.auth.getSession();
       history.replaceState(null,'',window.location.pathname);
     }
-    const{data:{session}}=await sb.auth.getSession();
+    // getSession with 5s timeout — prevents infinite spinner if Supabase hangs
+    const sessionResult = await Promise.race([
+      sb.auth.getSession(),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),5000))
+    ]).catch(()=>({data:{session:null}}));
+    const session = sessionResult?.data?.session;
+    const isLocal=window.location.protocol==='file:'||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1';
+    if(!session&&!isLocal){
+      document.getElementById('loading-screen').style.display='none';
+      window.location.href='/login.html';
+      return;
+    }
     const h=new Date().getHours();
     document.getElementById('greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
     document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
