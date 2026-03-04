@@ -6,8 +6,668 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resurfr — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ══════════════════════════════════════════
+// QUOTES MODULE
+// ══════════════════════════════════════════
+let quotes = [];
+let editingQuoteId = null;
+
+async function loadQuotes() {
+const { data } = await sb.from(‘quotes’).select(’*’).order(‘created_at’, { ascending: false });
+quotes = (data || []).map(q => ({
+…q,
+lines: typeof q.lines === ‘string’ ? JSON.parse(q.lines) : (q.lines || [])
+}));
+const nb = document.getElementById(‘nb-quotes’);
+const pending = quotes.filter(q => q.status === ‘draft’ || q.status === ‘sent’).length;
+if (nb) { nb.textContent = pending; nb.style.display = pending ? ‘inline’ : ‘none’; }
+}
+
+function calcQ(q) {
+const s = q.lines.reduce((a, l) => a + (l.q * l.p), 0);
+const t = s * ((q.tax || 0) / 100);
+return { s, t, total: s + t };
+}
+
+function qbadge(st) {
+const m = {
+draft: [’#9CA3AF’, ‘#F3F4F6’, ‘Draft’],
+sent: [’#2563EB’, ‘#EFF6FF’, ‘Sent’],
+approved: [’#16A34A’, ‘#F0FDF4’, ‘✓ Approved’],
+declined: [’#DC2626’, ‘#FEF2F2’, ‘Declined’],
+converted: [’#7C3AED’, ‘#F5F3FF’, ‘→ Job Created’]
+};
+const [color, bg, lbl] = m[st] || m.draft;
+return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
+}
+
+function renderQuotesPipe() {
+const el = document.getElementById(‘q-pipe’);
+if (!el) return;
+const stages = [
+{ key: ‘draft’, label: ‘Draft’, color: ‘#9CA3AF’ },
+{ key: ‘sent’, label: ‘Sent’, color: ‘#2563EB’ },
+{ key: ‘approved’, label: ‘Approved’, color: ‘#16A34A’ },
+{ key: ‘converted’, label: ‘Converted’, color: ‘#7C3AED’ }
+];
+el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">` +
+stages.map(s => {
+const qs = quotes.filter(q => q.status === s.key);
+const val = qs.reduce((a, q) => a + calcQ(q).total, 0);
+return `<div class="pipe-card pipe-${s.key}" style="cursor:pointer" onclick="filterQuotes('${s.key}')"> <div class="pipe-n">${qs.length}</div> <div class="pipe-l">${s.label}</div> <div class="pipe-v">$${val.toLocaleString()}</div> </div>`;
+}).join(’’) + `</div>`;
+}
+
+function renderQuotesTable(filter = ‘all’) {
+const filtered = filter === ‘all’ ? quotes : quotes.filter(q => q.status === filter);
+
+// Filters
+const filtersEl = document.getElementById(‘q-filters’);
+if (filtersEl) {
+const counts = {};
+[‘all’,‘draft’,‘sent’,‘approved’,‘converted’,‘declined’].forEach(k => {
+counts[k] = k === ‘all’ ? quotes.length : quotes.filter(q=>q.status===k).length;
+});
+filtersEl.innerHTML = [‘all’,‘draft’,‘sent’,‘approved’,‘converted’,‘declined’].map(k =>
+`<button onclick="renderQuotesTable('${k}')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid ${filter===k?'var(--green)':'var(--border)'};background:${filter===k?'var(--green)':'white'};color:${filter===k?'white':'var(--muted)'}">${k==='all'?'All':k.charAt(0).toUpperCase()+k.slice(1)} (${counts[k]})</button>`
+).join(’’);
+}
+
+const fmt = d => d ? new Date(d).toLocaleDateString(‘en-US’, { month: ‘short’, day: ‘numeric’, year: ‘numeric’ }) : ‘—’;
+
+// Desktop table
+const tbody = document.getElementById(‘q-tbody’);
+if (tbody) {
+tbody.innerHTML = filtered.length === 0
+? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet — tap "New Quote" to create one</td></tr>`
+: filtered.map(q => {
+const { total } = calcQ(q);
+return `<tr> <td><strong style="color:var(--green)">${q.client_name || '—'}</strong></td> <td>${q.title || '—'}</td> <td><strong>$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></td> <td>${fmt(q.created_at)}</td> <td>${qbadge(q.status)}</td> <td><div class="row-actions"> <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button> <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button> ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="sendQuoteById('${q.id}')">Send</button>`: ''} ${q.status === 'sent' || q.status === 'approved' ?`<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>`: ''} ${q.status === 'approved' ?`<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''} <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button> </div></td> </tr>`;
+}).join(’’);
+}
+
+// Mobile cards
+const cardsEl = document.getElementById(‘q-cards’);
+if (cardsEl) {
+cardsEl.innerHTML = filtered.length === 0 ? ‘’ : filtered.map(q => {
+const { total } = calcQ(q);
+return `<div class="m-card"> <div class="m-card-top"><div class="m-card-name">${q.client_name || '—'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div> <div class="m-card-meta">${q.title || '—'} · ${fmt(q.created_at)}</div> <div class="m-card-tags">${qbadge(q.status)}</div> <div class="m-card-actions"> <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button> <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button> ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''} <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button> </div> </div>`;
+}).join(’’);
+}
+}
+
+function filterQuotes(status) {
+nav(‘quotes’, null);
+renderQuotesTable(status);
+}
+
+function openQuoteModal(clientName) {
+editingQuoteId = null;
+document.getElementById(‘modal-title’).textContent = ‘New Quote’;
+document.getElementById(‘nq-client’).value = clientName || ‘’;
+document.getElementById(‘nq-title’).value = ‘’;
+document.getElementById(‘nq-tax’).value = ‘0’;
+document.getElementById(‘nq-notes’).value = ‘’;
+document.getElementById(‘nq-valid’).value = ‘’;
+// Populate client dropdown
+const sel = document.getElementById(‘nq-client’);
+if (sel && sel.tagName === ‘SELECT’) {
+sel.innerHTML = ‘<option value="">Select client</option>’ + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join(’’);
+}
+// Reset line items
+document.getElementById(‘line-items’).innerHTML = ` <div class="li-row" data-idx="0"> <input class="fi li-desc" placeholder="Description" value=""> <input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"> <input class="fi li-price" type="number" placeholder="Unit price" value="" oninput="recalcQuote()"> <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button> </div>`;
+recalcQuote();
+document.getElementById(‘nq-overlay’).style.display = ‘flex’;
+}
+
+function closeQuoteModal() {
+document.getElementById(‘nq-overlay’).style.display = ‘none’;
+editingQuoteId = null;
+}
+
+function editQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+editingQuoteId = id;
+document.getElementById(‘modal-title’).textContent = ‘Edit Quote’;
+document.getElementById(‘nq-client’).value = q.client_name || ‘’;
+document.getElementById(‘nq-title’).value = q.title || ‘’;
+document.getElementById(‘nq-tax’).value = q.tax || 0;
+document.getElementById(‘nq-notes’).value = q.notes || ‘’;
+document.getElementById(‘nq-valid’).value = q.valid_until || ‘’;
+// Line items
+const lines = q.lines || [];
+document.getElementById(‘line-items’).innerHTML = lines.map((l, i) => ` <div class="li-row" data-idx="${i}"> <input class="fi li-desc" placeholder="Description" value="${l.d || ''}"> <input class="fi li-qty" type="number" placeholder="Qty" value="${l.q || 1}" oninput="recalcQuote()"> <input class="fi li-price" type="number" placeholder="Unit price" value="${l.p || ''}" oninput="recalcQuote()"> <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button> </div>`).join(’’) || `<div class="li-row"><input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button></div>`;
+recalcQuote();
+document.getElementById(‘nq-overlay’).style.display = ‘flex’;
+}
+
+function addQuoteLine() {
+const container = document.getElementById(‘line-items’);
+const row = document.createElement(‘div’);
+row.className = ‘li-row’;
+row.innerHTML = `<input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>`;
+container.appendChild(row);
+}
+
+function recalcQuote() {
+let sub = 0;
+document.querySelectorAll(’.li-row’).forEach(row => {
+const q = parseFloat(row.querySelector(’.li-qty’)?.value) || 0;
+const p = parseFloat(row.querySelector(’.li-price’)?.value) || 0;
+sub += q * p;
+});
+const tax = parseFloat(document.getElementById(‘nq-tax’)?.value) || 0;
+const taxAmt = sub * (tax / 100);
+const total = sub + taxAmt;
+const fmt = n => ‘$’ + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const subEl = document.getElementById(‘nq-subtotal’);
+const taxEl = document.getElementById(‘nq-taxamt’);
+const totEl = document.getElementById(‘nq-total’);
+if (subEl) subEl.textContent = fmt(sub);
+if (taxEl) taxEl.textContent = fmt(taxAmt);
+if (totEl) totEl.textContent = fmt(total);
+}
+
+function getQuoteLines() {
+const lines = [];
+document.querySelectorAll(’.li-row’).forEach(row => {
+const d = row.querySelector(’.li-desc’)?.value.trim();
+const q = parseFloat(row.querySelector(’.li-qty’)?.value) || 0;
+const p = parseFloat(row.querySelector(’.li-price’)?.value) || 0;
+if (d || p) lines.push({ d, q, p });
+});
+return lines;
+}
+
+async function saveQuote() {
+const clientName = document.getElementById(‘nq-client’).value.trim();
+const title = document.getElementById(‘nq-title’).value.trim();
+if (!clientName || !title) { toast(‘Enter a client and title’); return; }
+const lines = getQuoteLines();
+if (lines.length === 0) { toast(‘Add at least one line item’); return; }
+const payload = {
+client_name: clientName,
+title,
+lines: JSON.stringify(lines),
+tax: parseFloat(document.getElementById(‘nq-tax’).value) || 0,
+notes: document.getElementById(‘nq-notes’).value.trim() || null,
+valid_until: document.getElementById(‘nq-valid’).value || null,
+status: editingQuoteId ? undefined : ‘draft’
+};
+if (editingQuoteId) delete payload.status;
+let error;
+if (editingQuoteId) {
+({ error } = await sb.from(‘quotes’).update(payload).eq(‘id’, editingQuoteId));
+} else {
+({ error } = await sb.from(‘quotes’).insert({ …payload, status: ‘draft’ }));
+}
+if (error) { toast(’Error: ’ + error.message); return; }
+closeQuoteModal();
+toast(editingQuoteId ? ‘Quote updated! ✓’ : ‘Quote created! ✓’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+}
+
+async function saveAndPreviewQuote() {
+await saveQuote();
+// Find the most recently saved quote and preview it
+await loadQuotes();
+if (quotes.length > 0) previewQuote(quotes[0].id);
+}
+
+function previewQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+const { s, t, total } = calcQ(q);
+const fmt = n => ‘$’ + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const qpBody = document.getElementById(‘qp-body’);
+if (!qpBody) return;
+
+const lines = q.lines || [];
+qpBody.innerHTML = `<div class="qp-bar" style="background:linear-gradient(135deg,var(--green),#2A6B47)"> <div class="qp-brand">Resurfr</div> <div class="qp-num">ESTIMATE #${String(q.id).slice(-4).toUpperCase()}</div> </div> <div class="qp-head"> <div class="qp-bills"> <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">Your Business</div></div> <div class="qp-bill"><div class="qp-bill-lbl">TO</div><div class="qp-bill-name">${q.client_name}</div></div> </div> <div class="qp-meta"> <div><span class="qp-bill-lbl">Date</span><br>${new Date(q.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div> ${q.valid_until ?`<div><span class="qp-bill-lbl">Valid Until</span><br>${new Date(q.valid_until+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’})}</div>`: ''} </div> </div> <div class="qp-body-inner" style="padding:0 24px"> <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin:16px 0 10px">${q.title}</div> <table class="qp-tbl"> <thead><tr><th style="text-align:left">Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead> <tbody>${lines.map(l =>`<tr><td>${l.d}</td><td style="text-align:center">${l.q}</td><td style="text-align:right">${fmt(l.p)}</td><td style="text-align:right">${fmt(l.q*l.p)}</td></tr>`).join('')}</tbody> </table> <div class="qp-tots"> <div class="qp-tots-inner"> <div class="qp-tot-row"><span>Subtotal</span><span>${fmt(s)}</span></div> ${q.tax ? `<div class="qp-tot-row"><span>Tax (${q.tax}%)</span><span>${fmt(t)}</span></div>`: ''} <div class="qp-tot-row" style="font-size:18px;font-weight:800;color:var(--charcoal);border-top:2px solid var(--border);padding-top:10px;margin-top:6px"><span>Total</span><span>${fmt(total)}</span></div> </div> </div> ${q.notes ?`<div class="qp-note-box">${q.notes}</div>`: ''} ${q.status === 'sent' || q.status === 'approved' ?`
+<div style="margin:20px 0;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
+<div style="font-size:13px;color:#166534;margin-bottom:12px;font-weight:600">Client Approval</div>
+${q.status === ‘approved’
+? `<div style="font-size:24px;margin-bottom:6px">✓</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
+: `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Approve This Quote</button>`
+}
+</div>`: ''} ${q.status === 'approved' ?`
+<div style="text-align:center;padding:16px 0">
+<button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">→ Convert to Job</button>
+</div>` : ''} </div> <div class="qp-footer">Generated by Resurfr · getresurfr.netlify.app</div>`;
+
+document.getElementById(‘nq-overlay’).style.display = ‘none’;
+document.getElementById(‘qp-wrap’).style.display = ‘flex’;
+document.getElementById(‘qp-wrap’).dataset.quoteId = id;
+}
+
+function closePreview() {
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+}
+
+async function sendQuote() {
+// Called from save+preview flow
+const id = document.getElementById(‘qp-wrap’)?.dataset.quoteId;
+if (id) await sendQuoteById(id);
+}
+
+async function sendQuoteById(id) {
+await sb.from(‘quotes’).update({ status: ‘sent’ }).eq(‘id’, id);
+toast(‘Quote marked as sent! ✉️’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+}
+
+async function approveQuote(id) {
+await sb.from(‘quotes’).update({ status: ‘approved’ }).eq(‘id’, id);
+toast(‘Quote approved! ✓’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+// Refresh preview if open
+const wrap = document.getElementById(‘qp-wrap’);
+if (wrap && wrap.style.display !== ‘none’) previewQuote(id);
+}
+
+async function convertQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+const { total } = calcQ(q);
+// Find client id
+const client = clients.find(c => c.name === q.client_name);
+if (client) {
+// Create job
+const { data: job } = await sb.from(‘jobs’).insert({
+client_id: client.id,
+service: q.title,
+amount: total,
+status: ‘scheduled’,
+date: new Date().toISOString().split(‘T’)[0],
+notes: `Converted from quote: ${q.title}`
+}).select().single();
+// Create invoice
+if (job) {
+await sb.from(‘invoices’).insert({
+client_id: client.id,
+amount: total,
+status: ‘pending’,
+issued_date: new Date().toISOString().split(‘T’)[0],
+notes: `From quote: ${q.title}`
+});
+}
+}
+// Mark quote as converted
+await sb.from(‘quotes’).update({ status: ‘converted’ }).eq(‘id’, id);
+toast(‘Quote converted to job + invoice! 🎉’);
+await loadQuotes();
+await loadJobs();
+await loadInvoices();
+renderQuotesPipe();
+renderQuotesTable();
+renderDashboard();
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+nav(‘jobs’, null);
+}
+
+async function deleteQuote(id) {
+if (!confirm(‘Delete this quote?’)) return;
+await sb.from(‘quotes’).delete().eq(‘id’, id);
+toast(‘Deleted’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+}
+
+function renderDashQuotes() {
+// Show recent quotes on dashboard if any
+const recent = quotes.filter(q => q.status === ‘draft’ || q.status === ‘sent’).slice(0, 3);
+const el = document.getElementById(‘d-quotes’);
+if (!el) return;
+el.innerHTML = recent.length === 0
+? ‘<div class="empty">No pending quotes</div>’
+: recent.map(q => {
+const { total } = calcQ(q);
+return `<div class="c-row" style="cursor:pointer" onclick="previewQuote('${q.id}')"> <div style="flex:1;min-width:0"> <div class="c-name">${q.client_name || '—'}</div> <div class="c-meta">${q.title || '—'}</div> </div> <div style="display:flex;align-items:center;gap:8px;flex-shrink:0"> <div style="font-size:13px;font-weight:700">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div> ${qbadge(q.status)} </div> </div>`;
+}).join(’’);
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+// ══════════════════════════════════════════
+// QUOTES MODULE
+// ══════════════════════════════════════════
+let quotes = [];
+let editingQuoteId = null;
+
+async function loadQuotes() {
+const { data } = await sb.from(‘quotes’).select(’*’).order(‘created_at’, { ascending: false });
+quotes = (data || []).map(q => ({
+…q,
+lines: typeof q.lines === ‘string’ ? JSON.parse(q.lines) : (q.lines || [])
+}));
+const nb = document.getElementById(‘nb-quotes’);
+const pending = quotes.filter(q => q.status === ‘draft’ || q.status === ‘sent’).length;
+if (nb) { nb.textContent = pending; nb.style.display = pending ? ‘inline’ : ‘none’; }
+}
+
+function calcQ(q) {
+const s = q.lines.reduce((a, l) => a + (l.q * l.p), 0);
+const t = s * ((q.tax || 0) / 100);
+return { s, t, total: s + t };
+}
+
+function qbadge(st) {
+const m = {
+draft: [’#9CA3AF’, ‘#F3F4F6’, ‘Draft’],
+sent: [’#2563EB’, ‘#EFF6FF’, ‘Sent’],
+approved: [’#16A34A’, ‘#F0FDF4’, ‘✓ Approved’],
+declined: [’#DC2626’, ‘#FEF2F2’, ‘Declined’],
+converted: [’#7C3AED’, ‘#F5F3FF’, ‘→ Job Created’]
+};
+const [color, bg, lbl] = m[st] || m.draft;
+return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
+}
+
+function renderQuotesPipe() {
+const el = document.getElementById(‘q-pipe’);
+if (!el) return;
+const stages = [
+{ key: ‘draft’, label: ‘Draft’, color: ‘#9CA3AF’ },
+{ key: ‘sent’, label: ‘Sent’, color: ‘#2563EB’ },
+{ key: ‘approved’, label: ‘Approved’, color: ‘#16A34A’ },
+{ key: ‘converted’, label: ‘Converted’, color: ‘#7C3AED’ }
+];
+el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">` +
+stages.map(s => {
+const qs = quotes.filter(q => q.status === s.key);
+const val = qs.reduce((a, q) => a + calcQ(q).total, 0);
+return `<div class="pipe-card pipe-${s.key}" style="cursor:pointer" onclick="filterQuotes('${s.key}')"> <div class="pipe-n">${qs.length}</div> <div class="pipe-l">${s.label}</div> <div class="pipe-v">$${val.toLocaleString()}</div> </div>`;
+}).join(’’) + `</div>`;
+}
+
+function renderQuotesTable(filter = ‘all’) {
+const filtered = filter === ‘all’ ? quotes : quotes.filter(q => q.status === filter);
+
+// Filters
+const filtersEl = document.getElementById(‘q-filters’);
+if (filtersEl) {
+const counts = {};
+[‘all’,‘draft’,‘sent’,‘approved’,‘converted’,‘declined’].forEach(k => {
+counts[k] = k === ‘all’ ? quotes.length : quotes.filter(q=>q.status===k).length;
+});
+filtersEl.innerHTML = [‘all’,‘draft’,‘sent’,‘approved’,‘converted’,‘declined’].map(k =>
+`<button onclick="renderQuotesTable('${k}')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid ${filter===k?'var(--green)':'var(--border)'};background:${filter===k?'var(--green)':'white'};color:${filter===k?'white':'var(--muted)'}">${k==='all'?'All':k.charAt(0).toUpperCase()+k.slice(1)} (${counts[k]})</button>`
+).join(’’);
+}
+
+const fmt = d => d ? new Date(d).toLocaleDateString(‘en-US’, { month: ‘short’, day: ‘numeric’, year: ‘numeric’ }) : ‘—’;
+
+// Desktop table
+const tbody = document.getElementById(‘q-tbody’);
+if (tbody) {
+tbody.innerHTML = filtered.length === 0
+? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet — tap "New Quote" to create one</td></tr>`
+: filtered.map(q => {
+const { total } = calcQ(q);
+return `<tr> <td><strong style="color:var(--green)">${q.client_name || '—'}</strong></td> <td>${q.title || '—'}</td> <td><strong>$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></td> <td>${fmt(q.created_at)}</td> <td>${qbadge(q.status)}</td> <td><div class="row-actions"> <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button> <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button> ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="sendQuoteById('${q.id}')">Send</button>`: ''} ${q.status === 'sent' || q.status === 'approved' ?`<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>`: ''} ${q.status === 'approved' ?`<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''} <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button> </div></td> </tr>`;
+}).join(’’);
+}
+
+// Mobile cards
+const cardsEl = document.getElementById(‘q-cards’);
+if (cardsEl) {
+cardsEl.innerHTML = filtered.length === 0 ? ‘’ : filtered.map(q => {
+const { total } = calcQ(q);
+return `<div class="m-card"> <div class="m-card-top"><div class="m-card-name">${q.client_name || '—'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div> <div class="m-card-meta">${q.title || '—'} · ${fmt(q.created_at)}</div> <div class="m-card-tags">${qbadge(q.status)}</div> <div class="m-card-actions"> <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button> <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button> ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''} <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button> </div> </div>`;
+}).join(’’);
+}
+}
+
+function filterQuotes(status) {
+nav(‘quotes’, null);
+renderQuotesTable(status);
+}
+
+function openQuoteModal(clientName) {
+editingQuoteId = null;
+document.getElementById(‘modal-title’).textContent = ‘New Quote’;
+document.getElementById(‘nq-client’).value = clientName || ‘’;
+document.getElementById(‘nq-title’).value = ‘’;
+document.getElementById(‘nq-tax’).value = ‘0’;
+document.getElementById(‘nq-notes’).value = ‘’;
+document.getElementById(‘nq-valid’).value = ‘’;
+// Populate client dropdown
+const sel = document.getElementById(‘nq-client’);
+if (sel && sel.tagName === ‘SELECT’) {
+sel.innerHTML = ‘<option value="">Select client</option>’ + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join(’’);
+}
+// Reset line items
+document.getElementById(‘line-items’).innerHTML = ` <div class="li-row" data-idx="0"> <input class="fi li-desc" placeholder="Description" value=""> <input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"> <input class="fi li-price" type="number" placeholder="Unit price" value="" oninput="recalcQuote()"> <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button> </div>`;
+recalcQuote();
+document.getElementById(‘nq-overlay’).style.display = ‘flex’;
+}
+
+function closeQuoteModal() {
+document.getElementById(‘nq-overlay’).style.display = ‘none’;
+editingQuoteId = null;
+}
+
+function editQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+editingQuoteId = id;
+document.getElementById(‘modal-title’).textContent = ‘Edit Quote’;
+document.getElementById(‘nq-client’).value = q.client_name || ‘’;
+document.getElementById(‘nq-title’).value = q.title || ‘’;
+document.getElementById(‘nq-tax’).value = q.tax || 0;
+document.getElementById(‘nq-notes’).value = q.notes || ‘’;
+document.getElementById(‘nq-valid’).value = q.valid_until || ‘’;
+// Line items
+const lines = q.lines || [];
+document.getElementById(‘line-items’).innerHTML = lines.map((l, i) => ` <div class="li-row" data-idx="${i}"> <input class="fi li-desc" placeholder="Description" value="${l.d || ''}"> <input class="fi li-qty" type="number" placeholder="Qty" value="${l.q || 1}" oninput="recalcQuote()"> <input class="fi li-price" type="number" placeholder="Unit price" value="${l.p || ''}" oninput="recalcQuote()"> <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button> </div>`).join(’’) || `<div class="li-row"><input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button></div>`;
+recalcQuote();
+document.getElementById(‘nq-overlay’).style.display = ‘flex’;
+}
+
+function addQuoteLine() {
+const container = document.getElementById(‘line-items’);
+const row = document.createElement(‘div’);
+row.className = ‘li-row’;
+row.innerHTML = `<input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>`;
+container.appendChild(row);
+}
+
+function recalcQuote() {
+let sub = 0;
+document.querySelectorAll(’.li-row’).forEach(row => {
+const q = parseFloat(row.querySelector(’.li-qty’)?.value) || 0;
+const p = parseFloat(row.querySelector(’.li-price’)?.value) || 0;
+sub += q * p;
+});
+const tax = parseFloat(document.getElementById(‘nq-tax’)?.value) || 0;
+const taxAmt = sub * (tax / 100);
+const total = sub + taxAmt;
+const fmt = n => ‘$’ + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const subEl = document.getElementById(‘nq-subtotal’);
+const taxEl = document.getElementById(‘nq-taxamt’);
+const totEl = document.getElementById(‘nq-total’);
+if (subEl) subEl.textContent = fmt(sub);
+if (taxEl) taxEl.textContent = fmt(taxAmt);
+if (totEl) totEl.textContent = fmt(total);
+}
+
+function getQuoteLines() {
+const lines = [];
+document.querySelectorAll(’.li-row’).forEach(row => {
+const d = row.querySelector(’.li-desc’)?.value.trim();
+const q = parseFloat(row.querySelector(’.li-qty’)?.value) || 0;
+const p = parseFloat(row.querySelector(’.li-price’)?.value) || 0;
+if (d || p) lines.push({ d, q, p });
+});
+return lines;
+}
+
+async function saveQuote() {
+const clientName = document.getElementById(‘nq-client’).value.trim();
+const title = document.getElementById(‘nq-title’).value.trim();
+if (!clientName || !title) { toast(‘Enter a client and title’); return; }
+const lines = getQuoteLines();
+if (lines.length === 0) { toast(‘Add at least one line item’); return; }
+const payload = {
+client_name: clientName,
+title,
+lines: JSON.stringify(lines),
+tax: parseFloat(document.getElementById(‘nq-tax’).value) || 0,
+notes: document.getElementById(‘nq-notes’).value.trim() || null,
+valid_until: document.getElementById(‘nq-valid’).value || null,
+status: editingQuoteId ? undefined : ‘draft’
+};
+if (editingQuoteId) delete payload.status;
+let error;
+if (editingQuoteId) {
+({ error } = await sb.from(‘quotes’).update(payload).eq(‘id’, editingQuoteId));
+} else {
+({ error } = await sb.from(‘quotes’).insert({ …payload, status: ‘draft’ }));
+}
+if (error) { toast(’Error: ’ + error.message); return; }
+closeQuoteModal();
+toast(editingQuoteId ? ‘Quote updated! ✓’ : ‘Quote created! ✓’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+}
+
+async function saveAndPreviewQuote() {
+await saveQuote();
+// Find the most recently saved quote and preview it
+await loadQuotes();
+if (quotes.length > 0) previewQuote(quotes[0].id);
+}
+
+function previewQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+const { s, t, total } = calcQ(q);
+const fmt = n => ‘$’ + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const qpBody = document.getElementById(‘qp-body’);
+if (!qpBody) return;
+
+const lines = q.lines || [];
+qpBody.innerHTML = `<div class="qp-bar" style="background:linear-gradient(135deg,var(--green),#2A6B47)"> <div class="qp-brand">Resurfr</div> <div class="qp-num">ESTIMATE #${String(q.id).slice(-4).toUpperCase()}</div> </div> <div class="qp-head"> <div class="qp-bills"> <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">Your Business</div></div> <div class="qp-bill"><div class="qp-bill-lbl">TO</div><div class="qp-bill-name">${q.client_name}</div></div> </div> <div class="qp-meta"> <div><span class="qp-bill-lbl">Date</span><br>${new Date(q.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div> ${q.valid_until ?`<div><span class="qp-bill-lbl">Valid Until</span><br>${new Date(q.valid_until+‘T00:00:00’).toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’})}</div>`: ''} </div> </div> <div class="qp-body-inner" style="padding:0 24px"> <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin:16px 0 10px">${q.title}</div> <table class="qp-tbl"> <thead><tr><th style="text-align:left">Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead> <tbody>${lines.map(l =>`<tr><td>${l.d}</td><td style="text-align:center">${l.q}</td><td style="text-align:right">${fmt(l.p)}</td><td style="text-align:right">${fmt(l.q*l.p)}</td></tr>`).join('')}</tbody> </table> <div class="qp-tots"> <div class="qp-tots-inner"> <div class="qp-tot-row"><span>Subtotal</span><span>${fmt(s)}</span></div> ${q.tax ? `<div class="qp-tot-row"><span>Tax (${q.tax}%)</span><span>${fmt(t)}</span></div>`: ''} <div class="qp-tot-row" style="font-size:18px;font-weight:800;color:var(--charcoal);border-top:2px solid var(--border);padding-top:10px;margin-top:6px"><span>Total</span><span>${fmt(total)}</span></div> </div> </div> ${q.notes ?`<div class="qp-note-box">${q.notes}</div>`: ''} ${q.status === 'sent' || q.status === 'approved' ?`
+<div style="margin:20px 0;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
+<div style="font-size:13px;color:#166534;margin-bottom:12px;font-weight:600">Client Approval</div>
+${q.status === ‘approved’
+? `<div style="font-size:24px;margin-bottom:6px">✓</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
+: `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Approve This Quote</button>`
+}
+</div>`: ''} ${q.status === 'approved' ?`
+<div style="text-align:center;padding:16px 0">
+<button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">→ Convert to Job</button>
+</div>` : ''} </div> <div class="qp-footer">Generated by Resurfr · getresurfr.netlify.app</div>`;
+
+document.getElementById(‘nq-overlay’).style.display = ‘none’;
+document.getElementById(‘qp-wrap’).style.display = ‘flex’;
+document.getElementById(‘qp-wrap’).dataset.quoteId = id;
+}
+
+function closePreview() {
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+}
+
+async function sendQuote() {
+// Called from save+preview flow
+const id = document.getElementById(‘qp-wrap’)?.dataset.quoteId;
+if (id) await sendQuoteById(id);
+}
+
+async function sendQuoteById(id) {
+await sb.from(‘quotes’).update({ status: ‘sent’ }).eq(‘id’, id);
+toast(‘Quote marked as sent! ✉️’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+}
+
+async function approveQuote(id) {
+await sb.from(‘quotes’).update({ status: ‘approved’ }).eq(‘id’, id);
+toast(‘Quote approved! ✓’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+// Refresh preview if open
+const wrap = document.getElementById(‘qp-wrap’);
+if (wrap && wrap.style.display !== ‘none’) previewQuote(id);
+}
+
+async function convertQuote(id) {
+const q = quotes.find(x => x.id == id);
+if (!q) return;
+const { total } = calcQ(q);
+// Find client id
+const client = clients.find(c => c.name === q.client_name);
+if (client) {
+// Create job
+const { data: job } = await sb.from(‘jobs’).insert({
+client_id: client.id,
+service: q.title,
+amount: total,
+status: ‘scheduled’,
+date: new Date().toISOString().split(‘T’)[0],
+notes: `Converted from quote: ${q.title}`
+}).select().single();
+// Create invoice
+if (job) {
+await sb.from(‘invoices’).insert({
+client_id: client.id,
+amount: total,
+status: ‘pending’,
+issued_date: new Date().toISOString().split(‘T’)[0],
+notes: `From quote: ${q.title}`
+});
+}
+}
+// Mark quote as converted
+await sb.from(‘quotes’).update({ status: ‘converted’ }).eq(‘id’, id);
+toast(‘Quote converted to job + invoice! 🎉’);
+await loadQuotes();
+await loadJobs();
+await loadInvoices();
+renderQuotesPipe();
+renderQuotesTable();
+renderDashboard();
+document.getElementById(‘qp-wrap’).style.display = ‘none’;
+nav(‘jobs’, null);
+}
+
+async function deleteQuote(id) {
+if (!confirm(‘Delete this quote?’)) return;
+await sb.from(‘quotes’).delete().eq(‘id’, id);
+toast(‘Deleted’);
+await loadQuotes();
+renderQuotesPipe();
+renderQuotesTable();
+}
+
+function renderDashQuotes() {
+// Show recent quotes on dashboard if any
+const recent = quotes.filter(q => q.status === ‘draft’ || q.status === ‘sent’).slice(0, 3);
+const el = document.getElementById(‘d-quotes’);
+if (!el) return;
+el.innerHTML = recent.length === 0
+? ‘<div class="empty">No pending quotes</div>’
+: recent.map(q => {
+const { total } = calcQ(q);
+return `<div class="c-row" style="cursor:pointer" onclick="previewQuote('${q.id}')"> <div style="flex:1;min-width:0"> <div class="c-name">${q.client_name || '—'}</div> <div class="c-meta">${q.title || '—'}</div> </div> <div style="display:flex;align-items:center;gap:8px;flex-shrink:0"> <div style="font-size:13px;font-weight:700">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div> ${qbadge(q.status)} </div> </div>`;
+}).join(’’);
+}
+
+</script>
 <style>
 :root{--yellow:#C8E62B;--green:#1E4D35;--off:#F4F6F1;--border:#E2E8DC;--charcoal:#181C17;--text:#1A1F18;--muted:#6B7A65;--lmuted:#9DAA96;--sw:240px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -155,6 +815,80 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .m-card{display:block}
   .row-actions{opacity:1}
 }
+
+/* ── QUOTES ── */
+.pipe-card{background:white;border:1px solid var(–border);border-radius:12px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.pipe-card::before{content:’’;position:absolute;top:0;left:0;right:0;height:3px;}
+.pipe-draft::before{background:#9CA3AF;}
+.pipe-sent::before{background:#2563EB;}
+.pipe-approved::before{background:#16A34A;}
+.pipe-converted::before{background:#7C3AED;}
+.pipe-n{font-family:‘Barlow Condensed’,sans-serif;font-size:36px;font-weight:900;color:var(–dark);line-height:1;}
+.pipe-l{font-size:11px;font-weight:700;color:var(–lm);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
+.pipe-v{font-size:12px;font-weight:600;margin-top:4px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:white;border-radius:16px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.3);}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(–border);}
+.mh-title{font-family:‘Barlow Condensed’,sans-serif;font-size:22px;font-weight:900;color:var(–dark);}
+.mx{background:none;border:none;cursor:pointer;font-size:20px;color:var(–lm);padding:4px 8px;border-radius:6px;line-height:1;}
+.mx:hover{background:var(–off);}
+.mbody{padding:24px;}
+.fg{margin-bottom:16px;}
+.fl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(–lm);margin-bottom:6px;display:block;}
+.fi{width:100%;padding:10px 12px;border:1px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:14px;color:var(–text);background:var(–off);transition:border-color .15s;}
+.fi:focus{outline:none;border-color:var(–g);background:white;}
+.fi-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.li-header{display:grid;grid-template-columns:1fr 80px 90px 32px;gap:8px;margin-bottom:6px;}
+.li-hl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(–lm);}
+.li-row{display:grid;grid-template-columns:1fr 80px 90px 32px;gap:8px;margin-bottom:8px;align-items:center;}
+.li-del{background:none;border:none;cursor:pointer;color:var(–lm);font-size:15px;padding:0;border-radius:4px;line-height:1;}
+.li-del:hover{color:#B91C1C;}
+.add-line-btn{background:none;border:1px dashed var(–border);color:var(–lm);font-size:12px;font-weight:600;padding:8px;border-radius:6px;cursor:pointer;width:100%;margin-top:4px;font-family:‘DM Sans’,sans-serif;transition:all .15s;}
+.add-line-btn:hover{border-color:var(–g);color:var(–g);}
+.totals-box{display:flex;justify-content:flex-end;gap:24px;padding:12px 0;border-top:1px solid var(–border);margin-top:4px;}
+.tot-item{text-align:right;}
+.tot-lbl{font-size:10px;color:var(–lm);}
+.tot-val{font-size:14px;font-weight:700;color:var(–dark);min-width:72px;}
+.mfooter{padding:16px 24px;border-top:1px solid var(–border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+.qp-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:900;overflow-y:auto;padding:16px;}
+.qp-wrap.open{display:block;}
+.qp{background:white;border-radius:12px;max-width:700px;margin:0 auto;box-shadow:0 32px 80px rgba(0,0,0,.4);}
+.qp-bar{background:var(–dark);border-radius:12px 12px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.qp-body{padding:40px;}
+.qp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid var(–y);}
+.qp-logo-wrap{display:flex;align-items:center;gap:10px;}
+.qp-rr{width:44px;height:44px;background:var(–y);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:‘Barlow Condensed’,sans-serif;font-size:24px;font-weight:900;color:var(–dark);}
+.qp-brand{font-family:‘Barlow Condensed’,sans-serif;font-size:26px;font-weight:900;color:var(–dark);}
+.qp-meta{text-align:right;}
+.qp-num{font-family:‘Barlow Condensed’,sans-serif;font-size:22px;font-weight:900;color:var(–dark);}
+.qp-bills{display:flex;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+.qp-bill{flex:1;min-width:140px;}
+.qp-bill-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(–lm);margin-bottom:6px;}
+.qp-bill-name{font-size:15px;font-weight:700;color:var(–dark);}
+.qp-bill-sub{font-size:12px;color:var(–muted);margin-top:2px;}
+.qp-tbl{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.qp-tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(–lm);padding:8px 12px;text-align:left;background:var(–off);border-bottom:1px solid var(–border);}
+.qp-tbl td{padding:12px;border-bottom:1px solid var(–border);font-size:13px;}
+.qp-tbl tr:last-child td{border-bottom:none;}
+.qp-tots{display:flex;justify-content:flex-end;margin-bottom:20px;}
+.qp-tots-inner{min-width:220px;}
+.qp-tot-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(–muted);border-bottom:1px solid var(–border);}
+.qp-tot-row.grand{border-bottom:none;font-size:16px;font-weight:800;color:var(–dark);padding-top:10px;}
+.qp-note-box{background:var(–off);border-radius:8px;padding:14px;margin-bottom:20px;font-size:13px;color:var(–muted);line-height:1.6;}
+.approve-bar{background:var(–dark);border-radius:10px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.approve-bar.approved{background:var(–g);}
+.approve-text{color:white;font-size:14px;font-weight:600;}
+.approve-sub{color:rgba(255,255,255,.5);font-size:12px;margin-top:2px;}
+.approve-btns{display:flex;gap:8px;flex-shrink:0;}
+.qp-footer{margin-top:20px;padding-top:16px;border-top:1px solid var(–border);display:flex;justify-content:space-between;font-size:11px;color:var(–lm);flex-wrap:wrap;gap:8px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(–dark);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;pointer-events:none;border-left:3px solid var(–y);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.purple{border-left-color:#7C3AED;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
+.converting{animation:pulse .6s ease-out;}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
+
 </style>
 </head>
 <body>
@@ -263,6 +997,13 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
     </div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="panel-head">
+        <div class="panel-title">Pending Quotes</div>
+        <button class="panel-link" onclick="nav('quotes',null)">View all</button>
+      </div>
+      <div id="d-quotes"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">Monthly Revenue</div>
@@ -331,20 +1072,26 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="topbar">
     <div class="topbar-left">
       <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <div class="page-title">Quotes</div>
+      <div>
+        <div class="page-title">Quotes &amp; Estimates</div>
+        <div class="topbar-date">Create, send, and convert quotes into jobs</div>
+      </div>
     </div>
     <div class="topbar-right">
-      <button class="btn" style="background:#7C3AED;color:white"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Quote</button>
+      <button class="btn" style="background:#7C3AED;color:white" onclick="openQuoteModal()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Quote
+      </button>
     </div>
   </div>
-  <div class="content" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;min-height:60vh">
-    <div style="font-size:48px">📋</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--charcoal)">Quotes Coming Soon</div>
-    <div style="font-size:14px;color:var(--lmuted);text-align:center;max-width:340px;line-height:1.6">Create estimates, send them to clients, get approval, then convert to jobs automatically.</div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <span style="background:#F3E8FF;color:#7C3AED;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">Pipeline View</span>
-      <span style="background:#F3E8FF;color:#7C3AED;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">E-Signature</span>
-      <span style="background:#F3E8FF;color:#7C3AED;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">Convert to Job</span>
+  <div class="content">
+    <div class="pipe" id="q-pipe"></div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">All Quotes</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="q-filters"></div>
+      </div>
+      <div style="overflow-x:auto"><table class="desktop-table" id="q-tbl"><thead><tr><th>Client</th><th>Title</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="q-tbody"></tbody></table></div>
+      <div id="q-cards"></div>
     </div>
   </div>
 </div>
@@ -605,8 +1352,8 @@ async function boot(){
       document.getElementById('user-email').textContent='Local Preview';
       document.getElementById('user-av').textContent='LP';
     }
-    await Promise.all([loadClients(),loadJobs(),loadInvoices()]);
-    renderClients();renderJobs();renderInvoices();renderDashboard();
+    await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadQuotes()]);
+    renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
     loadServiceAlerts();
   } catch(e) {
     console.error('Boot error:',e);
@@ -910,7 +1657,7 @@ async function completeJobWithPayment(paid){
     if(inv) await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
   }
   toast(paid?'Job complete & payment recorded! ✓':'Job complete — invoice still pending.','ok');
-  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();loadServiceAlerts();
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();loadServiceAlerts();
 }
 
 function editClient(id){
@@ -1090,7 +1837,7 @@ async function saveJob(){
   }
   closeModal('job');
   toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
-  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
 }
 
 async function saveInvoice(){
@@ -1144,7 +1891,7 @@ async function qaFinish(saveJob,saveInvoice){
   if(btn)btn.disabled=false;
   closeModal('client');qaJobSaved=false;
   toast('All saved! ✓','ok');
-  await loadClients();await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();
+  await loadClients();await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
 }
 
 function qaNext(page){
@@ -1178,7 +1925,7 @@ async function doDelete(){
     invoices=invoices.filter(x=>x.id!=id);
     await sb.from('invoices').delete().eq('id',id);
   }
-  renderClients();renderJobs();renderInvoices();renderDashboard();
+  renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
   toast('Deleted','ok');
 }
 
@@ -1212,6 +1959,7 @@ function renderRevenueChart(){
 function nav(name,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
+  if(name==='quotes'){renderQuotesPipe();renderQuotesTable();}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   else{const btn=document.getElementById('nav-'+name);if(btn)btn.classList.add('active');}
@@ -1228,7 +1976,470 @@ function cdEdit(){const id=document.getElementById('client-detail-overlay').data
 function cdDelete(){const id=document.getElementById('client-detail-overlay').dataset.clientId;const c=clients.find(x=>String(x.id)===String(id));if(!c)return;document.getElementById('client-detail-overlay').style.display='none';confirmDelete('client',id,c.name);}
 function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
+
+// ══════════════════════════════════════════
+// QUOTES MODULE
+// ══════════════════════════════════════════
+let quotes = [];
+let editingQuoteId = null;
+
+async function loadQuotes() {
+  const { data } = await sb.from('quotes').select('*').order('created_at', { ascending: false });
+  quotes = (data || []).map(q => ({
+    ...q,
+    lines: typeof q.lines === 'string' ? JSON.parse(q.lines) : (q.lines || [])
+  }));
+  const nb = document.getElementById('nb-quotes');
+  const pending = quotes.filter(q => q.status === 'draft' || q.status === 'sent').length;
+  if (nb) { nb.textContent = pending; nb.style.display = pending ? 'inline' : 'none'; }
+}
+
+function calcQ(q) {
+  const s = q.lines.reduce((a, l) => a + (l.q * l.p), 0);
+  const t = s * ((q.tax || 0) / 100);
+  return { s, t, total: s + t };
+}
+
+function qbadge(st) {
+  const m = {
+    draft: ['#9CA3AF', '#F3F4F6', 'Draft'],
+    sent: ['#2563EB', '#EFF6FF', 'Sent'],
+    approved: ['#16A34A', '#F0FDF4', '✓ Approved'],
+    declined: ['#DC2626', '#FEF2F2', 'Declined'],
+    converted: ['#7C3AED', '#F5F3FF', '→ Job Created']
+  };
+  const [color, bg, lbl] = m[st] || m.draft;
+  return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
+}
+
+function renderQuotesPipe() {
+  const el = document.getElementById('q-pipe');
+  if (!el) return;
+  const stages = [
+    { key: 'draft', label: 'Draft', color: '#9CA3AF' },
+    { key: 'sent', label: 'Sent', color: '#2563EB' },
+    { key: 'approved', label: 'Approved', color: '#16A34A' },
+    { key: 'converted', label: 'Converted', color: '#7C3AED' }
+  ];
+  el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">` +
+    stages.map(s => {
+      const qs = quotes.filter(q => q.status === s.key);
+      const val = qs.reduce((a, q) => a + calcQ(q).total, 0);
+      return `<div class="pipe-card pipe-${s.key}" style="cursor:pointer" onclick="filterQuotes('${s.key}')">
+        <div class="pipe-n">${qs.length}</div>
+        <div class="pipe-l">${s.label}</div>
+        <div class="pipe-v">$${val.toLocaleString()}</div>
+      </div>`;
+    }).join('') + `</div>`;
+}
+
+function renderQuotesTable(filter = 'all') {
+  const filtered = filter === 'all' ? quotes : quotes.filter(q => q.status === filter);
+  
+  // Filters
+  const filtersEl = document.getElementById('q-filters');
+  if (filtersEl) {
+    const counts = {};
+    ['all','draft','sent','approved','converted','declined'].forEach(k => {
+      counts[k] = k === 'all' ? quotes.length : quotes.filter(q=>q.status===k).length;
+    });
+    filtersEl.innerHTML = ['all','draft','sent','approved','converted','declined'].map(k =>
+      `<button onclick="renderQuotesTable('${k}')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid ${filter===k?'var(--green)':'var(--border)'};background:${filter===k?'var(--green)':'white'};color:${filter===k?'white':'var(--muted)'}">${k==='all'?'All':k.charAt(0).toUpperCase()+k.slice(1)} (${counts[k]})</button>`
+    ).join('');
+  }
+
+  const fmt = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+  
+  // Desktop table
+  const tbody = document.getElementById('q-tbody');
+  if (tbody) {
+    tbody.innerHTML = filtered.length === 0
+      ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet — tap "New Quote" to create one</td></tr>`
+      : filtered.map(q => {
+          const { total } = calcQ(q);
+          return `<tr>
+            <td><strong style="color:var(--green)">${q.client_name || '—'}</strong></td>
+            <td>${q.title || '—'}</td>
+            <td><strong>$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></td>
+            <td>${fmt(q.created_at)}</td>
+            <td>${qbadge(q.status)}</td>
+            <td><div class="row-actions">
+              <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
+              <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
+              ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="sendQuoteById('${q.id}')">Send</button>` : ''}
+              ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
+              ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''}
+              <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
+            </div></td>
+          </tr>`;
+        }).join('');
+  }
+
+  // Mobile cards
+  const cardsEl = document.getElementById('q-cards');
+  if (cardsEl) {
+    cardsEl.innerHTML = filtered.length === 0 ? '' : filtered.map(q => {
+      const { total } = calcQ(q);
+      return `<div class="m-card">
+        <div class="m-card-top"><div class="m-card-name">${q.client_name || '—'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
+        <div class="m-card-meta">${q.title || '—'} · ${fmt(q.created_at)}</div>
+        <div class="m-card-tags">${qbadge(q.status)}</div>
+        <div class="m-card-actions">
+          <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
+          <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
+          ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''}
+          <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function filterQuotes(status) {
+  nav('quotes', null);
+  renderQuotesTable(status);
+}
+
+function openQuoteModal(clientName) {
+  editingQuoteId = null;
+  document.getElementById('modal-title').textContent = 'New Quote';
+  document.getElementById('nq-client').value = clientName || '';
+  document.getElementById('nq-title').value = '';
+  document.getElementById('nq-tax').value = '0';
+  document.getElementById('nq-notes').value = '';
+  document.getElementById('nq-valid').value = '';
+  // Populate client dropdown
+  const sel = document.getElementById('nq-client');
+  if (sel && sel.tagName === 'SELECT') {
+    sel.innerHTML = '<option value="">Select client</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+  }
+  // Reset line items
+  document.getElementById('line-items').innerHTML = `
+    <div class="li-row" data-idx="0">
+      <input class="fi li-desc" placeholder="Description" value="">
+      <input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()">
+      <input class="fi li-price" type="number" placeholder="Unit price" value="" oninput="recalcQuote()">
+      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>
+    </div>`;
+  recalcQuote();
+  document.getElementById('nq-overlay').style.display = 'flex';
+}
+
+function closeQuoteModal() {
+  document.getElementById('nq-overlay').style.display = 'none';
+  editingQuoteId = null;
+}
+
+function editQuote(id) {
+  const q = quotes.find(x => x.id == id);
+  if (!q) return;
+  editingQuoteId = id;
+  document.getElementById('modal-title').textContent = 'Edit Quote';
+  document.getElementById('nq-client').value = q.client_name || '';
+  document.getElementById('nq-title').value = q.title || '';
+  document.getElementById('nq-tax').value = q.tax || 0;
+  document.getElementById('nq-notes').value = q.notes || '';
+  document.getElementById('nq-valid').value = q.valid_until || '';
+  // Line items
+  const lines = q.lines || [];
+  document.getElementById('line-items').innerHTML = lines.map((l, i) => `
+    <div class="li-row" data-idx="${i}">
+      <input class="fi li-desc" placeholder="Description" value="${l.d || ''}">
+      <input class="fi li-qty" type="number" placeholder="Qty" value="${l.q || 1}" oninput="recalcQuote()">
+      <input class="fi li-price" type="number" placeholder="Unit price" value="${l.p || ''}" oninput="recalcQuote()">
+      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>
+    </div>`).join('') || `<div class="li-row"><input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button></div>`;
+  recalcQuote();
+  document.getElementById('nq-overlay').style.display = 'flex';
+}
+
+function addQuoteLine() {
+  const container = document.getElementById('line-items');
+  const row = document.createElement('div');
+  row.className = 'li-row';
+  row.innerHTML = `<input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>`;
+  container.appendChild(row);
+}
+
+function recalcQuote() {
+  let sub = 0;
+  document.querySelectorAll('.li-row').forEach(row => {
+    const q = parseFloat(row.querySelector('.li-qty')?.value) || 0;
+    const p = parseFloat(row.querySelector('.li-price')?.value) || 0;
+    sub += q * p;
+  });
+  const tax = parseFloat(document.getElementById('nq-tax')?.value) || 0;
+  const taxAmt = sub * (tax / 100);
+  const total = sub + taxAmt;
+  const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const subEl = document.getElementById('nq-subtotal');
+  const taxEl = document.getElementById('nq-taxamt');
+  const totEl = document.getElementById('nq-total');
+  if (subEl) subEl.textContent = fmt(sub);
+  if (taxEl) taxEl.textContent = fmt(taxAmt);
+  if (totEl) totEl.textContent = fmt(total);
+}
+
+function getQuoteLines() {
+  const lines = [];
+  document.querySelectorAll('.li-row').forEach(row => {
+    const d = row.querySelector('.li-desc')?.value.trim();
+    const q = parseFloat(row.querySelector('.li-qty')?.value) || 0;
+    const p = parseFloat(row.querySelector('.li-price')?.value) || 0;
+    if (d || p) lines.push({ d, q, p });
+  });
+  return lines;
+}
+
+async function saveQuote() {
+  const clientName = document.getElementById('nq-client').value.trim();
+  const title = document.getElementById('nq-title').value.trim();
+  if (!clientName || !title) { toast('Enter a client and title'); return; }
+  const lines = getQuoteLines();
+  if (lines.length === 0) { toast('Add at least one line item'); return; }
+  const payload = {
+    client_name: clientName,
+    title,
+    lines: JSON.stringify(lines),
+    tax: parseFloat(document.getElementById('nq-tax').value) || 0,
+    notes: document.getElementById('nq-notes').value.trim() || null,
+    valid_until: document.getElementById('nq-valid').value || null,
+    status: editingQuoteId ? undefined : 'draft'
+  };
+  if (editingQuoteId) delete payload.status;
+  let error;
+  if (editingQuoteId) {
+    ({ error } = await sb.from('quotes').update(payload).eq('id', editingQuoteId));
+  } else {
+    ({ error } = await sb.from('quotes').insert({ ...payload, status: 'draft' }));
+  }
+  if (error) { toast('Error: ' + error.message); return; }
+  closeQuoteModal();
+  toast(editingQuoteId ? 'Quote updated! ✓' : 'Quote created! ✓');
+  await loadQuotes();
+  renderQuotesPipe();
+  renderQuotesTable();
+}
+
+async function saveAndPreviewQuote() {
+  await saveQuote();
+  // Find the most recently saved quote and preview it
+  await loadQuotes();
+  if (quotes.length > 0) previewQuote(quotes[0].id);
+}
+
+function previewQuote(id) {
+  const q = quotes.find(x => x.id == id);
+  if (!q) return;
+  const { s, t, total } = calcQ(q);
+  const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const qpBody = document.getElementById('qp-body');
+  if (!qpBody) return;
+  
+  const lines = q.lines || [];
+  qpBody.innerHTML = `
+    <div class="qp-bar" style="background:linear-gradient(135deg,var(--green),#2A6B47)">
+      <div class="qp-brand">Resurfr</div>
+      <div class="qp-num">ESTIMATE #${String(q.id).slice(-4).toUpperCase()}</div>
+    </div>
+    <div class="qp-head">
+      <div class="qp-bills">
+        <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">Your Business</div></div>
+        <div class="qp-bill"><div class="qp-bill-lbl">TO</div><div class="qp-bill-name">${q.client_name}</div></div>
+      </div>
+      <div class="qp-meta">
+        <div><span class="qp-bill-lbl">Date</span><br>${new Date(q.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        ${q.valid_until ? `<div><span class="qp-bill-lbl">Valid Until</span><br>${new Date(q.valid_until+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>` : ''}
+      </div>
+    </div>
+    <div class="qp-body-inner" style="padding:0 24px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin:16px 0 10px">${q.title}</div>
+      <table class="qp-tbl">
+        <thead><tr><th style="text-align:left">Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+        <tbody>${lines.map(l => `<tr><td>${l.d}</td><td style="text-align:center">${l.q}</td><td style="text-align:right">${fmt(l.p)}</td><td style="text-align:right">${fmt(l.q*l.p)}</td></tr>`).join('')}</tbody>
+      </table>
+      <div class="qp-tots">
+        <div class="qp-tots-inner">
+          <div class="qp-tot-row"><span>Subtotal</span><span>${fmt(s)}</span></div>
+          ${q.tax ? `<div class="qp-tot-row"><span>Tax (${q.tax}%)</span><span>${fmt(t)}</span></div>` : ''}
+          <div class="qp-tot-row" style="font-size:18px;font-weight:800;color:var(--charcoal);border-top:2px solid var(--border);padding-top:10px;margin-top:6px"><span>Total</span><span>${fmt(total)}</span></div>
+        </div>
+      </div>
+      ${q.notes ? `<div class="qp-note-box">${q.notes}</div>` : ''}
+      ${q.status === 'sent' || q.status === 'approved' ? `
+      <div style="margin:20px 0;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
+        <div style="font-size:13px;color:#166534;margin-bottom:12px;font-weight:600">Client Approval</div>
+        ${q.status === 'approved' 
+          ? `<div style="font-size:24px;margin-bottom:6px">✓</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
+          : `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Approve This Quote</button>`
+        }
+      </div>` : ''}
+      ${q.status === 'approved' ? `
+      <div style="text-align:center;padding:16px 0">
+        <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">→ Convert to Job</button>
+      </div>` : ''}
+    </div>
+    <div class="qp-footer">Generated by Resurfr · getresurfr.netlify.app</div>`;
+  
+  document.getElementById('nq-overlay').style.display = 'none';
+  document.getElementById('qp-wrap').style.display = 'flex';
+  document.getElementById('qp-wrap').dataset.quoteId = id;
+}
+
+function closePreview() {
+  document.getElementById('qp-wrap').style.display = 'none';
+}
+
+async function sendQuote() {
+  // Called from save+preview flow
+  const id = document.getElementById('qp-wrap')?.dataset.quoteId;
+  if (id) await sendQuoteById(id);
+}
+
+async function sendQuoteById(id) {
+  await sb.from('quotes').update({ status: 'sent' }).eq('id', id);
+  toast('Quote marked as sent! ✉️');
+  await loadQuotes();
+  renderQuotesPipe();
+  renderQuotesTable();
+  document.getElementById('qp-wrap').style.display = 'none';
+}
+
+async function approveQuote(id) {
+  await sb.from('quotes').update({ status: 'approved' }).eq('id', id);
+  toast('Quote approved! ✓');
+  await loadQuotes();
+  renderQuotesPipe();
+  renderQuotesTable();
+  // Refresh preview if open
+  const wrap = document.getElementById('qp-wrap');
+  if (wrap && wrap.style.display !== 'none') previewQuote(id);
+}
+
+async function convertQuote(id) {
+  const q = quotes.find(x => x.id == id);
+  if (!q) return;
+  const { total } = calcQ(q);
+  // Find client id
+  const client = clients.find(c => c.name === q.client_name);
+  if (client) {
+    // Create job
+    const { data: job } = await sb.from('jobs').insert({
+      client_id: client.id,
+      service: q.title,
+      amount: total,
+      status: 'scheduled',
+      date: new Date().toISOString().split('T')[0],
+      notes: `Converted from quote: ${q.title}`
+    }).select().single();
+    // Create invoice
+    if (job) {
+      await sb.from('invoices').insert({
+        client_id: client.id,
+        amount: total,
+        status: 'pending',
+        issued_date: new Date().toISOString().split('T')[0],
+        notes: `From quote: ${q.title}`
+      });
+    }
+  }
+  // Mark quote as converted
+  await sb.from('quotes').update({ status: 'converted' }).eq('id', id);
+  toast('Quote converted to job + invoice! 🎉');
+  await loadQuotes();
+  await loadJobs();
+  await loadInvoices();
+  renderQuotesPipe();
+  renderQuotesTable();
+  renderDashboard();
+  document.getElementById('qp-wrap').style.display = 'none';
+  nav('jobs', null);
+}
+
+async function deleteQuote(id) {
+  if (!confirm('Delete this quote?')) return;
+  await sb.from('quotes').delete().eq('id', id);
+  toast('Deleted');
+  await loadQuotes();
+  renderQuotesPipe();
+  renderQuotesTable();
+}
+
+function renderDashQuotes() {
+  // Show recent quotes on dashboard if any
+  const recent = quotes.filter(q => q.status === 'draft' || q.status === 'sent').slice(0, 3);
+  const el = document.getElementById('d-quotes');
+  if (!el) return;
+  el.innerHTML = recent.length === 0
+    ? '<div class="empty">No pending quotes</div>'
+    : recent.map(q => {
+        const { total } = calcQ(q);
+        return `<div class="c-row" style="cursor:pointer" onclick="previewQuote('${q.id}')">
+          <div style="flex:1;min-width:0">
+            <div class="c-name">${q.client_name || '—'}</div>
+            <div class="c-meta">${q.title || '—'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <div style="font-size:13px;font-weight:700">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            ${qbadge(q.status)}
+          </div>
+        </div>`;
+      }).join('');
+}
+
 </script>
+
+<div class="overlay" id="nq-overlay">
+  <div class="modal">
+    <div class="mh">
+      <div class="mh-title" id="modal-title">New Quote</div>
+      <button class="mx" onclick="closeQuoteModal()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fi-2">
+        <div class="fg"><label class="fl">Client Name</label><input class="fi" id="nq-client" placeholder="e.g. Darien Hunt Club" autocomplete="off"></div>
+        <div class="fg"><label class="fl">Valid Until</label><input class="fi" type="date" id="nq-valid"></div>
+      </div>
+      <div class="fg"><label class="fl">Quote Title</label><input class="fi" id="nq-title" placeholder="e.g. Full court resurfacing — 3 Har-Tru courts" autocomplete="off"></div>
+      <div class="fg">
+        <label class="fl">Line Items</label>
+        <div class="li-header"><div class="li-hl">Description</div><div class="li-hl">Qty</div><div class="li-hl">Unit Price ($)</div><div></div></div>
+        <div id="li-container"></div>
+        <button class="add-line-btn" onclick="addQuoteLine()">+ Add line item</button>
+      </div>
+      <div class="fg" style="max-width:160px"><label class="fl">Tax Rate (%)</label><input class="fi" type="number" id="nq-tax" value="6.35" oninput="recalc()"></div>
+      <div class="totals-box">
+        <div class="tot-item"><div class="tot-lbl">Subtotal</div><div class="tot-val" id="t-sub">$0</div></div>
+        <div class="tot-item"><div class="tot-lbl">Tax</div><div class="tot-val" id="t-tax">$0</div></div>
+        <div class="tot-item"><div class="tot-lbl" style="font-weight:700;color:var(--dark)">Total</div><div class="tot-val" id="t-total" style="font-size:18px">$0</div></div>
+      </div>
+      <div class="fg" style="margin-top:16px"><label class="fl">Notes (optional)</label><textarea class="fi" id="nq-notes" rows="2" placeholder="e.g. Price valid 30 days. Work begins within 2 weeks of approval." style="resize:vertical"></textarea></div>
+    </div>
+    <div class="mfooter">
+      <button class="btn" style="background:var(--off);border:1px solid var(--border);color:var(--muted)" onclick="closeQuoteModal()">Cancel</button>
+      <button class="btn" style="background:var(--off);border:1px solid var(--border);color:var(--dark)" onclick="saveQ('draft')">Save Draft</button>
+      <button class="btn bp" onclick="saveAndPreviewQuote()">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Preview &amp; Send
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE PREVIEW -->
+
+<div class="qp-wrap" id="qp-wrap">
+  <div class="qp">
+    <div class="qp-bar">
+      <span style="color:white;font-size:13px;font-weight:600">📄 Quote Preview — exactly how your client sees it</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()">← Back</button>
+        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="sendQuote()">Send to Client ✉️</button>
+      </div>
+    </div>
+    <div class="qp-body" id="qp-body"></div>
+  </div>
+</div>
 
 </body>
 </html>
