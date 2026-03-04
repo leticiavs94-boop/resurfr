@@ -142,20 +142,42 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:var(--green)}
 @media(max-width:768px){
+  /* Sidebar */
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
 
-  /* Stats: single column on small phones */
+  /* Main layout */
+  .main{margin-left:0;width:100%}
+  .menu-btn{display:flex}
+  .content{padding:14px}
+  .grid2{grid-template-columns:1fr}
+  .desktop-table{display:none}
+  .m-card{display:block}
+  .row-actions{opacity:1}
+
+  /* Topbar: greeting on top row, buttons below */
+  .topbar{padding:10px 14px;height:auto;flex-wrap:wrap;gap:0}
+  .topbar-date{display:none}
+  .topbar-left{flex:0 0 100%;padding-bottom:8px}
+  .topbar-right{flex:0 0 100%;gap:6px}
+  .topbar-right .btn{flex:1;justify-content:center;padding:9px 6px;font-size:12px;gap:4px}
+  .topbar-right .btn svg{width:13px;height:13px;flex-shrink:0}
+  .page-title{font-size:24px}
+
+  /* Stats grid */
   .stats{grid-template-columns:1fr 1fr}
   .stat-card{padding:14px 16px}
   .stat-val{font-size:28px}
 
-  /* Pipeline: 2x2 grid on mobile instead of 4 across */
+  /* Pipeline: 2x2 on mobile */
   .pipe>div{grid-template-columns:1fr 1fr !important}
   .pipe-card{padding:12px 10px}
   .pipe-n{font-size:28px}
   .pipe-l{font-size:10px}
   .pipe-v{font-size:11px}
 
-  /* Quote preview: fix padding and bar */
+  /* Quote preview */
   .qp-body{padding:20px 16px}
   .qp-bar{padding:10px 16px;border-radius:8px 8px 0 0}
   .qp-brand{font-size:18px}
@@ -167,24 +189,12 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .qp-tots-inner{min-width:unset;width:100%}
   .qp{margin:12px;border-radius:12px}
 
-  /* Topbar buttons on mobile */
-  .topbar-right{gap:6px}
-  .topbar-right .btn{padding:8px 10px;font-size:12px}
-  .topbar-right .btn svg{width:13px;height:13px}
-
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.open{display:block}
-  .main{margin-left:0;width:100%}
-  .menu-btn{display:flex}
-  .topbar{padding:0 14px}
-  .topbar-date{display:none}
-  .content{padding:14px}
-  .stats{grid-template-columns:1fr 1fr}
-  .grid2{grid-template-columns:1fr}
-  .desktop-table{display:none}
-  .m-card{display:block}
-  .row-actions{opacity:1}
+  /* Quote modal */
+  .fi-2{grid-template-columns:1fr}
+  .li-head{grid-template-columns:1fr 60px 80px 28px}
+  .li-row{grid-template-columns:1fr 60px 80px 28px;gap:4px}
+  .q-modal-actions{flex-direction:column}
+  .q-modal-actions button{min-width:unset}
 }
 
 /* ── QUOTES ── */
@@ -290,7 +300,9 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+    <div class="logo-icon" style="background:var(--yellow);width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#181C17;line-height:1">R</span>
+    </div>
     <span class="logo-text">Resurfr</span>
   </div>
   <div class="sidebar-section">Main</div>
@@ -578,7 +590,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="modal">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <div style="width:28px;height:28px;background:var(--yellow);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#181C17;line-height:1">R</span>
       </div>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
     </div>
@@ -644,7 +656,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="modal">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <div style="width:28px;height:28px;background:var(--yellow);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#181C17;line-height:1">R</span>
       </div>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
     </div>
@@ -675,7 +687,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="modal">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <div style="width:28px;height:28px;background:var(--yellow);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#181C17" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#181C17;line-height:1">R</span>
       </div>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
     </div>
