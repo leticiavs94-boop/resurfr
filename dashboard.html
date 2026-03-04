@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resurfr — Dashboard</title>
+<title>Resurfr - Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -196,7 +196,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .q-modal-actions button{min-width:unset}
 }
 
-/* ── QUOTES ── */
+/* -- QUOTES -- */
 .pipe-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;position:relative;overflow:hidden;}
 .pipe-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .pipe-draft::before{background:#9CA3AF;}
@@ -270,7 +270,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
-/* ── QUOTE MODAL ── */
+/* -- QUOTE MODAL -- */
 .mh{display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px}
 .mh-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)}
 .mx{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px;line-height:1}
@@ -500,7 +500,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <!-- CONFIRM DELETE -->
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    <div style="font-size:32px;margin-bottom:12px">🗑️</div>
+    <div style="font-size:32px;margin-bottom:12px">Delete</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal);margin-bottom:8px">Are you sure?</div>
     <div id="confirm-msg" style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5">This cannot be undone.</div>
     <div style="display:flex;gap:10px">
@@ -513,14 +513,14 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <!-- PAY CONFIRM -->
 <div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:24px">
   <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    <div style="font-size:36px;margin-bottom:12px">✅</div>
+    <div style="font-size:36px;margin-bottom:12px">Done</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:6px">Job Complete!</div>
     <div style="font-size:14px;color:var(--muted);margin-bottom:4px">Was payment received from</div>
-    <div id="pay-confirm-client" style="font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">—</div>
+    <div id="pay-confirm-client" style="font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">-</div>
     <div id="pay-confirm-amount" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--green);margin-bottom:24px">$0</div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none">💰 Yes — Payment Received</button>
-      <button onclick="completeJobWithPayment(false)" style="width:100%;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Not Yet — Keep Invoice Pending</button>
+      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none"> Yes - Payment Received</button>
+      <button onclick="completeJobWithPayment(false)" style="width:100%;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Not Yet - Keep Invoice Pending</button>
     </div>
   </div>
 </div>
@@ -536,17 +536,17 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <button onclick="document.getElementById('job-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
     </div>
     <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;border-bottom:1px solid var(--border)">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Date</div><div id="jd-date" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">—</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Date</div><div id="jd-date" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">-</div></div>
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Amount</div><div id="jd-amount" style="font-size:14px;font-weight:700;color:var(--charcoal);margin-top:4px">$0</div></div>
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Status</div><div id="jd-status" style="margin-top:4px"></div></div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Next Visit</div><div id="jd-next" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">—</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px">Next Visit</div><div id="jd-next" style="font-size:14px;font-weight:600;color:var(--charcoal);margin-top:4px">-</div></div>
     </div>
     <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--lmuted);letter-spacing:.5px;margin-bottom:6px">Notes</div>
-      <div id="jd-notes" style="font-size:13px;color:var(--muted);line-height:1.5">—</div>
+      <div id="jd-notes" style="font-size:13px;color:var(--muted);line-height:1.5">-</div>
     </div>
     <div style="padding:16px 20px;display:flex;gap:10px">
-      <button id="jd-done-btn" onclick="markJobDone(document.getElementById('job-detail-overlay').dataset.jobId)" style="flex:1;padding:13px;border-radius:10px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✓ Mark as Done</button>
+      <button id="jd-done-btn" onclick="markJobDone(document.getElementById('job-detail-overlay').dataset.jobId)" style="flex:1;padding:13px;border-radius:10px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer"> Mark as Done</button>
       <button onclick="editJob(document.getElementById('job-detail-overlay').dataset.jobId);document.getElementById('job-detail-overlay').style.display='none'" style="flex:1;padding:13px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Edit Job</button>
     </div>
   </div>
@@ -596,9 +596,9 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div class="modal-title" id="client-modal-title">Add Client</div>
     <div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
       <div style="display:flex;align-items:center">
-        <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 · Client</div>
-        <div id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 · Job</div>
-        <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 · Invoice</div>
+        <div id="step-1" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--charcoal);font-size:11px;font-weight:700;color:var(--charcoal)">1 &middot; Client</div>
+        <div id="step-2" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">2 &middot; Job</div>
+        <div id="step-3" style="flex:1;text-align:center;padding:8px 4px;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--lmuted)">3 &middot; Invoice</div>
       </div>
     </div>
     <div id="qa-page-1">
@@ -621,31 +621,31 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <button class="b-save" id="save-client-btn" onclick="saveClient()">Save Client</button>
       </div>
       <div id="qa-new-btns">
-        <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job →</button>
+        <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClient()">Save &amp; Add Job -></button>
         <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="saveClientOnly()">Save Client Only</button>
         <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeModal('client')">Cancel</button>
       </div>
     </div>
     <div id="qa-page-2" style="display:none">
-      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
+      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600"> Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
       <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="e.g. Panel installation, Lawn mow" autocomplete="off"></div>
       <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
       <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800" autocomplete="off"></div>
       <div class="fg"><label class="fl">Job Status</label>
         <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
       </div>
-      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaSaveJobThenInvoice()">Save Job &amp; Add Invoice →</button>
+      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" onclick="qaSaveJobThenInvoice()">Save Job &amp; Add Invoice -></button>
       <button style="width:100%;padding:11px;border-radius:8px;background:var(--charcoal);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-bottom:8px" onclick="qaFinish(true,false)">Save Job &amp; Finish</button>
-      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without job</button>
+      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip - finish without job</button>
     </div>
     <div id="qa-page-3" style="display:none">
-      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">✓ Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
+      <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600"> Job saved! Create an invoice for <span id="qa-client-name-display2"></span>?</div>
       <div class="fg"><label class="fl">Invoice Amount ($)</label><input type="number" class="fi" id="qa-i-amount" placeholder="0" autocomplete="off"></div>
       <div class="fg"><label class="fl">Payment Status</label>
-        <select class="fi" id="qa-i-status"><option value="pending">Pending — not yet paid</option><option value="paid">Paid ✓</option><option value="overdue">Overdue</option></select>
+        <select class="fi" id="qa-i-status"><option value="pending">Pending - not yet paid</option><option value="paid">Paid </option><option value="overdue">Overdue</option></select>
       </div>
-      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish ✓</button>
-      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip — finish without invoice</button>
+      <button style="width:100%;padding:13px;border-radius:8px;background:var(--yellow);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:8px" id="qa-finish-btn" onclick="qaFinish(false,true)">Save Invoice &amp; Finish </button>
+      <button style="width:100%;padding:9px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--lmuted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="qaFinish(false,false)">Skip - finish without invoice</button>
     </div>
   </div>
 </div>
@@ -708,7 +708,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <div id="i-photo-preview" style="display:none;margin-top:8px"><img id="i-photo-img" src="" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
       <div id="i-photo-existing" style="display:none;margin-top:8px">
         <img id="i-photo-existing-img" src="" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
-        <button onclick="removeInvoicePhoto()" style="margin-top:6px;background:none;border:none;color:#A84E2A;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕ Remove photo</button>
+        <button onclick="removeInvoicePhoto()" style="margin-top:6px;background:none;border:none;color:#A84E2A;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">x Remove photo</button>
       </div>
     </div>
     <div class="modal-btns">
@@ -720,7 +720,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 <!-- PHOTO VIEWER -->
 <div id="photo-viewer" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:900;align-items:center;justify-content:center;flex-direction:column" onclick="document.getElementById('photo-viewer').style.display='none'">
-  <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300">✕</div>
+  <div style="position:absolute;top:20px;right:20px;color:white;font-size:28px;cursor:pointer;font-weight:300">x</div>
   <img id="photo-viewer-img" src="" style="max-width:95vw;max-height:85vh;object-fit:contain;border-radius:8px">
   <div id="photo-viewer-caption" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:12px;font-family:'DM Sans',sans-serif"></div>
 </div>
@@ -737,7 +737,7 @@ let qaClientId=null,qaJobSaved=false,invoicePhotoUrl=null,pendingCompleteJobId=n
 let pendingDelete={type:null,id:null};
 let revenueChart=null;
 
-// ── BOOT ──
+// -- BOOT --
 async function boot(){
   try {
     // Handle email magic link / token in URL hash
@@ -745,7 +745,7 @@ async function boot(){
       await sb.auth.getSession();
       history.replaceState(null,'',window.location.pathname);
     }
-    // getSession with 5s timeout — prevents infinite spinner if Supabase hangs
+    // getSession with 5s timeout - prevents infinite spinner if Supabase hangs
     const sessionResult = await Promise.race([
       sb.auth.getSession(),
       new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),5000))
@@ -765,7 +765,7 @@ async function boot(){
       document.getElementById('user-email').textContent=email;
       document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
     } else {
-      // No session — redirect to login on production
+      // No session - redirect to login on production
       const isLocal=window.location.protocol==='file:'||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1';
       if(!isLocal){window.location.href='/login.html';return;}
       document.getElementById('user-email').textContent='Local Preview';
@@ -830,7 +830,7 @@ async function loadServiceAlerts(){
     if(ac){if(urgent.length>0){ac.textContent=urgent.length+' due';ac.style.display='inline';}else ac.style.display='none';}
     const el=document.getElementById('d-alerts');
     if(el) el.innerHTML=alerts.length===0
-      ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date ✓</div>'
+      ?'<div style="padding:20px 16px;font-size:13px;color:var(--lmuted);text-align:center">All clients up to date </div>'
       :alerts.slice(0,8).map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);${a.clientId?'cursor:pointer':''};" ${a.clientId?`onclick="showClientDetail('${a.clientId}')"`:''}><div style="width:9px;height:9px;border-radius:50%;background:${a.dot};flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--charcoal)">${a.name}</div><div style="font-size:11px;color:var(--muted);margin-top:1px">${a.sub}</div></div>${a.surface?`<span style="font-size:10px;font-weight:700;color:${a.color};background:${a.color}18;padding:2px 7px;border-radius:5px;white-space:nowrap">${a.surface}</span>`:''}</div>`).join('');
   } catch(e){console.error('alerts error',e);}
 }
@@ -876,7 +876,7 @@ function renderDashboard(){
   const uc=document.getElementById('upcoming-count');
   if(uc)uc.textContent=upcoming.length>0?upcoming.length:'';
   const upEl=document.getElementById('d-upcoming');
-  if(upEl) upEl.innerHTML=upcoming.length===0?`<div class="empty">No upcoming jobs — tap "Add Job" to schedule one</div>`:upcoming.slice(0,5).map(j=>{
+  if(upEl) upEl.innerHTML=upcoming.length===0?`<div class="empty">No upcoming jobs - tap "Add Job" to schedule one</div>`:upcoming.slice(0,5).map(j=>{
     const d=j.date?new Date(j.date+'T00:00:00'):null;
     const isToday=d&&d.toDateString()===now.toDateString();
     const isTomorrow=d&&d.toDateString()===new Date(Date.now()+86400000).toDateString();
@@ -884,16 +884,16 @@ function renderDashboard(){
     const cname=j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||'?';
     return`<div class="c-row" style="cursor:pointer" onclick="showJobDetail('${j.id}')">
       <div style="width:44px;text-align:center;flex-shrink:0">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'-'}</div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
       </div>
       <div style="flex:1;min-width:0">
         <div class="c-name" style="color:var(--green)">${cname}</div>
-        <div class="c-meta">${j.service||'—'} · ${dayLabel}</div>
+        <div class="c-meta">${j.service||'-'} &middot; ${dayLabel}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
         <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
-        <button onclick="markJobDone('${j.id}')" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Done</button>
+        <button onclick="markJobDone('${j.id}')" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif"> Done</button>
       </div>
     </div>`;
   }).join('');
@@ -906,12 +906,12 @@ function renderDashboard(){
     const cname=j.clients?.name||'?';
     return`<div class="c-row" style="cursor:pointer" onclick="showJobDetail('${j.id}')">
       <div style="width:44px;text-align:center;flex-shrink:0">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'—'}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal);line-height:1">${d?d.getDate():'-'}</div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--lmuted)">${d?d.toLocaleDateString('en-US',{month:'short'}):''}</div>
       </div>
       <div style="flex:1;min-width:0">
         <div class="c-name" style="color:var(--green)">${cname}</div>
-        <div class="c-meta">${j.service||'—'}</div>
+        <div class="c-meta">${j.service||'-'}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
@@ -922,7 +922,7 @@ function renderDashboard(){
 
   // Active clients
   const clEl=document.getElementById('d-clients');
-  if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+  if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 
   renderRevenueChart();
 }
@@ -930,17 +930,17 @@ function renderDashboard(){
 function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
 
 function renderClients(){
-  if(clients.length===0){document.getElementById('clients-list').innerHTML=`<div class="empty">No clients yet — tap "Add Client" to get started</div>`;return;}
+  if(clients.length===0){document.getElementById('clients-list').innerHTML=`<div class="empty">No clients yet - tap "Add Client" to get started</div>`;return;}
   const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Service Type</th><th>Units</th><th>Status</th><th>Billed</th><th></th></tr></thead><tbody>`+
     clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
       <td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
-      <td>${c.location||'—'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
+      <td>${c.location||'-'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
       <td>${cstatusbadge(c.status)}</td><td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
       <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
     <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
-    <div class="m-card-meta">${c.location||'—'} · ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
+    <div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
     <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
     <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div>
   </div>`).join('');
@@ -948,18 +948,18 @@ function renderClients(){
 }
 
 function renderJobs(){
-  if(jobs.length===0){document.getElementById('jobs-list').innerHTML=`<div class="empty">No jobs yet — tap "Add Job" to schedule one</div>`;return;}
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  if(jobs.length===0){document.getElementById('jobs-list').innerHTML=`<div class="empty">No jobs yet - tap "Add Job" to schedule one</div>`;return;}
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
   const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
       <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</strong></td>
-      <td>${j.service||'—'}</td><td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
+      <td>${j.service||'-'}</td><td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
       <td>${jbadge(j.status)}</td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=jobs.map(j=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
-    <div class="m-card-meta">${j.service||'—'} · ${fmt(j.date)}</div>
+    <div class="m-card-meta">${j.service||'-'} &middot; ${fmt(j.date)}</div>
     <div class="m-card-tags">${jbadge(j.status)}</div>
     <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div>
   </div>`).join('');
@@ -968,23 +968,23 @@ function renderJobs(){
 
 function renderInvoices(){
   if(invoices.length===0){document.getElementById('invoices-list').innerHTML=`<div class="empty">No invoices yet</div>`;return;}
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
   const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
     invoices.map(i=>`<tr>
       <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</strong></td>
       <td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
       <td><div class="row-actions">
-        ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+        ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')"> Paid</button>`:''}
         <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
         <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
       </div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=invoices.map(i=>`<div class="m-card">
     <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
-    <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' · '+i.notes:''}</div>
+    <div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' &middot; '+i.notes:''}</div>
     <div class="m-card-tags">${ibadge(i.status)}</div>
     <div class="m-card-actions">
-      ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')">✓ Paid</button>`:''}
+      ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')"> Paid</button>`:''}
       <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
       <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
     </div>
@@ -994,7 +994,7 @@ function renderInvoices(){
 
 async function markPaid(id){
   await sb.from('invoices').update({status:'paid'}).eq('id',id);
-  toast('Invoice marked as paid! ✓','ok');
+  toast('Invoice marked as paid! ','ok');
   await loadInvoices();renderDashboard();
 }
 
@@ -1003,12 +1003,12 @@ function showClientDetail(id){
   const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
   const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id));
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
-  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
   const el=document.getElementById('client-detail-overlay');
   el.dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
-  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' · ':''+(c.surface||''))+(c.courts?' · '+c.courts+' unit'+(c.courts!==1?'s':''):'');
+  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' &middot; ':''+(c.surface||''))+(c.courts?' &middot; '+c.courts+' unit'+(c.courts!==1?'s':''):'');
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
   document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
@@ -1016,9 +1016,9 @@ function showClientDetail(id){
     :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
       <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${j.service||'—'}</div>
-          <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(j.date)}${j.notes?' · '+j.notes:''}</div>
-          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">↩ Next: ${fmt(j.next_visit)}</div>`:''}
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${j.service||'-'}</div>
+          <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(j.date)}${j.notes?' &middot; '+j.notes:''}</div>
+          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">-> Next: ${fmt(j.next_visit)}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
@@ -1032,7 +1032,7 @@ function showClientDetail(id){
         <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
         <div style="font-size:13px;font-weight:700">$${(i.amount||0).toLocaleString()}</div>
         ${ibadge(i.status)}
-        ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif">✓ Paid</button>`:''}
+        ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif"> Paid</button>`:''}
       </div>`).join('');
   el.style.display='flex';
 }
@@ -1043,7 +1043,7 @@ function showJobDetail(id){
   const el=document.getElementById('job-detail-overlay');
   el.dataset.jobId=id;
   document.getElementById('jd-client').textContent=j.clients?.name||'Unknown';
-  document.getElementById('jd-service').textContent=j.service||'—';
+  document.getElementById('jd-service').textContent=j.service||'-';
   document.getElementById('jd-date').textContent=fmt(j.date);
   document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
   document.getElementById('jd-status').innerHTML=jbadge(j.status);
@@ -1075,7 +1075,7 @@ async function completeJobWithPayment(paid){
     const inv=invoices.filter(i=>String(i.client_id)===String(j.client_id)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
     if(inv) await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
   }
-  toast(paid?'Job complete & payment recorded! ✓':'Job complete — invoice still pending.','ok');
+  toast(paid?'Job complete & payment recorded! ':'Job complete - invoice still pending.','ok');
   await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();loadServiceAlerts();
 }
 
@@ -1311,7 +1311,7 @@ async function qaFinish(saveJob,saveInvoice){
   }
   if(btn)btn.disabled=false;
   closeModal('client');qaJobSaved=false;
-  toast('All saved! ✓','ok');
+  toast('All saved! ','ok');
   await loadClients();await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
 }
 
@@ -1374,7 +1374,7 @@ function renderRevenueChart(){
   document.getElementById('chart-summary').innerHTML=`
     <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">$${total.toLocaleString()}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">YTD Revenue</div></div>
     <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${totalJ}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Jobs Done</div></div>
-    <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${total>0?months[best]:'—'}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div></div>`;
+    <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${total>0?months[best]:'-'}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div></div>`;
 }
 
 function nav(name,el){
@@ -1388,7 +1388,7 @@ function nav(name,el){
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
-function stag(s){const colors={'Solar':'tag-hard','Lawn Care':'tag-hartru','HVAC':'tag-clay','Roofing':'tag-hard','Pool Service':'tag-hartru','Tennis Courts':'tag-hartru','Plumbing':'tag-hard'};return`<span class="tag ${colors[s]||'tag-def'}">${s||'—'}</span>`;}
+function stag(s){const colors={'Solar':'tag-hard','Lawn Care':'tag-hartru','HVAC':'tag-clay','Roofing':'tag-hard','Pool Service':'tag-hartru','Tennis Courts':'tag-hartru','Plumbing':'tag-hard'};return`<span class="tag ${colors[s]||'tag-def'}">${s||'-'}</span>`;}
 function cstatusbadge(s){const map={active:{label:'Active',bg:'#E8F5EE',color:'#1E6640'},prospect:{label:'Prospect',bg:'#FFF8E1',color:'#B88000'},inactive:{label:'Inactive',bg:'#F2F2F2',color:'#888888'}};const st=map[(s||'active').toLowerCase()]||map.active;return`<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.bg};color:${st.color}">${st.label}</span>`;}
 function jbadge(s){const m={scheduled:'b-scheduled',inprogress:'b-inprogress',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
@@ -1398,9 +1398,9 @@ function cdDelete(){const id=document.getElementById('client-detail-overlay').da
 function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 
-// ══════════════════════════════════════════
+// ==========================================
 // QUOTES MODULE
-// ══════════════════════════════════════════
+// ==========================================
 let quotes = [];
 let editingQuoteId = null;
 
@@ -1425,9 +1425,9 @@ function qbadge(st) {
   const m = {
     draft: ['#9CA3AF', '#F3F4F6', 'Draft'],
     sent: ['#2563EB', '#EFF6FF', 'Sent'],
-    approved: ['#16A34A', '#F0FDF4', '✓ Approved'],
+    approved: ['#16A34A', '#F0FDF4', ' Approved'],
     declined: ['#DC2626', '#FEF2F2', 'Declined'],
-    converted: ['#7C3AED', '#F5F3FF', '→ Job Created']
+    converted: ['#7C3AED', '#F5F3FF', '-> Job Created']
   };
   const [color, bg, lbl] = m[st] || m.draft;
   return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
@@ -1469,18 +1469,18 @@ function renderQuotesTable(filter = 'all') {
     ).join('');
   }
 
-  const fmt = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+  const fmt = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-';
   
   // Desktop table
   const tbody = document.getElementById('q-tbody');
   if (tbody) {
     tbody.innerHTML = filtered.length === 0
-      ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet — tap "New Quote" to create one</td></tr>`
+      ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet - tap "New Quote" to create one</td></tr>`
       : filtered.map(q => {
           const { total } = calcQ(q);
           return `<tr>
-            <td><strong style="color:var(--green)">${q.client_name || '—'}</strong></td>
-            <td>${q.title || '—'}</td>
+            <td><strong style="color:var(--green)">${q.client_name || '-'}</strong></td>
+            <td>${q.title || '-'}</td>
             <td><strong>$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></td>
             <td>${fmt(q.created_at)}</td>
             <td>${qbadge(q.status)}</td>
@@ -1489,7 +1489,7 @@ function renderQuotesTable(filter = 'all') {
               <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
               ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="sendQuoteById('${q.id}')">Send</button>` : ''}
               ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
-              ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''}
+              ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
               <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
             </div></td>
           </tr>`;
@@ -1502,13 +1502,13 @@ function renderQuotesTable(filter = 'all') {
     cardsEl.innerHTML = filtered.length === 0 ? '' : filtered.map(q => {
       const { total } = calcQ(q);
       return `<div class="m-card">
-        <div class="m-card-top"><div class="m-card-name">${q.client_name || '—'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
-        <div class="m-card-meta">${q.title || '—'} · ${fmt(q.created_at)}</div>
+        <div class="m-card-top"><div class="m-card-name">${q.client_name || '-'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
+        <div class="m-card-meta">${q.title || '-'} &middot; ${fmt(q.created_at)}</div>
         <div class="m-card-tags">${qbadge(q.status)}</div>
         <div class="m-card-actions">
           <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
           <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
-          ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">→ Job</button>` : ''}
+          ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
           <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
         </div>
       </div>`;
@@ -1540,7 +1540,7 @@ function openQuoteModal(clientName) {
       <input class="fi li-desc" placeholder="Description" value="">
       <input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()">
       <input class="fi li-price" type="number" placeholder="Unit price" value="" oninput="recalcQuote()">
-      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>
+      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">x</button>
     </div>`;
   recalcQuote();
   document.getElementById('nq-overlay').style.display = 'flex';
@@ -1568,8 +1568,8 @@ function editQuote(id) {
       <input class="fi li-desc" placeholder="Description" value="${l.d || ''}">
       <input class="fi li-qty" type="number" placeholder="Qty" value="${l.q || 1}" oninput="recalcQuote()">
       <input class="fi li-price" type="number" placeholder="Unit price" value="${l.p || ''}" oninput="recalcQuote()">
-      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>
-    </div>`).join('') || `<div class="li-row"><input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button></div>`;
+      <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">x</button>
+    </div>`).join('') || `<div class="li-row"><input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">x</button></div>`;
   recalcQuote();
   document.getElementById('nq-overlay').style.display = 'flex';
 }
@@ -1636,7 +1636,7 @@ async function saveQuote() {
   }
   if (error) { toast('Error: ' + error.message); return; }
   closeQuoteModal();
-  toast(editingQuoteId ? 'Quote updated! ✓' : 'Quote created! ✓');
+  toast(editingQuoteId ? 'Quote updated! ' : 'Quote created! ');
   await loadQuotes();
   renderQuotesPipe();
   renderQuotesTable();
@@ -1691,16 +1691,16 @@ function previewQuote(id) {
       <div style="margin:20px 0;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
         <div style="font-size:13px;color:#166534;margin-bottom:12px;font-weight:600">Client Approval</div>
         ${q.status === 'approved' 
-          ? `<div style="font-size:24px;margin-bottom:6px">✓</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
-          : `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Approve This Quote</button>`
+          ? `<div style="font-size:24px;margin-bottom:6px"></div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
+          : `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif"> Approve This Quote</button>`
         }
       </div>` : ''}
       ${q.status === 'approved' ? `
       <div style="text-align:center;padding:16px 0">
-        <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">→ Convert to Job</button>
+        <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">-> Convert to Job</button>
       </div>` : ''}
     </div>
-    <div class="qp-footer">Generated by Resurfr · getresurfr.netlify.app</div>`;
+    <div class="qp-footer">Generated by Resurfr &middot; getresurfr.netlify.app</div>`;
   
   document.getElementById('nq-overlay').style.display = 'none';
   document.getElementById('qp-wrap').style.display = 'flex';
@@ -1719,7 +1719,7 @@ async function sendQuote() {
 
 async function sendQuoteById(id) {
   await sb.from('quotes').update({ status: 'sent' }).eq('id', id);
-  toast('Quote marked as sent! ✉️');
+  toast('Quote marked as sent! ');
   await loadQuotes();
   renderQuotesPipe();
   renderQuotesTable();
@@ -1728,7 +1728,7 @@ async function sendQuoteById(id) {
 
 async function approveQuote(id) {
   await sb.from('quotes').update({ status: 'approved' }).eq('id', id);
-  toast('Quote approved! ✓');
+  toast('Quote approved! ');
   await loadQuotes();
   renderQuotesPipe();
   renderQuotesTable();
@@ -1766,7 +1766,7 @@ async function convertQuote(id) {
   }
   // Mark quote as converted
   await sb.from('quotes').update({ status: 'converted' }).eq('id', id);
-  toast('Quote converted to job + invoice! 🎉');
+  toast('Quote converted to job + invoice! ');
   await loadQuotes();
   await loadJobs();
   await loadInvoices();
@@ -1797,8 +1797,8 @@ function renderDashQuotes() {
         const { total } = calcQ(q);
         return `<div class="c-row" style="cursor:pointer" onclick="previewQuote('${q.id}')">
           <div style="flex:1;min-width:0">
-            <div class="c-name">${q.client_name || '—'}</div>
-            <div class="c-meta">${q.title || '—'}</div>
+            <div class="c-name">${q.client_name || '-'}</div>
+            <div class="c-meta">${q.title || '-'}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
             <div style="font-size:13px;font-weight:700">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
@@ -1809,9 +1809,9 @@ function renderDashQuotes() {
 }
 
 
-// ══════════════════════════════════════════
+// ==========================================
 // EMAIL MODULE (EmailJS)
-// ══════════════════════════════════════════
+// ==========================================
 // EmailJS setup - user needs to fill in their own service/template IDs
 const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // from emailjs.com dashboard
 const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // from emailjs.com dashboard
@@ -1829,12 +1829,12 @@ function openEmailModal(quoteId) {
   document.getElementById('eq-to').value = client?.email || '';
 
   // Pre-fill subject
-  document.getElementById('eq-subject').value = `Your Estimate from Resurfr — ${q.title}`;
+  document.getElementById('eq-subject').value = `Your Estimate from Resurfr - ${q.title}`;
 
   // Pre-fill polite message with quote summary
   const { s, t, total } = calcQ(q);
   const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const linesList = (q.lines || []).map(l => `  • ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('
+  const linesList = (q.lines || []).map(l => `  - ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('
 ');
   const validStr = q.valid_until ? `
 
@@ -1845,9 +1845,9 @@ This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDat
 
 Thank you for the opportunity to work with you. Please find below the estimate you requested for "${q.title}".
 
-────────────────────────
+------------------------
 ${linesList}
-────────────────────────
+------------------------
 Subtotal:  ${fmt(s)}${q.tax ? `
 Tax (${q.tax}%): ${fmt(t)}` : ''}
 Total:     ${fmt(total)}${validStr}
@@ -1884,7 +1884,7 @@ async function sendQuoteEmail() {
       // Fallback: open mailto link
       const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
       window.location.href = mailtoLink;
-      toast('Opening your mail app... ✉️');
+      toast('Opening your mail app... ');
       closeEmailModal();
       if (emailQuoteId) await sendQuoteById(emailQuoteId);
       return;
@@ -1898,18 +1898,18 @@ async function sendQuoteEmail() {
       message: message,
     });
 
-    toast('Quote sent! ✉️');
+    toast('Quote sent! ');
     closeEmailModal();
     if (emailQuoteId) await sendQuoteById(emailQuoteId);
 
   } catch (err) {
     console.error('Email error:', err);
-    toast('Email failed — try the mailto fallback');
+    toast('Email failed - try the mailto fallback');
     // Fallback to mailto
     const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     window.open(mailtoLink);
   } finally {
-    btn.textContent = 'Send Email ✉️';
+    btn.textContent = 'Send Email ';
     btn.disabled = false;
   }
 }
@@ -1978,10 +1978,10 @@ function openEmailFromPreview() {
 <div class="qp-wrap" id="qp-wrap">
   <div class="qp">
     <div class="qp-bar">
-      <span style="color:white;font-size:13px;font-weight:600">📄 Quote Preview — exactly how your client sees it</span>
+      <span style="color:white;font-size:13px;font-weight:600"> Quote Preview - exactly how your client sees it</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()">← Back</button>
-        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="openEmailFromPreview()">Send to Client ✉️</button>
+        <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()"><- Back</button>
+        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="openEmailFromPreview()">Send to Client </button>
       </div>
     </div>
     <div class="qp-body" id="qp-body"></div>
@@ -2010,11 +2010,11 @@ function openEmailFromPreview() {
         <textarea class="fi" id="eq-message" rows="6" style="resize:vertical;line-height:1.6;font-family:'DM Sans',sans-serif"></textarea>
       </div>
       <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 14px;font-size:12px;color:#166534;line-height:1.5">
-        📎 A summary of the quote details will be included in the email body.
+         A summary of the quote details will be included in the email body.
       </div>
       <div style="display:flex;gap:8px;padding-top:4px">
         <button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
-        <button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Send Email ✉️</button>
+        <button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Send Email </button>
       </div>
     </div>
   </div>
