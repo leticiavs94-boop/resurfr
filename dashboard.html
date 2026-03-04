@@ -6,8 +6,232 @@
 <title>Resurfr — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+
+// ══════════════════════════════════════════
+// EMAIL MODULE (EmailJS)
+// ══════════════════════════════════════════
+// EmailJS setup - user needs to fill in their own service/template IDs
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // from emailjs.com dashboard
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // from emailjs.com dashboard
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // from emailjs.com account
+
+let emailQuoteId = null;
+
+function openEmailModal(quoteId) {
+  emailQuoteId = quoteId;
+  const q = quotes.find(x => x.id == quoteId);
+  if (!q) return;
+
+  // Pre-fill client email if we have it
+  const client = clients.find(c => c.name === q.client_name);
+  document.getElementById('eq-to').value = client?.email || '';
+
+  // Pre-fill subject
+  document.getElementById('eq-subject').value = `Your Estimate from Resurfr — ${q.title}`;
+
+  // Pre-fill polite message with quote summary
+  const { s, t, total } = calcQ(q);
+  const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const linesList = (q.lines || []).map(l => `  • ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('
+');
+  const validStr = q.valid_until ? `
+
+This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : '';
+
+  document.getElementById('eq-message').value =
+`Hi ${q.client_name},
+
+Thank you for the opportunity to work with you. Please find below the estimate you requested for "${q.title}".
+
+────────────────────────
+${linesList}
+────────────────────────
+Subtotal:  ${fmt(s)}${q.tax ? `
+Tax (${q.tax}%): ${fmt(t)}` : ''}
+Total:     ${fmt(total)}${validStr}
+
+If you have any questions or would like to make any adjustments, please don't hesitate to reach out. We look forward to working with you.
+
+Best regards,
+Resurfr Team
+getresurfr.netlify.app`;
+
+  document.getElementById('m-email-quote').style.display = 'flex';
+}
+
+function closeEmailModal() {
+  document.getElementById('m-email-quote').style.display = 'none';
+  emailQuoteId = null;
+}
+
+async function sendQuoteEmail() {
+  const to = document.getElementById('eq-to').value.trim();
+  const subject = document.getElementById('eq-subject').value.trim();
+  const message = document.getElementById('eq-message').value.trim();
+
+  if (!to) { toast('Please enter a recipient email'); return; }
+  if (!to.includes('@')) { toast('Please enter a valid email address'); return; }
+
+  const btn = document.getElementById('eq-send-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    // Check if EmailJS is configured
+    if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+      // Fallback: open mailto link
+      const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      window.location.href = mailtoLink;
+      toast('Opening your mail app... ✉️');
+      closeEmailModal();
+      if (emailQuoteId) await sendQuoteById(emailQuoteId);
+      return;
+    }
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: to,
+      to_name: document.getElementById('eq-to').value,
+      subject: subject,
+      message: message,
+    });
+
+    toast('Quote sent! ✉️');
+    closeEmailModal();
+    if (emailQuoteId) await sendQuoteById(emailQuoteId);
+
+  } catch (err) {
+    console.error('Email error:', err);
+    toast('Email failed — try the mailto fallback');
+    // Fallback to mailto
+    const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.open(mailtoLink);
+  } finally {
+    btn.textContent = 'Send Email ✉️';
+    btn.disabled = false;
+  }
+}
+
+
+function openEmailFromPreview() {
+  const id = document.getElementById('qp-wrap')?.dataset.quoteId;
+  if (id) openEmailModal(id);
+}
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+
+// ══════════════════════════════════════════
+// EMAIL MODULE (EmailJS)
+// ══════════════════════════════════════════
+// EmailJS setup - user needs to fill in their own service/template IDs
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // from emailjs.com dashboard
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // from emailjs.com dashboard
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // from emailjs.com account
+
+let emailQuoteId = null;
+
+function openEmailModal(quoteId) {
+  emailQuoteId = quoteId;
+  const q = quotes.find(x => x.id == quoteId);
+  if (!q) return;
+
+  // Pre-fill client email if we have it
+  const client = clients.find(c => c.name === q.client_name);
+  document.getElementById('eq-to').value = client?.email || '';
+
+  // Pre-fill subject
+  document.getElementById('eq-subject').value = `Your Estimate from Resurfr — ${q.title}`;
+
+  // Pre-fill polite message with quote summary
+  const { s, t, total } = calcQ(q);
+  const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const linesList = (q.lines || []).map(l => `  • ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('
+');
+  const validStr = q.valid_until ? `
+
+This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : '';
+
+  document.getElementById('eq-message').value =
+`Hi ${q.client_name},
+
+Thank you for the opportunity to work with you. Please find below the estimate you requested for "${q.title}".
+
+────────────────────────
+${linesList}
+────────────────────────
+Subtotal:  ${fmt(s)}${q.tax ? `
+Tax (${q.tax}%): ${fmt(t)}` : ''}
+Total:     ${fmt(total)}${validStr}
+
+If you have any questions or would like to make any adjustments, please don't hesitate to reach out. We look forward to working with you.
+
+Best regards,
+Resurfr Team
+getresurfr.netlify.app`;
+
+  document.getElementById('m-email-quote').style.display = 'flex';
+}
+
+function closeEmailModal() {
+  document.getElementById('m-email-quote').style.display = 'none';
+  emailQuoteId = null;
+}
+
+async function sendQuoteEmail() {
+  const to = document.getElementById('eq-to').value.trim();
+  const subject = document.getElementById('eq-subject').value.trim();
+  const message = document.getElementById('eq-message').value.trim();
+
+  if (!to) { toast('Please enter a recipient email'); return; }
+  if (!to.includes('@')) { toast('Please enter a valid email address'); return; }
+
+  const btn = document.getElementById('eq-send-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    // Check if EmailJS is configured
+    if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+      // Fallback: open mailto link
+      const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      window.location.href = mailtoLink;
+      toast('Opening your mail app... ✉️');
+      closeEmailModal();
+      if (emailQuoteId) await sendQuoteById(emailQuoteId);
+      return;
+    }
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: to,
+      to_name: document.getElementById('eq-to').value,
+      subject: subject,
+      message: message,
+    });
+
+    toast('Quote sent! ✉️');
+    closeEmailModal();
+    if (emailQuoteId) await sendQuoteById(emailQuoteId);
+
+  } catch (err) {
+    console.error('Email error:', err);
+    toast('Email failed — try the mailto fallback');
+    // Fallback to mailto
+    const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.open(mailtoLink);
+  } finally {
+    btn.textContent = 'Send Email ✉️';
+    btn.disabled = false;
+  }
+}
+
+
+function openEmailFromPreview() {
+  const id = document.getElementById('qp-wrap')?.dataset.quoteId;
+  if (id) openEmailModal(id);
+}
+
 </script>
 <style>
 :root{--yellow:#C8E62B;--green:#1E4D35;--off:#F4F6F1;--border:#E2E8DC;--charcoal:#181C17;--text:#1A1F18;--muted:#6B7A65;--lmuted:#9DAA96;--sw:240px;}
@@ -232,24 +456,24 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .tot-lbl{font-size:10px;color:var(--lm);}
 .tot-val{font-size:14px;font-weight:700;color:var(--dark);min-width:72px;}
 .mfooter{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
-.qp-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:900;overflow-y:auto;padding:16px;}
+.qp-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:900;overflow-y:auto;padding:20px 16px;padding:16px;}
 .qp-wrap.open{display:block;}
 .qp{background:white;border-radius:12px;max-width:700px;margin:0 auto;box-shadow:0 32px 80px rgba(0,0,0,.4);}
-.qp-bar{background:var(--green);border-radius:12px 12px 0 0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.qp-body{padding:40px;}
-.qp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid var(--y);}
+.qp-bar{background:var(--green);border-radius:12px 12px 0 0;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.qp-body{padding:32px 40px;}
+.qp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:24px;border-bottom:3px solid var(--yellow);gap:20px;flex-wrap:wrap;}
 .qp-logo-wrap{display:flex;align-items:center;gap:10px;}
 .qp-rr{width:44px;height:44px;background:var(--y);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--dark);}
 .qp-brand{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--dark);}
 .qp-meta{text-align:right;}
 .qp-num{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--dark);}
-.qp-bills{display:flex;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+.qp-bills{display:flex;gap:40px;margin-bottom:0;flex-wrap:wrap;}
 .qp-bill{flex:1;min-width:140px;}
 .qp-bill-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--lm);margin-bottom:6px;}
 .qp-bill-name{font-size:15px;font-weight:700;color:var(--dark);}
 .qp-bill-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 .qp-tbl{width:100%;border-collapse:collapse;margin-bottom:20px;}
-.qp-tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lm);padding:8px 12px;text-align:left;background:var(--off);border-bottom:1px solid var(--border);}
+.qp-tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lm);padding:10px 14px;text-align:left;background:var(--off);border-bottom:1px solid var(--border);}
 .qp-tbl td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;}
 .qp-tbl tr:last-child td{border-bottom:none;}
 .qp-tots{display:flex;justify-content:flex-end;margin-bottom:20px;}
@@ -484,7 +708,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="content">
     <div class="pipe" id="q-pipe"></div>
     <div class="panel">
-      <div class="panel-head">
+      <div class="panel-head" style="flex-direction:column;align-items:flex-start;gap:10px">
         <div class="panel-title">All Quotes</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap" id="q-filters"></div>
       </div>
@@ -1799,6 +2023,118 @@ function renderDashQuotes() {
       }).join('');
 }
 
+
+// ══════════════════════════════════════════
+// EMAIL MODULE (EmailJS)
+// ══════════════════════════════════════════
+// EmailJS setup - user needs to fill in their own service/template IDs
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // from emailjs.com dashboard
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // from emailjs.com dashboard
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // from emailjs.com account
+
+let emailQuoteId = null;
+
+function openEmailModal(quoteId) {
+  emailQuoteId = quoteId;
+  const q = quotes.find(x => x.id == quoteId);
+  if (!q) return;
+
+  // Pre-fill client email if we have it
+  const client = clients.find(c => c.name === q.client_name);
+  document.getElementById('eq-to').value = client?.email || '';
+
+  // Pre-fill subject
+  document.getElementById('eq-subject').value = `Your Estimate from Resurfr — ${q.title}`;
+
+  // Pre-fill polite message with quote summary
+  const { s, t, total } = calcQ(q);
+  const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const linesList = (q.lines || []).map(l => `  • ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('
+');
+  const validStr = q.valid_until ? `
+
+This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : '';
+
+  document.getElementById('eq-message').value =
+`Hi ${q.client_name},
+
+Thank you for the opportunity to work with you. Please find below the estimate you requested for "${q.title}".
+
+────────────────────────
+${linesList}
+────────────────────────
+Subtotal:  ${fmt(s)}${q.tax ? `
+Tax (${q.tax}%): ${fmt(t)}` : ''}
+Total:     ${fmt(total)}${validStr}
+
+If you have any questions or would like to make any adjustments, please don't hesitate to reach out. We look forward to working with you.
+
+Best regards,
+Resurfr Team
+getresurfr.netlify.app`;
+
+  document.getElementById('m-email-quote').style.display = 'flex';
+}
+
+function closeEmailModal() {
+  document.getElementById('m-email-quote').style.display = 'none';
+  emailQuoteId = null;
+}
+
+async function sendQuoteEmail() {
+  const to = document.getElementById('eq-to').value.trim();
+  const subject = document.getElementById('eq-subject').value.trim();
+  const message = document.getElementById('eq-message').value.trim();
+
+  if (!to) { toast('Please enter a recipient email'); return; }
+  if (!to.includes('@')) { toast('Please enter a valid email address'); return; }
+
+  const btn = document.getElementById('eq-send-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    // Check if EmailJS is configured
+    if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+      // Fallback: open mailto link
+      const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      window.location.href = mailtoLink;
+      toast('Opening your mail app... ✉️');
+      closeEmailModal();
+      if (emailQuoteId) await sendQuoteById(emailQuoteId);
+      return;
+    }
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: to,
+      to_name: document.getElementById('eq-to').value,
+      subject: subject,
+      message: message,
+    });
+
+    toast('Quote sent! ✉️');
+    closeEmailModal();
+    if (emailQuoteId) await sendQuoteById(emailQuoteId);
+
+  } catch (err) {
+    console.error('Email error:', err);
+    toast('Email failed — try the mailto fallback');
+    // Fallback to mailto
+    const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.open(mailtoLink);
+  } finally {
+    btn.textContent = 'Send Email ✉️';
+    btn.disabled = false;
+  }
+}
+
+
+function openEmailFromPreview() {
+  const id = document.getElementById('qp-wrap')?.dataset.quoteId;
+  if (id) openEmailModal(id);
+}
+
 </script>
 
 <div class="overlay" id="nq-overlay" style="z-index:500">
@@ -1860,10 +2196,42 @@ function renderDashQuotes() {
       <span style="color:white;font-size:13px;font-weight:600">📄 Quote Preview — exactly how your client sees it</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()">← Back</button>
-        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="sendQuote()">Send to Client ✉️</button>
+        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="openEmailFromPreview()">Send to Client ✉️</button>
       </div>
     </div>
     <div class="qp-body" id="qp-body"></div>
+  </div>
+</div>
+
+
+<!-- EMAIL QUOTE MODAL -->
+<div class="overlay" id="m-email-quote" style="z-index:600">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">Send Quote by Email</div>
+      <button onclick="closeEmailModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px">&#x2715;</button>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div class="fg">
+        <label class="fl">To</label>
+        <input class="fi" id="eq-to" type="email" placeholder="client@email.com" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label class="fl">Subject</label>
+        <input class="fi" id="eq-subject" value="Your Estimate from Resurfr" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label class="fl">Message</label>
+        <textarea class="fi" id="eq-message" rows="6" style="resize:vertical;line-height:1.6;font-family:'DM Sans',sans-serif"></textarea>
+      </div>
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 14px;font-size:12px;color:#166534;line-height:1.5">
+        📎 A summary of the quote details will be included in the email body.
+      </div>
+      <div style="display:flex;gap:8px;padding-top:4px">
+        <button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+        <button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Send Email ✉️</button>
+      </div>
+    </div>
   </div>
 </div>
 
