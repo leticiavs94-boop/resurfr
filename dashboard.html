@@ -142,6 +142,36 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:var(--green)}
 @media(max-width:768px){
+
+  /* Stats: single column on small phones */
+  .stats{grid-template-columns:1fr 1fr}
+  .stat-card{padding:14px 16px}
+  .stat-val{font-size:28px}
+
+  /* Pipeline: 2x2 grid on mobile instead of 4 across */
+  .pipe>div{grid-template-columns:1fr 1fr !important}
+  .pipe-card{padding:12px 10px}
+  .pipe-n{font-size:28px}
+  .pipe-l{font-size:10px}
+  .pipe-v{font-size:11px}
+
+  /* Quote preview: fix padding and bar */
+  .qp-body{padding:20px 16px}
+  .qp-bar{padding:10px 16px;border-radius:8px 8px 0 0}
+  .qp-brand{font-size:18px}
+  .qp-num{font-size:11px}
+  .qp-head{flex-direction:column;gap:12px}
+  .qp-bills{gap:16px}
+  .qp-meta{flex-direction:row;gap:20px}
+  .qp-tbl th,.qp-tbl td{padding:6px 8px;font-size:12px}
+  .qp-tots-inner{min-width:unset;width:100%}
+  .qp{margin:12px;border-radius:12px}
+
+  /* Topbar buttons on mobile */
+  .topbar-right{gap:6px}
+  .topbar-right .btn{padding:8px 10px;font-size:12px}
+  .topbar-right .btn svg{width:13px;height:13px}
+
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}
@@ -195,7 +225,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .qp-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:900;overflow-y:auto;padding:16px;}
 .qp-wrap.open{display:block;}
 .qp{background:white;border-radius:12px;max-width:700px;margin:0 auto;box-shadow:0 32px 80px rgba(0,0,0,.4);}
-.qp-bar{background:var(--dark);border-radius:12px 12px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.qp-bar{background:var(--green);border-radius:12px 12px 0 0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .qp-body{padding:40px;}
 .qp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid var(--y);}
 .qp-logo-wrap{display:flex;align-items:center;gap:10px;}
@@ -1527,7 +1557,7 @@ function addQuoteLine() {
   const container = document.getElementById('line-items');
   const row = document.createElement('div');
   row.className = 'li-row';
-  row.innerHTML = `<input class="fi li-desc" placeholder="Description"><input class="fi li-qty" type="number" placeholder="Qty" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="Unit price" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">✕</button>`;
+  row.innerHTML = `<input class="fi li-desc" placeholder="e.g. Labor"><input class="fi li-qty" type="number" placeholder="1" value="1" oninput="recalcQuote()"><input class="fi li-price" type="number" placeholder="0.00" oninput="recalcQuote()"><button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">&#x2715;</button>`;
   container.appendChild(row);
 }
 
@@ -1787,9 +1817,9 @@ function renderDashQuotes() {
     </div>
     <div id="line-items">
       <div class="li-row">
-        <input class="fi" placeholder="e.g. Labor" autocomplete="off">
-        <input class="fi" type="number" placeholder="1" value="1" oninput="recalcQuote()">
-        <input class="fi" type="number" placeholder="0.00" oninput="recalcQuote()">
+        <input class="fi li-desc" placeholder="e.g. Labor" autocomplete="off">
+        <input class="fi li-qty" type="number" placeholder="1" value="1" oninput="recalcQuote()">
+        <input class="fi li-price" type="number" placeholder="0.00" oninput="recalcQuote()">
         <button class="li-del" onclick="this.closest('.li-row').remove();recalcQuote()">&#x2715;</button>
       </div>
     </div>
