@@ -328,13 +328,14 @@ footer {
   footer { padding:32px 24px; flex-direction:column; align-items:flex-start; gap:12px; }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <!-- NAV -->
 <nav id="nav">
   <a class="nav-logo" href="#">
-    <div class="nav-logo-icon"><span>R</span></div>
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#C8E62B"/><text x="5" y="25" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="23" fill="#181C17">R</text></svg>
     <span class="nav-logo-text">Resurfr</span>
   </a>
   <div style="display:flex;align-items:center;gap:8px">
@@ -566,7 +567,7 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <div class="footer-logo-icon"><span>R</span></div>
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#C8E62B"/><text x="4" y="21" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="20" fill="#181C17">R</text></svg>
     <span class="footer-logo-text">Resurfr</span>
   </div>
   <span class="footer-copy">&copy; 2026 Resurfr. All rights reserved.</span>
@@ -591,12 +592,14 @@ document.querySelectorAll('.feat-card').forEach((card, i) => {
 });
 
 // Hero form
-function handleHeroSubmit(e) {
+async function handleHeroSubmit(e) {
   e.preventDefault();
+  const btn = e.submitter;
   const email = document.getElementById('hero-email').value.trim();
   if (!email) return;
-  saveEmail(email);
-  // Scroll to capture section and show success
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  await saveEmail(email);
+  btn.textContent = 'Get Early Access'; btn.disabled = false;
   document.getElementById('hero-email').value = '';
   document.getElementById('capture-success').style.display = 'block';
   document.getElementById('capture-success').textContent = "You're on the list! We'll be in touch soon.";
@@ -604,27 +607,37 @@ function handleHeroSubmit(e) {
 }
 
 // Capture form
-function handleCaptureSubmit(e) {
+async function handleCaptureSubmit(e) {
   e.preventDefault();
+  const btn = e.submitter;
   const email = document.getElementById('capture-email').value.trim();
   if (!email) return;
-  saveEmail(email);
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  await saveEmail(email);
+  btn.textContent = 'Join Waitlist'; btn.disabled = false;
   document.getElementById('capture-email').value = '';
   const success = document.getElementById('capture-success');
   success.style.display = 'block';
   success.textContent = "You're on the list! We'll be in touch soon.";
 }
 
-// Save email — stores locally + sends to a simple endpoint
-function saveEmail(email) {
-  // Store in localStorage as backup
-  const list = JSON.parse(localStorage.getItem('resurfr_waitlist') || '[]');
-  if (!list.includes(email)) {
-    list.push(email);
-    localStorage.setItem('resurfr_waitlist', JSON.stringify(list));
+// Supabase client
+const { createClient } = supabase;
+const sb = createClient(
+  'https://qyrgkspwxjmbjnkaixag.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA'
+);
+
+async function saveEmail(email) {
+  // Save to Supabase waitlist table
+  try {
+    const { error } = await sb.from('waitlist').insert({ email, signed_up_at: new Date().toISOString() });
+    if (error && error.code !== '23505') { // 23505 = duplicate, that's fine
+      console.error('Supabase error:', error);
+    }
+  } catch(e) {
+    console.error('Save failed:', e);
   }
-  // You can connect this to Netlify Forms, Supabase, or EmailJS later
-  console.log('Waitlist signup:', email);
 }
 </script>
 
