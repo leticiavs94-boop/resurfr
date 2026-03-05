@@ -313,7 +313,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast.purple{border-left-color:#7C3AED;}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
 .converting{animation:pulse .6s ease-out;}
-@media(max-width:768px){#view-profile .panel{padding:16px !important;border-radius:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;}}
+@media(max-width:768px){#view-profile .panel{padding:16px !important;border-radius:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
@@ -820,6 +820,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
       </div>
     </div>
+    <div id="cd-contact"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)">
       <div style="background:white;padding:14px 20px">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted)">Total Billed</div>
@@ -1395,13 +1396,13 @@ function renderJobs(){
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
   const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Revenue</th><th>Profit</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
-      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</strong></td>
+      <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||j.client_name||j.client_name_fallback||'Unknown'}</strong></td>
       <td>${j.service||'-'}</td><td>${fmt(j.date)}${j.time?' <span style="font-size:10px;color:var(--lmuted)">'+fmtTime(j.time)+'</span>':''}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td><td>${j.cost>0?`<span style="font-size:12px;font-weight:700;color:#16A34A">$${((j.amount||0)-(j.cost||0)).toLocaleString()}</span><span style="font-size:10px;color:var(--lmuted);display:block">${Math.round(((j.amount-j.cost)/j.amount)*100)}% margin</span>`:'<span style="color:var(--lmuted);font-size:11px">—</span>'}</td>
       <td>${jbadge(j.status)}</td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
   const cards=jobs.map(j=>`<div class="m-card">
-    <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
+    <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||j.client_name||j.client_name_fallback||'Unknown'}</div><div class="m-card-amount">$${(j.amount||0).toLocaleString()}</div></div>
     <div class="m-card-meta">${j.service||'-'} &middot; ${fmt(j.date)}</div>
     <div class="m-card-tags">${jbadge(j.status)}</div>
     <div class="m-card-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div>
@@ -1451,7 +1452,15 @@ function showClientDetail(id){
   el.dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
-  document.getElementById('cd-meta').textContent=(c.location||'')+(c.location&&c.surface?' &middot; ':''+(c.surface||''))+(c.courts?' &middot; '+c.courts+' unit'+(c.courts!==1?'s':''):'');
+  document.getElementById('cd-meta').innerHTML=[c.location,c.surface,c.courts?(c.courts+' unit'+(c.courts!==1?'s':'')):null].filter(Boolean).join(' &middot; ');
+  // Contact info row
+  let contactHtml = '';
+  if(c.phone) contactHtml += `<a href="tel:${c.phone}" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--green);font-weight:600;text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.4 2 2 0 0 1 3.57 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>${c.phone}</a>`;
+  if(c.email) contactHtml += `<a href="mailto:${c.email}" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--green);font-weight:600;text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${c.email}</a>`;
+  if(c.street||c.location) contactHtml += `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${[c.street,c.location].filter(Boolean).join(', ')}</div>`;
+  if(c.notes) contactHtml += `<div style="font-size:12px;color:var(--muted);font-style:italic">${c.notes}</div>`;
+  const contactEl = document.getElementById('cd-contact');
+  if(contactEl) contactEl.innerHTML = contactHtml ? `<div style="display:flex;flex-direction:column;gap:6px;padding:12px 20px;border-bottom:1px solid var(--border)">${contactHtml}</div>` : '';
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
   document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
@@ -1881,9 +1890,11 @@ async function loadProfile() {
       updateTradeSelection();
     }
     if (data.logo_url) {
+      businessProfile.logo_data = data.logo_url;
       const zone = document.getElementById('logo-upload-zone');
       zone.style.backgroundImage = `url(${data.logo_url})`;
       zone.style.backgroundSize = 'cover';
+      zone.style.backgroundPosition = 'center';
       zone.innerHTML = '';
     }
     updateProfilePreview();
@@ -1988,6 +1999,7 @@ function handleLogoUpload(input) {
       zone.style.backgroundPosition = 'center';
       zone.innerHTML = `<input type="file" id="profile-logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">`;
       businessProfile.logo_data = e.target.result;
+      businessProfile._logo_changed = true;
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -2174,6 +2186,9 @@ function openQuoteModal(clientName) {
   document.getElementById('nq-tax').value = '0';
   document.getElementById('nq-notes').value = '';
   document.getElementById('nq-valid').value = '';
+  document.getElementById('nq-client-email').value = '';
+  document.getElementById('nq-job-date').value = '';
+  document.getElementById('nq-job-time').value = '';
   // Populate client dropdown
   const sel = document.getElementById('nq-client');
   if (sel && sel.tagName === 'SELECT') {
@@ -2206,6 +2221,9 @@ function editQuote(id) {
   document.getElementById('nq-tax').value = q.tax || 0;
   document.getElementById('nq-notes').value = q.notes || '';
   document.getElementById('nq-valid').value = q.valid_until || '';
+  document.getElementById('nq-client-email').value = q.client_email || '';
+  document.getElementById('nq-job-date').value = q.job_date || '';
+  document.getElementById('nq-job-time').value = q.job_time || '';
   // Line items
   const lines = q.lines || [];
   document.getElementById('line-items').innerHTML = lines.map((l, i) => `
@@ -2270,6 +2288,9 @@ async function saveQuote() {
     tax: parseFloat(document.getElementById('nq-tax').value) || 0,
     notes: document.getElementById('nq-notes').value.trim() || null,
     valid_until: document.getElementById('nq-valid').value || null,
+    client_email: document.getElementById('nq-client-email').value.trim() || null,
+    job_date: document.getElementById('nq-job-date').value || null,
+    job_time: document.getElementById('nq-job-time').value || null,
     status: editingQuoteId ? undefined : 'draft'
   };
   if (editingQuoteId) delete payload.status;
@@ -2303,52 +2324,96 @@ function previewQuote(id) {
   if (!qpBody) return;
   
   const lines = q.lines || [];
+  const logoHtml = businessProfile.logo_data
+    ? `<img src="${businessProfile.logo_data}" style="height:56px;max-width:120px;object-fit:contain;border-radius:8px">`
+    : `<div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px">${businessProfile.name||'Your Business'}</div>`;
+
   qpBody.innerHTML = `
-    <div class="qp-bar" style="background:linear-gradient(135deg,var(--green),#2A6B47)">
-      <div class="qp-brand">${businessProfile.name || 'Your Business'}</div>
-      <div class="qp-num">ESTIMATE #${String(q.id).slice(-4).toUpperCase()}</div>
-    </div>
-    <div class="qp-head">
-      <div class="qp-bills">
-        <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">${businessProfile.name || 'Your Business'}</div></div>
-        <div class="qp-bill"><div class="qp-bill-lbl">TO</div><div class="qp-bill-name">${q.client_name}</div></div>
-      </div>
-      <div class="qp-meta">
-        <div><span class="qp-bill-lbl">Date</span><br>${new Date(q.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
-        ${q.valid_until ? `<div><span class="qp-bill-lbl">Valid Until</span><br>${new Date(q.valid_until+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>` : ''}
-      </div>
-    </div>
-    <div class="qp-body-inner" style="padding:0 24px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin:16px 0 10px">${q.title}</div>
-      <table class="qp-tbl">
-        <thead><tr><th style="text-align:left">Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
-        <tbody>${lines.map(l => `<tr><td>${l.d}</td><td style="text-align:center">${l.q}</td><td style="text-align:right">${fmt(l.p)}</td><td style="text-align:right">${fmt(l.q*l.p)}</td></tr>`).join('')}</tbody>
-      </table>
-      <div class="qp-tots">
-        <div class="qp-tots-inner">
-          <div class="qp-tot-row"><span>Subtotal</span><span>${fmt(s)}</span></div>
-          ${q.tax ? `<div class="qp-tot-row"><span>Tax (${q.tax}%)</span><span>${fmt(t)}</span></div>` : ''}
-          <div class="qp-tot-row" style="font-size:18px;font-weight:800;color:var(--charcoal);border-top:2px solid var(--border);padding-top:10px;margin-top:6px"><span>Total</span><span>${fmt(total)}</span></div>
+    <div style="background:white;font-family:'DM Sans',sans-serif">
+
+      <!-- HEADER -->
+      <div style="background:linear-gradient(135deg,${businessProfile.color||'#1E4D35'},#2A6B47);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        ${logoHtml}
+        <div style="text-align:right">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase">Estimate</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:white">#${String(q.id).slice(-6).toUpperCase()}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${new Date(q.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
         </div>
       </div>
-      ${q.notes ? `<div class="qp-note-box">${q.notes}</div>` : ''}
-      ${q.status === 'sent' || q.status === 'approved' ? `
-      <div style="margin:20px 0;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
+
+      <!-- FROM / TO -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:2px solid #f0f0f0">
+        <div style="padding:20px 24px;border-right:1px solid #f0f0f0">
+          <div style="font-size:9px;font-weight:800;letter-spacing:2px;color:#999;text-transform:uppercase;margin-bottom:8px">From</div>
+          <div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:4px">${businessProfile.name||'Your Business'}</div>
+          ${businessProfile.phone?`<div style="font-size:12px;color:#666;margin-top:2px">📞 ${businessProfile.phone}</div>`:''}
+          ${businessProfile.email?`<div style="font-size:12px;color:#666;margin-top:2px">✉ ${businessProfile.email}</div>`:''}
+          ${businessProfile.street?`<div style="font-size:12px;color:#666;margin-top:2px">📍 ${businessProfile.street}${businessProfile.city?', '+businessProfile.city:''}</div>`:''}
+          ${businessProfile.license_number?`<div style="font-size:11px;color:#999;margin-top:4px">License: ${businessProfile.license_number}</div>`:''}
+        </div>
+        <div style="padding:20px 24px">
+          <div style="font-size:9px;font-weight:800;letter-spacing:2px;color:#999;text-transform:uppercase;margin-bottom:8px">Prepared For</div>
+          <div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:4px">${q.client_name}</div>
+          ${q.client_email?`<div style="font-size:12px;color:#666;margin-top:2px">✉ ${q.client_email}</div>`:''}
+          ${q.job_date?`<div style="font-size:12px;color:#1E4D35;font-weight:700;margin-top:6px">📅 Job Date: ${new Date(q.job_date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}${q.job_time?' at '+fmtTime(q.job_time):''}</div>`:''}
+          ${q.valid_until?`<div style="font-size:11px;color:#999;margin-top:4px">Valid until ${new Date(q.valid_until+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`:''}
+        </div>
+      </div>
+
+      <!-- LINE ITEMS -->
+      <div style="padding:0 0 0 0">
+        <div style="padding:14px 24px 8px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;color:#333;letter-spacing:.5px">${q.title}</div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:#f8f8f8">
+              <th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:800;color:#999;letter-spacing:1px;text-transform:uppercase">Description</th>
+              <th style="text-align:center;padding:10px 8px;font-size:10px;font-weight:800;color:#999;letter-spacing:1px;text-transform:uppercase;white-space:nowrap">Qty</th>
+              <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:800;color:#999;letter-spacing:1px;text-transform:uppercase;white-space:nowrap">Unit Price</th>
+              <th style="text-align:right;padding:10px 24px 10px 8px;font-size:10px;font-weight:800;color:#999;letter-spacing:1px;text-transform:uppercase">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lines.map((l,i) => `<tr style="border-top:1px solid #f0f0f0;background:${i%2===0?'white':'#fafafa'}">
+              <td style="padding:12px 24px;font-size:13px;color:#333">${l.d}</td>
+              <td style="text-align:center;padding:12px 8px;font-size:13px;color:#666">${l.q}</td>
+              <td style="text-align:right;padding:12px 8px;font-size:13px;color:#666">${fmt(l.p)}</td>
+              <td style="text-align:right;padding:12px 24px 12px 8px;font-size:13px;font-weight:600;color:#1a1a1a">${fmt(l.q*l.p)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TOTALS -->
+      <div style="display:flex;justify-content:flex-end;padding:16px 24px;border-top:2px solid #f0f0f0">
+        <div style="width:220px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#666"><span>Subtotal</span><span>${fmt(s)}</span></div>
+          ${q.tax?`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#666"><span>Tax (${q.tax}%)</span><span>${fmt(t)}</span></div>`:''}
+          <div style="display:flex;justify-content:space-between;padding:12px 14px;margin-top:8px;background:linear-gradient(135deg,#1E4D35,#2A6B47);border-radius:10px"><span style="font-size:14px;font-weight:800;color:white">TOTAL DUE</span><span style="font-size:18px;font-weight:900;color:#C8E62B">${fmt(total)}</span></div>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      ${q.notes?`<div style="margin:0 24px 16px;padding:14px;background:#fffbeb;border-left:3px solid #C8E62B;border-radius:0 8px 8px 0;font-size:12px;color:#666;line-height:1.6">${q.notes}</div>`:''}
+
+      <!-- APPROVAL -->
+      ${q.status==='sent'||q.status==='approved'?`
+      <div style="margin:0 24px 16px;padding:20px;background:#F0FDF4;border-radius:12px;text-align:center;border:1px solid #BBF7D0">
         <div style="font-size:13px;color:#166534;margin-bottom:12px;font-weight:600">Client Approval</div>
-        ${q.status === 'approved' 
-          ? `<div style="font-size:24px;margin-bottom:6px"></div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">Approved</div>`
-          : `<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif"> Approve This Quote</button>`
+        ${q.status==='approved'
+          ?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#16A34A">✓ Approved</div>`
+          :`<button onclick="approveQuote('${q.id}')" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Approve This Quote</button>`
         }
-      </div>` : ''}
-      ${q.status === 'approved' ? `
-      <div style="text-align:center;padding:16px 0">
-        <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">-> Convert to Job</button>
-      </div>` : ''}
-    </div>
-    <div class="qp-footer">
-      ${businessProfile.name || 'Your Business'}
-      ${businessProfile.phone ? ' &middot; ' + businessProfile.phone : ''}
-      ${businessProfile.email ? ' &middot; ' + businessProfile.email : ''}
+      </div>`:'' }
+      ${q.status==='approved'?`
+      <div style="text-align:center;padding:16px 24px 20px">
+        <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">→ Convert to Job</button>
+      </div>`:''}
+
+      <!-- FOOTER -->
+      <div style="background:#f8f8f8;padding:14px 24px;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="font-size:11px;color:#aaa">${businessProfile.name||'Your Business'} ${businessProfile.phone?' · '+businessProfile.phone:''} ${businessProfile.email?' · '+businessProfile.email:''}</div>
+        <div style="font-size:10px;color:#ccc">Powered by Resurfr</div>
+      </div>
     </div>`;
   
   document.getElementById('nq-overlay').style.display = 'none';
@@ -2400,8 +2465,10 @@ async function convertQuote(id) {
     service: q.title,
     amount: total,
     status: 'scheduled',
-    date: new Date().toISOString().split('T')[0],
-    notes: `Converted from quote: ${q.title}`
+    date: q.job_date || new Date().toISOString().split('T')[0],
+    time: q.job_time || null,
+    notes: `Converted from quote: ${q.title}`,
+    client_name_fallback: q.client_name
   };
   if (clientId) jobPayload.client_id = clientId;
   else jobPayload.client_name = q.client_name; // fallback if no client_id
@@ -2485,7 +2552,7 @@ function openEmailModal(quoteId) {
 
   // Pre-fill client email if we have it
   const client = clients.find(c => c.name === q.client_name);
-  document.getElementById('eq-to').value = client?.email || '';
+  document.getElementById('eq-to').value = q.client_email || client?.email || '';
 
   // Pre-fill subject
   document.getElementById('eq-subject').value = `Your Estimate from ${businessProfile.name || 'Us'} - ${q.title}`;
@@ -2614,11 +2681,22 @@ function openEmailFromPreview() {
     </div>
     <div class="fi-2">
       <div class="fg"><label class="fl">Client Name *</label>
-        <input class="fi" id="nq-client" placeholder="Client name" list="nq-client-list" autocomplete="off">
+        <input class="fi" id="nq-client" placeholder="Client name" list="nq-client-list" autocomplete="off" oninput="autoFillClientEmail()">
         <datalist id="nq-client-list"></datalist>
       </div>
-      <div class="fg"><label class="fl">Quote Title *</label>
-        <input class="fi" id="nq-title" placeholder="e.g. Solar panel installation" autocomplete="off" list="nq-title-list"><datalist id="nq-title-list"></datalist>
+      <div class="fg"><label class="fl">Client Email <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(for sending)</span></label>
+        <input class="fi" id="nq-client-email" type="email" placeholder="client@email.com" autocomplete="off">
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Quote Title *</label>
+      <input class="fi" id="nq-title" placeholder="e.g. Solar panel installation" autocomplete="off" list="nq-title-list"><datalist id="nq-title-list"></datalist>
+    </div>
+    <div class="fi-2">
+      <div class="fg"><label class="fl">Job Date <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label>
+        <input class="fi" type="date" id="nq-job-date">
+      </div>
+      <div class="fg"><label class="fl">Job Time <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label>
+        <input class="fi" type="time" id="nq-job-time">
       </div>
     </div>
     <div class="fi-2">
