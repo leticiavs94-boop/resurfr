@@ -629,11 +629,18 @@ const sb = createClient(
 );
 
 async function saveEmail(email) {
-  // Save to Supabase waitlist table
   try {
-    const { error } = await sb.from('waitlist').insert({ email, signed_up_at: new Date().toISOString() });
-    if (error && error.code !== '23505') { // 23505 = duplicate, that's fine
-      console.error('Supabase error:', error);
+    const { data, error } = await sb.from('waitlist').insert([{ email }]).select();
+    if (error) {
+      if (error.code === '23505' || error.code === '409') {
+        console.log('Email already on list — thats ok');
+      } else {
+        console.error('Supabase error code:', error.code);
+        console.error('Supabase error message:', error.message);
+        console.error('Supabase error details:', error.details);
+      }
+    } else {
+      console.log('Saved to waitlist:', data);
     }
   } catch(e) {
     console.error('Save failed:', e);
