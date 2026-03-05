@@ -331,6 +331,12 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <span class="nav-badge" id="nb-quotes" style="background:#7C3AED;color:white;display:none"></span>
     </button>
   </nav>
+  <div class="sidebar-section">Account</div>
+  <nav class="sidebar-nav">
+    <button class="nav-item" id="nav-profile" onclick="nav('profile',this)">
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Business Profile
+    </button>
+  </nav>
   <div class="sidebar-footer">
     <div class="user-card">
       <div class="user-av" id="user-av">?</div>
@@ -465,6 +471,144 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 
 <!-- QUOTES VIEW -->
+
+<div id="view-profile" class="view">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div>
+        <div class="page-title">Business Profile</div>
+        <div class="topbar-date">Your info appears on every quote you send</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-primary" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+
+  <div class="main-inner" style="max-width:680px">
+
+    <!-- LOGO & NAME -->
+    <div class="panel" style="margin-bottom:16px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+        <div class="panel-title">Logo &amp; Brand</div>
+        <div style="font-size:12px;color:var(--muted)">Shown at the top of every quote</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+        <div id="logo-upload-zone" onclick="document.getElementById('profile-logo-input').click()" style="width:80px;height:80px;border-radius:14px;background:var(--off);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;gap:4px;transition:all .2s;overflow:hidden">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px">LOGO</span>
+        </div>
+        <input type="file" id="profile-logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Upload your logo</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5">PNG or JPG. Square images work best.<br>Shows on quote headers your clients see.</div>
+          <button onclick="document.getElementById('profile-logo-input').click()" style="margin-top:8px;padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Choose File</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="grid-column:1/-1">
+          <div class="fi-label">Business Name</div>
+          <input class="fi-input" id="prof-name" type="text" placeholder="e.g. Cletus Solar LLC" oninput="updateProfilePreview()">
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="fi-label">Tagline <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
+          <input class="fi-input" id="prof-tagline" type="text" placeholder="e.g. Licensed Solar Installer · Florida">
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel" style="margin-bottom:16px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+        <div class="panel-title">Contact Info</div>
+        <div style="font-size:12px;color:var(--muted)">Shown on quote footer so clients can reach you</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <div class="fi-label">Phone Number</div>
+          <input class="fi-input" id="prof-phone" type="tel" placeholder="(555) 123-4567" oninput="updateProfilePreview()">
+        </div>
+        <div>
+          <div class="fi-label">Email Address</div>
+          <input class="fi-input" id="prof-email" type="email" placeholder="you@yourbusiness.com" oninput="updateProfilePreview()">
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="fi-label">Website <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
+          <input class="fi-input" id="prof-website" type="url" placeholder="www.yourbusiness.com">
+        </div>
+      </div>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="panel" style="margin-bottom:16px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+        <div class="panel-title">Business Address</div>
+        <div style="font-size:12px;color:var(--muted)">For licensing and tax purposes on quotes</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="grid-column:1/-1">
+          <div class="fi-label">Street Address</div>
+          <input class="fi-input" id="prof-street" type="text" placeholder="123 Main Street">
+        </div>
+        <div>
+          <div class="fi-label">City</div>
+          <input class="fi-input" id="prof-city" type="text" placeholder="Miami">
+        </div>
+        <div>
+          <div class="fi-label">State</div>
+          <input class="fi-input" id="prof-state" type="text" placeholder="Florida">
+        </div>
+        <div>
+          <div class="fi-label">ZIP Code</div>
+          <input class="fi-input" id="prof-zip" type="text" placeholder="33101">
+        </div>
+        <div>
+          <div class="fi-label">License # <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
+          <input class="fi-input" id="prof-license" type="text" placeholder="e.g. EC13008012">
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="panel" style="background:var(--off);border:1px solid var(--border)">
+      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+        <div class="panel-title">Quote Preview</div>
+        <div style="font-size:12px;color:var(--muted)">This is how your header looks on sent quotes</div>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden">
+        <div style="background:var(--green);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+          <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Your Business Name</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1px">ESTIMATE #001</div>
+        </div>
+        <div style="padding:16px 20px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">From</div>
+              <div id="prev-from" style="font-size:13px;font-weight:600;color:var(--text)">Your Business Name</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">To</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">Client Name</div>
+            </div>
+          </div>
+          <div style="padding-top:12px;border-top:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.4 2 2 0 0 1 3.57 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
+              <span id="prev-phone">(555) 123-4567</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span id="prev-email">you@yourbusiness.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="view-quotes" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -1380,7 +1524,7 @@ function renderRevenueChart(){
 function nav(name,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  if(name==='quotes'){renderQuotesPipe();renderQuotesTable();}
+  if(name==='quotes'){renderQuotesPipe();renderQuotesTable();} if(name==='profile'){loadProfile();}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   else{const btn=document.getElementById('nav-'+name);if(btn)btn.classList.add('active');}
@@ -1397,6 +1541,84 @@ function cdEdit(){const id=document.getElementById('client-detail-overlay').data
 function cdDelete(){const id=document.getElementById('client-detail-overlay').dataset.clientId;const c=clients.find(x=>String(x.id)===String(id));if(!c)return;document.getElementById('client-detail-overlay').style.display='none';confirmDelete('client',id,c.name);}
 function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
+
+
+// ── BUSINESS PROFILE ──
+let businessProfile = {};
+
+async function loadProfile() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const { data } = await sb.from('business_profiles').select('*').eq('user_id', user.id).single();
+  if (data) {
+    businessProfile = data;
+    document.getElementById('prof-name').value = data.name || '';
+    document.getElementById('prof-tagline').value = data.tagline || '';
+    document.getElementById('prof-phone').value = data.phone || '';
+    document.getElementById('prof-email').value = data.email || '';
+    document.getElementById('prof-website').value = data.website || '';
+    document.getElementById('prof-street').value = data.street || '';
+    document.getElementById('prof-city').value = data.city || '';
+    document.getElementById('prof-state').value = data.state || '';
+    document.getElementById('prof-zip').value = data.zip || '';
+    document.getElementById('prof-license').value = data.license_number || '';
+    if (data.logo_url) {
+      const zone = document.getElementById('logo-upload-zone');
+      zone.style.backgroundImage = `url(${data.logo_url})`;
+      zone.style.backgroundSize = 'cover';
+      zone.innerHTML = '';
+    }
+    updateProfilePreview();
+  }
+}
+
+function updateProfilePreview() {
+  const name = document.getElementById('prof-name').value || 'Your Business Name';
+  const phone = document.getElementById('prof-phone').value || '(555) 123-4567';
+  const email = document.getElementById('prof-email').value || 'you@yourbusiness.com';
+  document.getElementById('prev-biz-name').textContent = name;
+  document.getElementById('prev-from').textContent = name;
+  document.getElementById('prev-phone').textContent = phone;
+  document.getElementById('prev-email').textContent = email;
+}
+
+function handleLogoUpload(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const zone = document.getElementById('logo-upload-zone');
+      zone.style.backgroundImage = `url(${e.target.result})`;
+      zone.style.backgroundSize = 'cover';
+      zone.style.backgroundPosition = 'center';
+      zone.innerHTML = `<input type="file" id="profile-logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">`;
+      businessProfile.logo_data = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+async function saveProfile() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const profile = {
+    user_id: user.id,
+    name: document.getElementById('prof-name').value,
+    tagline: document.getElementById('prof-tagline').value,
+    phone: document.getElementById('prof-phone').value,
+    email: document.getElementById('prof-email').value,
+    website: document.getElementById('prof-website').value,
+    street: document.getElementById('prof-street').value,
+    city: document.getElementById('prof-city').value,
+    state: document.getElementById('prof-state').value,
+    zip: document.getElementById('prof-zip').value,
+    license_number: document.getElementById('prof-license').value,
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await sb.from('business_profiles').upsert(profile, { onConflict: 'user_id' });
+  if (error) { toast('Error saving profile', 'err'); return; }
+  businessProfile = profile;
+  toast('Profile saved!');
+}
 
 // ==========================================
 // QUOTES MODULE
