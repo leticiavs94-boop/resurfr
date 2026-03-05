@@ -55,11 +55,51 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .content{padding:24px;flex:1;min-width:0}
 .view{display:none}
 .view.active{display:block}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal);line-height:1}
 .stat-lbl{font-size:11px;color:var(--lmuted);margin-top:3px}
 .stat-sub{font-size:11px;color:var(--lmuted);margin-top:2px}
+
+/* ── CALENDAR ── */
+.cal-wrap{padding:16px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-month{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--charcoal)}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:white;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-nav button:hover{background:var(--charcoal);color:white;border-color:var(--charcoal)}
+.cal-view-btns{display:flex;gap:4px;background:var(--off);border-radius:8px;padding:3px}
+.cal-view-btn{padding:5px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif}
+.cal-view-btn.active{background:white;color:var(--charcoal);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-dow{text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:4px 0;letter-spacing:.5px;text-transform:uppercase}
+.cal-day{min-height:72px;border-radius:8px;padding:4px;background:white;border:1px solid var(--border);cursor:pointer;transition:all .15s;position:relative}
+.cal-day:hover{border-color:var(--green);background:#F5FAF6}
+.cal-day.other-month{background:var(--off);opacity:0.5}
+.cal-day.today{border-color:var(--yellow);border-width:2px}
+.cal-day.today .cal-day-num{background:var(--charcoal);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-day-num{font-size:12px;font-weight:700;color:var(--charcoal);margin-bottom:2px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-event{font-size:10px;font-weight:600;border-radius:4px;padding:2px 5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:1.3}
+.cal-event.scheduled{background:#DBEAFE;color:#1D4ED8}
+.cal-event.inprogress{background:#FEF9C3;color:#854D0E}
+.cal-event.completed{background:#DCFCE7;color:#166534}
+.cal-event.cancelled{background:#FEE2E2;color:#991B1B}
+.cal-week-grid{display:grid;grid-template-columns:48px repeat(7,1fr);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.cal-week-header{background:var(--off);padding:8px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border)}
+.cal-week-header.today-col{background:rgba(200,230,43,0.15);color:var(--charcoal)}
+.cal-time-cell{background:var(--off);border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:2px 4px;font-size:10px;color:var(--muted);font-weight:600;height:48px;display:flex;align-items:flex-start;padding-top:4px}
+.cal-slot{border-right:1px solid var(--border);border-bottom:1px solid var(--border);height:48px;position:relative;cursor:pointer;transition:background .1s}
+.cal-slot:hover{background:rgba(200,230,43,0.08)}
+.cal-slot-event{position:absolute;inset:2px;border-radius:4px;padding:2px 4px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;z-index:2}
+@media(max-width:768px){
+  .cal-day{min-height:48px;padding:2px}
+  .cal-day-num{font-size:11px}
+  .cal-event{display:none}
+  .cal-day.has-jobs::after{content:'';display:block;width:6px;height:6px;background:var(--green);border-radius:50%;margin:2px auto}
+  .cal-week-grid{grid-template-columns:36px repeat(7,1fr)}
+  .cal-time-cell{font-size:9px;padding:2px}
+}
+
 .onboarding{background:linear-gradient(135deg,var(--green) 0%,#2A6B47 100%);border-radius:16px;padding:24px;margin-bottom:20px;color:white}
 .ob-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
 .ob-sub{font-size:13px;opacity:0.8;margin-bottom:18px}
@@ -69,6 +109,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .ob-step:hover{background:rgba(255,255,255,0.2)}
 .ob-step:first-child:hover{background:#d4f030}
 .ob-step-icon{font-size:18px;flex-shrink:0}
+.trade-chip{display:flex;align-items:center;gap:0;cursor:pointer}
+.trade-chip input{display:none}
+.trade-chip span{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--muted);background:white;cursor:pointer;transition:all .15s;width:100%;justify-content:center}
+.trade-chip input:checked + span{border-color:var(--green);background:rgba(30,77,53,0.07);color:var(--green)}
 .ob-step-text{font-size:13px;font-weight:600}
 .ob-step-sub{font-size:11px;opacity:0.7;margin-top:1px}
 .ob-footer{font-size:11px;opacity:0.6;display:flex;gap:16px;flex-wrap:wrap}
@@ -269,6 +313,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast.purple{border-left-color:#7C3AED;}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
 .converting{animation:pulse .6s ease-out;}
+@media(max-width:768px){#view-profile .panel{padding:16px !important;border-radius:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
@@ -315,6 +360,9 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients
       <span class="nav-badge" id="nb-clients" style="display:none"></span>
     </button>
+    <button class="nav-item" id="nav-calendar" onclick="nav('calendar',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="3"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="3"/><line x1="16" y1="14" x2="16" y2="14" stroke-width="3"/></svg>Calendar
+    </button>
     <button class="nav-item" id="nav-jobs" onclick="nav('jobs',this)">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs
     </button>
@@ -344,6 +392,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <div class="user-av" id="user-av">?</div>
       <div style="min-width:0">
         <div class="user-name" id="user-email">Loading...</div>
+        <div id="plan-badge" style="font-size:10px;font-weight:700;color:var(--yellow);letter-spacing:.5px">FREE PLAN</div>
         <div class="sign-out" onclick="signOut()">Sign out</div>
       </div>
     </div>
@@ -371,6 +420,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   <div class="content">
     <div class="stats">
       <div class="stat-card"><div class="stat-val" id="s-revenue">$0</div><div class="stat-lbl">YTD Revenue</div></div>
+      <div class="stat-card" style="border-color:rgba(30,77,53,0.2);background:linear-gradient(135deg,#F0FDF4,#fff)"><div class="stat-val" id="s-profit" style="color:#16A34A">$0</div><div class="stat-lbl">YTD Profit</div><div class="stat-sub" id="s-margin" style="color:#16A34A"></div></div>
       <div class="stat-card"><div class="stat-val" id="s-clients">0</div><div class="stat-lbl">Active Clients</div><div class="stat-sub" id="s-courts" style="color:var(--lmuted)"></div></div>
       <div class="stat-card"><div class="stat-val" id="s-invoices">$0</div><div class="stat-lbl">Pending Invoices</div><div class="stat-sub" id="s-inv-count"></div></div>
       <div class="stat-card"><div class="stat-val" id="s-jobs">0</div><div class="stat-lbl">Jobs This Month</div><div class="stat-sub" id="s-jobs-sub"></div></div>
@@ -440,6 +490,38 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- JOBS VIEW -->
+
+<div id="view-calendar" class="view">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="page-title">Calendar</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-yellow" onclick="openModal('job')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Job</button>
+    </div>
+  </div>
+  <div class="content" style="padding:0">
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <div class="cal-month" id="cal-title">March 2026</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="cal-view-btns">
+            <button class="cal-view-btn active" id="cvb-month" onclick="setCalView('month')">Month</button>
+            <button class="cal-view-btn" id="cvb-week" onclick="setCalView('week')">Week</button>
+          </div>
+          <div class="cal-nav">
+            <button onclick="calPrev()">&#8249;</button>
+            <button onclick="calToday()" style="width:auto;padding:0 10px;font-size:11px;font-weight:700">Today</button>
+            <button onclick="calNext()">&#8250;</button>
+          </div>
+        </div>
+      </div>
+      <div id="cal-body"></div>
+    </div>
+  </div>
+</div>
+
 <div id="view-jobs" class="view">
   <div class="topbar">
     <div class="topbar-left">
@@ -485,7 +567,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
 
-  <div class="main-inner" style="max-width:680px;padding:20px;margin:0 auto;width:100%">
+  <div class="main-inner" style="max-width:680px;padding:20px 16px;margin:0 auto;width:100%;box-sizing:border-box">
 
     <!-- LOGO & NAME -->
     <div class="panel" style="margin-bottom:16px">
@@ -513,6 +595,20 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div style="grid-column:1/-1">
           <div class="fi-label">Tagline <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
           <input class="fi-input" id="prof-tagline" type="text" placeholder="e.g. Licensed Solar Installer · Florida">
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="fi-label">What trades do you work in? <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(select all that apply)</span></div>
+          <div id="trades-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
+            <label class="trade-chip"><input type="checkbox" value="Solar" onchange="updateTradeSelection()"><span>☀️ Solar</span></label>
+            <label class="trade-chip"><input type="checkbox" value="HVAC" onchange="updateTradeSelection()"><span>❄️ HVAC</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Roofing" onchange="updateTradeSelection()"><span>🏠 Roofing</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Plumbing" onchange="updateTradeSelection()"><span>🔧 Plumbing</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Lawn Care" onchange="updateTradeSelection()"><span>🌿 Lawn Care</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Pool Service" onchange="updateTradeSelection()"><span>🏊 Pool</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Electrical" onchange="updateTradeSelection()"><span>⚡ Electrical</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Painting" onchange="updateTradeSelection()"><span>🎨 Painting</span></label>
+            <label class="trade-chip"><input type="checkbox" value="Other" onchange="updateTradeSelection()"><span>🔩 Other</span></label>
+          </div>
         </div>
       </div>
     </div>
@@ -608,7 +704,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   </div>
 
   <!-- STICKY SAVE BAR -->
-  <div id="profile-save-bar" style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:50;margin-top:24px;flex-wrap:wrap">
+  <div id="profile-save-bar" style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:50;margin-top:24px;flex-wrap:wrap">
     <div style="font-size:13px;color:var(--muted)">Changes apply to <strong style="color:var(--text)">all future quotes</strong> automatically.</div>
     <div style="display:flex;align-items:center;gap:10px">
       <div id="profile-saved-badge" style="display:none;align-items:center;gap:6px;background:#E8F5EE;border:1px solid #BBF7D0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#16A34A">
@@ -763,7 +859,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <div class="fg"><label class="fl">Street Address</label><input type="text" class="fi" id="c-street" placeholder="123 Main St" autocomplete="off"></div>
       <div class="fg"><label class="fl">City, State *</label><input type="text" class="fi" id="c-loc" placeholder="Miami, FL" autocomplete="off"></div>
       <div class="fg"><label class="fl">Service Type</label>
-        <select class="fi" id="c-surface"><option value="">Select type</option><option value="Solar">Solar</option><option value="Lawn Care">Lawn Care</option><option value="HVAC">HVAC</option><option value="Roofing">Roofing</option><option value="Pool Service">Pool Service</option><option value="Plumbing">Plumbing</option><option value="Tennis Courts">Tennis Courts</option><option value="Other">Other</option></select>
+        <select class="fi" id="c-surface"><option value="">Select type</option></select>
       </div>
       <div class="row2">
         <div class="fg"><label class="fl">Units / Properties</label><input type="number" class="fi" id="c-courts" placeholder="1" min="1" autocomplete="off"></div>
@@ -821,10 +917,14 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div class="fg"><label class="fl">Client *</label>
       <select class="fi" id="j-client"><option value="">Select client</option></select>
     </div>
-    <div class="fg"><label class="fl">Service *</label><input type="text" class="fi" id="j-service" placeholder="e.g. Roof inspection, AC service" autocomplete="off"></div>
+    <div class="fg"><label class="fl">Service *</label><input type="text" class="fi" id="j-service" placeholder="e.g. Roof inspection, AC service" autocomplete="off" list="j-service-list"><datalist id="j-service-list"></datalist></div>
     <div class="row2">
       <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
-      <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="j-amount" placeholder="0" autocomplete="off"></div>
+      <div class="fg"><label class="fl">Time</label><input type="time" class="fi" id="j-time"></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label class="fl">Revenue ($) <span style="font-size:10px;color:var(--lmuted);font-weight:400">what client pays</span></label><input type="number" class="fi" id="j-amount" placeholder="0" autocomplete="off"></div>
+      <div class="fg"><label class="fl">Your Costs ($) <span style="font-size:10px;color:var(--lmuted);font-weight:400">materials, labor</span></label><input type="number" class="fi" id="j-cost" placeholder="0" autocomplete="off"></div>
     </div>
     <div class="fg"><label class="fl">Status</label>
       <select class="fi" id="j-status"><option value="scheduled">Scheduled</option><option value="inprogress">In Progress</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
@@ -948,6 +1048,160 @@ async function loadClients(){
   const nb=document.getElementById('nb-clients');
   if(nb){nb.textContent=clients.length;nb.style.display=clients.length?'inline':'none';}
 }
+
+// ══════════════════════════════════════════
+// CALENDAR MODULE
+// ══════════════════════════════════════════
+let calDate = new Date();
+let calView = 'month';
+
+function setCalView(v) {
+  calView = v;
+  document.getElementById('cvb-month').classList.toggle('active', v === 'month');
+  document.getElementById('cvb-week').classList.toggle('active', v === 'week');
+  renderCalendar();
+}
+
+function calPrev() {
+  if (calView === 'month') calDate.setMonth(calDate.getMonth() - 1);
+  else calDate.setDate(calDate.getDate() - 7);
+  renderCalendar();
+}
+
+function calNext() {
+  if (calView === 'month') calDate.setMonth(calDate.getMonth() + 1);
+  else calDate.setDate(calDate.getDate() + 7);
+  renderCalendar();
+}
+
+function calToday() {
+  calDate = new Date();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  if (calView === 'month') renderMonthView();
+  else renderWeekView();
+}
+
+function renderMonthView() {
+  const now = new Date();
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  document.getElementById('cal-title').textContent = calDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysInPrev = new Date(y, m, 0).getDate();
+
+  let html = '<div class="cal-grid">';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => html += `<div class="cal-dow">${d}</div>`);
+
+  // prev month fill
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${daysInPrev - i}</div></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayJobs = jobs.filter(j => j.date === dateStr);
+    const isToday = now.getFullYear()===y && now.getMonth()===m && now.getDate()===d;
+    html += `<div class="cal-day${isToday?' today':''}${dayJobs.length?' has-jobs':''}" onclick="calDayClick('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      ${dayJobs.slice(0,3).map(j => `
+        <div class="cal-event ${j.status||'scheduled'}" onclick="event.stopPropagation();editJob('${j.id}')" title="${j.service} - ${j.client_name||''}">
+          ${j.time?fmtTime(j.time)+' ':''}${j.service||'Job'}
+        </div>`).join('')}
+      ${dayJobs.length > 3 ? `<div style="font-size:9px;color:var(--muted);font-weight:700">+${dayJobs.length-3} more</div>` : ''}
+    </div>`;
+  }
+
+  // next month fill
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  for (let d = 1; d <= totalCells - firstDay - daysInMonth; d++) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+  html += '</div>';
+
+  // Day job list below calendar
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const todayJobs = jobs.filter(j => j.date === todayStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+  if (todayJobs.length) {
+    html += `<div style="margin-top:16px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin-bottom:10px">Today's Jobs</div>`;
+    todayJobs.forEach(j => {
+      html += `<div onclick="editJob('${j.id}')" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer">
+        <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${j.status==='completed'?'#16A34A':j.status==='inprogress'?'#CA8A04':'#2563EB'}"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--charcoal)">${j.service||'Job'}</div>
+          <div style="font-size:11px;color:var(--muted)">${j.client_name||''} ${j.time?'· '+fmtTime(j.time):''}</div>
+        </div>
+        <span class="badge b-${j.status||'scheduled'}">${j.status||'scheduled'}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  document.getElementById('cal-body').innerHTML = html;
+}
+
+function renderWeekView() {
+  const now = new Date();
+  // Get start of week (Sunday)
+  const start = new Date(calDate);
+  start.setDate(calDate.getDate() - calDate.getDay());
+  const end = new Date(start); end.setDate(start.getDate() + 6);
+  document.getElementById('cal-title').textContent =
+    start.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' +
+    end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  const days = Array.from({length:7},(_,i)=>{ const d=new Date(start); d.setDate(start.getDate()+i); return d; });
+  const hours = Array.from({length:13},(_,i)=>i+7); // 7am - 7pm
+
+  let html = '<div class="cal-week-grid">';
+  // Header row
+  html += '<div class="cal-week-header" style="border-bottom:1px solid var(--border)"></div>';
+  days.forEach(d => {
+    const isToday = d.toDateString() === now.toDateString();
+    html += `<div class="cal-week-header${isToday?' today-col':''}">
+      <div style="font-size:10px">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
+      <div style="font-size:16px;font-weight:900;color:${isToday?'var(--charcoal)':'var(--muted)'}">${d.getDate()}</div>
+    </div>`;
+  });
+
+  // Time slots
+  hours.forEach(h => {
+    html += `<div class="cal-time-cell">${h<=12?h+'am':(h-12)+'pm'}</div>`;
+    days.forEach(d => {
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const slotJobs = jobs.filter(j => {
+        if (j.date !== dateStr || !j.time) return false;
+        const jh = parseInt(j.time.split(':')[0]);
+        return jh === h;
+      });
+      html += `<div class="cal-slot" onclick="calSlotClick('${dateStr}','${h}')">
+        ${slotJobs.map(j=>`<div class="cal-slot-event ${j.status||'scheduled'}" onclick="event.stopPropagation();editJob('${j.id}')" title="${j.service}">
+          ${fmtTime(j.time)} ${j.service||'Job'}
+        </div>`).join('')}
+      </div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('cal-body').innerHTML = html;
+}
+
+function calDayClick(dateStr) {
+  // Open new job modal pre-filled with date
+  openModal('job');
+  setTimeout(() => { document.getElementById('j-date').value = dateStr; }, 50);
+}
+
+function calSlotClick(dateStr, hour) {
+  openModal('job');
+  setTimeout(() => {
+    document.getElementById('j-date').value = dateStr;
+    document.getElementById('j-time').value = String(hour).padStart(2,'0') + ':00';
+  }, 50);
+}
+
+
 async function loadJobs(){
   const{data}=await sb.from('jobs').select('*,clients(name)').order('created_at',{ascending:false});
   jobs=data||[];
@@ -999,12 +1253,17 @@ function renderDashboard(){
   const totalCourts=clients.reduce((s,c)=>s+(parseInt(c.courts)||1),0);
   const ytdJobs=jobs.filter(j=>j.status==='completed'&&j.date&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
   const ytdRev=ytdJobs.reduce((s,j)=>s+(j.amount||0),0);
+  const ytdCosts=ytdJobs.reduce((s,j)=>s+(j.cost||0),0);
+  const ytdProfit=ytdRev-ytdCosts;
+  const margin=ytdRev>0?Math.round((ytdProfit/ytdRev)*100):0;
   const pend=invoices.filter(i=>i.status==='pending'||i.status==='overdue');
   const pendAmt=pend.reduce((s,i)=>s+(i.amount||0),0);
   const monthJobs=jobs.filter(j=>j.date&&new Date(j.date+'T00:00:00').getMonth()===thisMonth&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
   const yearJobs=jobs.filter(j=>j.date&&new Date(j.date+'T00:00:00').getFullYear()===thisYear);
 
   document.getElementById('s-revenue').textContent='$'+ytdRev.toLocaleString();
+  document.getElementById('s-profit').textContent='$'+ytdProfit.toLocaleString();
+  document.getElementById('s-margin').textContent=ytdRev>0?margin+'% margin':'Add job costs';
   document.getElementById('s-clients').textContent=clients.length;
   document.getElementById('s-courts').textContent=totalCourts+' unit'+(totalCourts!==1?'s':'');
   document.getElementById('s-invoices').textContent='$'+pendAmt.toLocaleString();
@@ -1014,15 +1273,42 @@ function renderDashboard(){
 
   // Onboarding banner
   const banner=document.getElementById('onboarding-banner');
-  if(banner && clients.length===0){
+  const profileDone = businessProfile && businessProfile.name;
+  const step1Done = profileDone;
+  const step2Done = clients.length > 0;
+  const step3Done = jobs.length > 0;
+  const step4Done = invoices.length > 0;
+  const allDone = step1Done && step2Done && step3Done && step4Done;
+
+  if(banner && !allDone){
+    const check = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const stepStyle = (done, first) => done
+      ? 'background:rgba(255,255,255,0.08);opacity:0.5;cursor:default;text-decoration:line-through'
+      : first ? 'background:var(--yellow);color:var(--charcoal)' : 'background:rgba(255,255,255,0.1)';
+
     banner.innerHTML=`<div class="onboarding">
       <div class="ob-title">Welcome to Resurfr &#128075;</div>
-      <div class="ob-sub">You're all set. Let's add your first client and get your business organized.</div>
+      <div class="ob-sub">Complete these steps to get your business set up.</div>
       <div class="ob-steps">
-        <div class="ob-step" onclick="openModal('client')"><div class="ob-step-icon">&#128100;</div><div><div class="ob-step-text">Add your first client</div><div class="ob-step-sub">Name, location, service type</div></div></div>
-        <div class="ob-step" onclick="openModal('job')"><div class="ob-step-icon">&#128295;</div><div><div class="ob-step-text">Schedule a job</div><div class="ob-step-sub">Service, date, amount</div></div></div>
-        <div class="ob-step" onclick="openModal('invoice')"><div class="ob-step-icon">&#128176;</div><div><div class="ob-step-text">Create your first invoice</div><div class="ob-step-sub">Track payments and revenue</div></div></div>
+        <div class="ob-step" onclick="${step1Done?'':"nav('profile',document.getElementById('nav-profile'))"}" style="${stepStyle(step1Done, !step1Done)}">
+          <div class="ob-step-icon">${step1Done ? check : '&#127970;'}</div>
+          <div><div class="ob-step-text">Set up your business profile</div><div class="ob-step-sub">Your name & contact info goes on every quote</div></div>
+          ${!step1Done ? '<div style="margin-left:auto;font-size:11px;font-weight:700;opacity:0.7">START HERE →</div>' : ''}
+        </div>
+        <div class="ob-step" onclick="${step2Done?'':"openModal('client')"}" style="${stepStyle(step2Done, step1Done && !step2Done)}">
+          <div class="ob-step-icon">${step2Done ? check : '&#128100;'}</div>
+          <div><div class="ob-step-text">Add your first client</div><div class="ob-step-sub">Name, location, service type</div></div>
+        </div>
+        <div class="ob-step" onclick="${step3Done?'':"openModal('job')"}" style="${stepStyle(step3Done, step1Done && step2Done && !step3Done)}">
+          <div class="ob-step-icon">${step3Done ? check : '&#128295;'}</div>
+          <div><div class="ob-step-text">Schedule a job</div><div class="ob-step-sub">Service, date, and time</div></div>
+        </div>
+        <div class="ob-step" onclick="${step4Done?'':"openModal('invoice')"}" style="${stepStyle(step4Done, step1Done && step2Done && step3Done && !step4Done)}">
+          <div class="ob-step-icon">${step4Done ? check : '&#128176;'}</div>
+          <div><div class="ob-step-text">Create your first invoice</div><div class="ob-step-sub">Track payments and revenue</div></div>
+        </div>
       </div>
+      <div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,0.4)">${[step1Done,step2Done,step3Done,step4Done].filter(Boolean).length} of 4 complete</div>
     </div>`;
   } else if(banner) {
     banner.innerHTML='';
@@ -1107,10 +1393,10 @@ function renderClients(){
 function renderJobs(){
   if(jobs.length===0){document.getElementById('jobs-list').innerHTML=`<div class="empty">No jobs yet - tap "Add Job" to schedule one</div>`;return;}
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
-  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`+
+  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Revenue</th><th>Profit</th><th>Status</th><th></th></tr></thead><tbody>`+
     jobs.map(j=>`<tr>
       <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(j.clients?.name||'').replace(/'/g,"\\'")}'">${j.clients?.name||'?'}</strong></td>
-      <td>${j.service||'-'}</td><td>${fmt(j.date)}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td>
+      <td>${j.service||'-'}</td><td>${fmt(j.date)}${j.time?' <span style="font-size:10px;color:var(--lmuted)">'+fmtTime(j.time)+'</span>':''}</td><td><strong>$${(j.amount||0).toLocaleString()}</strong></td><td>${j.cost>0?`<span style="font-size:12px;font-weight:700;color:#16A34A">$${((j.amount||0)-(j.cost||0)).toLocaleString()}</span><span style="font-size:10px;color:var(--lmuted);display:block">${Math.round(((j.amount-j.cost)/j.amount)*100)}% margin</span>`:'<span style="color:var(--lmuted);font-size:11px">—</span>'}</td>
       <td>${jbadge(j.status)}</td>
       <td><div class="row-actions"><button class="act-btn act-edit" onclick="editJob('${j.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('job','${j.id}','${(j.service||'job').replace(/'/g,"\\'")}')">Delete</button></div></td>
     </tr>`).join('')+`</tbody></table>`;
@@ -1201,7 +1487,7 @@ function showJobDetail(id){
   el.dataset.jobId=id;
   document.getElementById('jd-client').textContent=j.clients?.name||'Unknown';
   document.getElementById('jd-service').textContent=j.service||'-';
-  document.getElementById('jd-date').textContent=fmt(j.date);
+  document.getElementById('jd-date').textContent=fmt(j.date)+(j.time?' at '+fmtTime(j.time):'');
   document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
   document.getElementById('jd-status').innerHTML=jbadge(j.status);
   document.getElementById('jd-notes').textContent=j.notes||'No notes';
@@ -1269,7 +1555,9 @@ function editJob(id){
   sel.value=j.client_id||'';
   document.getElementById('j-service').value=j.service||'';
   document.getElementById('j-date').value=j.date||'';
+  document.getElementById('j-time').value=j.time||'';
   document.getElementById('j-amount').value=j.amount||'';
+  document.getElementById('j-cost').value=j.cost||'';
   document.getElementById('j-status').value=j.status||'scheduled';
   document.getElementById('j-notes').value=j.notes||'';
   document.getElementById('j-next-visit').value=j.next_visit||'';
@@ -1299,9 +1587,16 @@ function editInvoice(id){
   document.getElementById('m-invoice').classList.add('open');
 }
 
+function populateClientTrades() {
+  const sel = document.getElementById('c-surface');
+  if (!sel) return;
+  const trades = getSmartTrades();
+  sel.innerHTML = '<option value="">Select type</option>' + trades.map(t => `<option value="${t}">${t}</option>`).join('') + '<option value="Other">Other</option>';
+}
+
 function openModal(type){
   editingId[type]=null;
-  if(type==='client'){
+  if(type==='client'){ if(!checkLimit('clients')) return; populateClientTrades();
     qaClientId=null;qaJobSaved=false;clientFiles=[];
     document.getElementById('client-modal-title').textContent='Add Client';
     document.getElementById('qa-steps').style.display='none';
@@ -1318,9 +1613,11 @@ function openModal(type){
     document.getElementById('job-modal-title').textContent='Add Job';
     const jmsub=document.getElementById('job-modal-sub');if(jmsub)jmsub.style.display='none';
     document.getElementById('save-job-btn').textContent='Save Job';
-    ['j-service','j-amount','j-notes','j-next-visit'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['j-service','j-amount','j-cost','j-notes','j-next-visit'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('j-status').value='scheduled';
     document.getElementById('j-date').value=new Date().toISOString().split('T')[0];
+    populateServiceSuggestions('j-service','j-service-list');
+    document.getElementById('j-time').value='';
     const sel=document.getElementById('j-client');
     sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
@@ -1400,7 +1697,8 @@ async function saveJob(){
   const btn=document.getElementById('save-job-btn');
   btn.disabled=true;btn.textContent='Saving...';
   const amt=parseFloat(document.getElementById('j-amount').value)||0;
-  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,amount:amt,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
+  const cost=parseFloat(document.getElementById('j-cost').value)||0;
+  const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,time:document.getElementById('j-time').value||null,amount:amt,cost:cost,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
   let error,newJobId=null;
   if(editingId.job){
     ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
@@ -1491,7 +1789,7 @@ function confirmDelete(type,id,label){
 function closeConfirm(){document.getElementById('confirm-overlay').style.display='none';pendingDelete={type:null,id:null};}
 async function doDelete(){
   const{type,id}=pendingDelete;closeConfirm();
-  if(type==='client'){
+  if(type==='client'){ if(!checkLimit('clients')) return; populateClientTrades();
     clients=clients.filter(x=>x.id!=id);jobs=jobs.filter(x=>x.client_id!=id);invoices=invoices.filter(x=>x.client_id!=id);
     await sb.from('jobs').delete().eq('client_id',id);
     await sb.from('invoices').delete().eq('client_id',id);
@@ -1537,7 +1835,7 @@ function renderRevenueChart(){
 function nav(name,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  if(name==='quotes'){renderQuotesPipe();renderQuotesTable();} if(name==='profile'){loadProfile();}
+  if(name==='quotes'){renderQuotesPipe();renderQuotesTable();} if(name==='profile'){loadProfile();} if(name==='calendar'){renderCalendar();}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   else{const btn=document.getElementById('nav-'+name);if(btn)btn.classList.add('active');}
@@ -1575,6 +1873,13 @@ async function loadProfile() {
     document.getElementById('prof-state').value = data.state || '';
     document.getElementById('prof-zip').value = data.zip || '';
     document.getElementById('prof-license').value = data.license_number || '';
+    if (data.trades) {
+      const saved = data.trades.split(',');
+      document.querySelectorAll('#trades-grid input').forEach(cb => {
+        cb.checked = saved.includes(cb.value);
+      });
+      updateTradeSelection();
+    }
     if (data.logo_url) {
       const zone = document.getElementById('logo-upload-zone');
       zone.style.backgroundImage = `url(${data.logo_url})`;
@@ -1588,6 +1893,79 @@ async function loadProfile() {
     document.getElementById('profile-edit-btn').style.display = 'block';
     document.getElementById('profile-saved-badge').style.display = 'flex';
   }
+}
+
+
+
+// ══════════════════════════════════════════
+// FREEMIUM PLAN
+// ══════════════════════════════════════════
+const FREE_LIMITS = { quotes: 3, clients: 5 };
+
+function isPro() {
+  return businessProfile.plan === 'pro';
+}
+
+function checkLimit(type) {
+  if (isPro()) return true;
+  if (type === 'quotes' && quotes.length >= FREE_LIMITS.quotes) {
+    showUpgradeModal('quotes');
+    return false;
+  }
+  if (type === 'clients' && clients.length >= FREE_LIMITS.clients) {
+    showUpgradeModal('clients');
+    return false;
+  }
+  return true;
+}
+
+function showUpgradeModal(reason) {
+  const msg = reason === 'quotes'
+    ? `You've used all 3 free quotes this month.`
+    : `You've reached the 5 client limit on the free plan.`;
+  document.getElementById('upgrade-reason').textContent = msg;
+  document.getElementById('upgrade-modal').style.display = 'flex';
+}
+
+function closeUpgradeModal() {
+  document.getElementById('upgrade-modal').style.display = 'none';
+}
+
+// ── TRADES / SMART SUGGESTIONS ──
+const TRADE_SERVICES = {
+  'Solar': ['Solar panel installation','Panel cleaning','System inspection','Battery storage install','Roof mount install','Inverter replacement','Electrical hookup','Net metering setup'],
+  'HVAC': ['AC installation','AC repair','Heating service','Duct cleaning','Filter replacement','Thermostat install','AC tune-up','Emergency repair'],
+  'Roofing': ['Roof inspection','Shingle replacement','Full roof install','Gutter cleaning','Leak repair','Flat roof install','Storm damage repair','Roof coating'],
+  'Plumbing': ['Pipe repair','Water heater install','Drain cleaning','Leak detection','Bathroom remodel','Kitchen plumbing','Sewer line repair','Fixture install'],
+  'Lawn Care': ['Lawn mowing','Hedge trimming','Fertilization','Weed control','Landscaping','Tree trimming','Irrigation install','Sod installation'],
+  'Pool Service': ['Pool cleaning','Chemical balance','Filter service','Pump repair','Pool resurfacing','Tile cleaning','Equipment install','Leak repair'],
+  'Electrical': ['Panel upgrade','Outlet install','Lighting install','EV charger install','Wiring repair','Generator hookup','Inspection','Smart home wiring'],
+  'Painting': ['Interior painting','Exterior painting','Cabinet painting','Pressure washing','Drywall repair','Staining','Epoxy flooring','Touch-up'],
+  'Other': ['Consultation','General service','Inspection','Repair','Installation','Maintenance','Emergency call','Custom project']
+};
+
+function updateTradeSelection() {
+  const selected = Array.from(document.querySelectorAll('#trades-grid input:checked')).map(i => i.value);
+  businessProfile.trades = selected.join(',');
+}
+
+function getSmartServices() {
+  const trades = (businessProfile.trades || '').split(',').filter(Boolean);
+  if (!trades.length) return Object.values(TRADE_SERVICES).flat();
+  return [...new Set(trades.flatMap(t => TRADE_SERVICES[t] || []))];
+}
+
+function getSmartTrades() {
+  const trades = (businessProfile.trades || '').split(',').filter(Boolean);
+  return trades.length ? trades : Object.keys(TRADE_SERVICES);
+}
+
+function populateServiceSuggestions(inputId, datalistId) {
+  let dl = document.getElementById(datalistId);
+  if (!dl) { dl = document.createElement('datalist'); dl.id = datalistId; document.body.appendChild(dl); }
+  dl.innerHTML = getSmartServices().map(s => `<option value="${s}">`).join('');
+  const input = document.getElementById(inputId);
+  if (input) input.setAttribute('list', datalistId);
 }
 
 function updateProfilePreview() {
@@ -1650,6 +2028,7 @@ async function saveProfile() {
     state: document.getElementById('prof-state').value,
     zip: document.getElementById('prof-zip').value,
     license_number: document.getElementById('prof-license').value,
+    trades: Array.from(document.querySelectorAll('#trades-grid input:checked')).map(i=>i.value).join(','),
     updated_at: new Date().toISOString()
   };
   const { error } = await sb.from('business_profiles').upsert(profile, { onConflict: 'user_id' });
@@ -2009,34 +2388,44 @@ async function approveQuote(id) {
 
 async function convertQuote(id) {
   const q = quotes.find(x => x.id == id);
-  if (!q) return;
+  if (!q) { toast('Quote not found', 'err'); return; }
   const { total } = calcQ(q);
-  // Find client id
-  const client = clients.find(c => c.name === q.client_name);
-  if (client) {
-    // Create job
-    const { data: job } = await sb.from('jobs').insert({
-      client_id: client.id,
-      service: q.title,
-      amount: total,
-      status: 'scheduled',
-      date: new Date().toISOString().split('T')[0],
-      notes: `Converted from quote: ${q.title}`
-    }).select().single();
-    // Create invoice
-    if (job) {
-      await sb.from('invoices').insert({
-        client_id: client.id,
-        amount: total,
-        status: 'pending',
-        issued_date: new Date().toISOString().split('T')[0],
-        notes: `From quote: ${q.title}`
-      });
-    }
-  }
+
+  // Try to find client — match by name (case-insensitive)
+  const client = clients.find(c => c.name?.toLowerCase().trim() === q.client_name?.toLowerCase().trim());
+  const clientId = client?.id || null;
+
+  // Create job regardless of client match
+  const jobPayload = {
+    service: q.title,
+    amount: total,
+    status: 'scheduled',
+    date: new Date().toISOString().split('T')[0],
+    notes: `Converted from quote: ${q.title}`
+  };
+  if (clientId) jobPayload.client_id = clientId;
+  else jobPayload.client_name = q.client_name; // fallback if no client_id
+
+  const { data: job, error: jobErr } = await sb.from('jobs').insert(jobPayload).select().single();
+  if (jobErr) { console.error('Job insert error:', jobErr); toast('Failed to create job: ' + jobErr.message, 'err'); return; }
+
+  // Create invoice
+  const invoicePayload = {
+    amount: total,
+    status: 'pending',
+    issued_date: new Date().toISOString().split('T')[0],
+    notes: `From quote: ${q.title} — ${q.client_name}`
+  };
+  if (clientId) invoicePayload.client_id = clientId;
+
+  const { error: invErr } = await sb.from('invoices').insert(invoicePayload);
+  if (invErr) console.error('Invoice insert error:', invErr);
+
   // Mark quote as converted
-  await sb.from('quotes').update({ status: 'converted' }).eq('id', id);
-  toast('Quote converted to job + invoice! ');
+  const { error: qErr } = await sb.from('quotes').update({ status: 'converted' }).eq('id', id);
+  if (qErr) console.error('Quote update error:', qErr);
+
+  toast('Converted to job + invoice! ✓');
   await loadQuotes();
   await loadJobs();
   await loadInvoices();
@@ -2229,7 +2618,7 @@ function openEmailFromPreview() {
         <datalist id="nq-client-list"></datalist>
       </div>
       <div class="fg"><label class="fl">Quote Title *</label>
-        <input class="fi" id="nq-title" placeholder="e.g. Solar panel installation" autocomplete="off">
+        <input class="fi" id="nq-title" placeholder="e.g. Solar panel installation" autocomplete="off" list="nq-title-list"><datalist id="nq-title-list"></datalist>
       </div>
     </div>
     <div class="fi-2">
