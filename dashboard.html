@@ -6,6 +6,8 @@
 <title>Resurfr - Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
@@ -606,9 +608,16 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   </div>
 
   <!-- STICKY SAVE BAR -->
-  <div style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:50;margin-top:24px;flex-wrap:wrap">
+  <div id="profile-save-bar" style="position:sticky;bottom:0;background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:50;margin-top:24px;flex-wrap:wrap">
     <div style="font-size:13px;color:var(--muted)">Changes apply to <strong style="color:var(--text)">all future quotes</strong> automatically.</div>
-    <button class="btn-primary" onclick="saveProfile()" style="padding:11px 28px;font-size:14px">Save Profile</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="profile-saved-badge" style="display:none;align-items:center;gap:6px;background:#E8F5EE;border:1px solid #BBF7D0;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#16A34A">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Profile Saved
+      </div>
+      <button id="profile-save-btn" onclick="saveProfile()" style="padding:11px 28px;font-size:14px;background:var(--yellow);color:var(--charcoal);border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit">Save Profile</button>
+      <button id="profile-edit-btn" onclick="editProfile()" style="display:none;padding:11px 28px;font-size:14px;background:white;color:var(--text);border:1.5px solid var(--border);border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit">Edit Profile</button>
+    </div>
   </div>
 
 </div>
@@ -1573,6 +1582,11 @@ async function loadProfile() {
       zone.innerHTML = '';
     }
     updateProfilePreview();
+    // Lock fields since profile already exists
+    lockProfileFields(true);
+    document.getElementById('profile-save-btn').style.display = 'none';
+    document.getElementById('profile-edit-btn').style.display = 'block';
+    document.getElementById('profile-saved-badge').style.display = 'flex';
   }
 }
 
@@ -1601,9 +1615,29 @@ function handleLogoUpload(input) {
   }
 }
 
+function lockProfileFields(locked) {
+  const ids = ['prof-name','prof-tagline','prof-phone','prof-email','prof-website','prof-street','prof-city','prof-state','prof-zip','prof-license'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.disabled = locked; el.style.background = locked ? '#f5f5f5' : ''; el.style.color = locked ? 'var(--muted)' : ''; }
+  });
+  // Lock logo upload
+  const logoZone = document.getElementById('logo-upload-zone');
+  if (logoZone) logoZone.style.pointerEvents = locked ? 'none' : 'auto';
+}
+
+function editProfile() {
+  lockProfileFields(false);
+  document.getElementById('profile-save-btn').style.display = 'block';
+  document.getElementById('profile-edit-btn').style.display = 'none';
+  document.getElementById('profile-saved-badge').style.display = 'none';
+}
+
 async function saveProfile() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return;
+  const btn = document.getElementById('profile-save-btn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
   const profile = {
     user_id: user.id,
     name: document.getElementById('prof-name').value,
@@ -1619,9 +1653,15 @@ async function saveProfile() {
     updated_at: new Date().toISOString()
   };
   const { error } = await sb.from('business_profiles').upsert(profile, { onConflict: 'user_id' });
+  btn.textContent = 'Save Profile'; btn.disabled = false;
   if (error) { toast('Error saving profile', 'err'); return; }
   businessProfile = profile;
-  toast('Profile saved!');
+  // Lock fields and show saved state
+  lockProfileFields(true);
+  document.getElementById('profile-save-btn').style.display = 'none';
+  document.getElementById('profile-edit-btn').style.display = 'block';
+  document.getElementById('profile-saved-badge').style.display = 'flex';
+  toast('Profile saved! ✓');
 }
 
 // ==========================================
@@ -1886,12 +1926,12 @@ function previewQuote(id) {
   const lines = q.lines || [];
   qpBody.innerHTML = `
     <div class="qp-bar" style="background:linear-gradient(135deg,var(--green),#2A6B47)">
-      <div class="qp-brand">Resurfr</div>
+      <div class="qp-brand">${businessProfile.name || 'Your Business'}</div>
       <div class="qp-num">ESTIMATE #${String(q.id).slice(-4).toUpperCase()}</div>
     </div>
     <div class="qp-head">
       <div class="qp-bills">
-        <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">Your Business</div></div>
+        <div class="qp-bill"><div class="qp-bill-lbl">FROM</div><div class="qp-bill-name">${businessProfile.name || 'Your Business'}</div></div>
         <div class="qp-bill"><div class="qp-bill-lbl">TO</div><div class="qp-bill-name">${q.client_name}</div></div>
       </div>
       <div class="qp-meta">
@@ -1926,7 +1966,11 @@ function previewQuote(id) {
         <button onclick="convertQuote('${q.id}')" style="background:#7C3AED;color:white;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">-> Convert to Job</button>
       </div>` : ''}
     </div>
-    <div class="qp-footer">Generated by Resurfr &middot; getresurfr.netlify.app</div>`;
+    <div class="qp-footer">
+      ${businessProfile.name || 'Your Business'}
+      ${businessProfile.phone ? ' &middot; ' + businessProfile.phone : ''}
+      ${businessProfile.email ? ' &middot; ' + businessProfile.email : ''}
+    </div>`;
   
   document.getElementById('nq-overlay').style.display = 'none';
   document.getElementById('qp-wrap').style.display = 'flex';
@@ -2055,7 +2099,7 @@ function openEmailModal(quoteId) {
   document.getElementById('eq-to').value = client?.email || '';
 
   // Pre-fill subject
-  document.getElementById('eq-subject').value = `Your Estimate from Resurfr - ${q.title}`;
+  document.getElementById('eq-subject').value = `Your Estimate from ${businessProfile.name || 'Us'} - ${q.title}`;
 
   // Pre-fill polite message with quote summary
   const { s, t, total } = calcQ(q);
@@ -2080,8 +2124,7 @@ Total:     ${fmt(total)}${validStr}
 If you have any questions or would like to make any adjustments, please don't hesitate to reach out. We look forward to working with you.
 
 Best regards,
-Resurfr Team
-getresurfr.netlify.app`;
+${businessProfile.name || 'Your Business'}${businessProfile.phone ? '\n' + businessProfile.phone : ''}${businessProfile.email ? '\n' + businessProfile.email : ''}`;
 
   document.getElementById('m-email-quote').style.display = 'flex';
 }
@@ -2139,6 +2182,33 @@ async function sendQuoteEmail() {
   }
 }
 
+
+
+// ── PDF GENERATION ──
+async function downloadQuotePDF() {
+  const btn = document.getElementById('pdf-btn');
+  btn.textContent = 'Generating...'; btn.disabled = true;
+  try {
+    const { jsPDF } = window.jspdf;
+    const element = document.getElementById('qp-body');
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const id = document.getElementById('qp-wrap')?.dataset.quoteId;
+    const q = quotes.find(x => x.id == id);
+    const filename = `Quote_${q?.client_name?.replace(/\s+/g,'_') || 'Client'}_${new Date().toISOString().slice(0,10)}.pdf`;
+    pdf.save(filename);
+    toast('PDF downloaded! ✓');
+  } catch(e) {
+    console.error('PDF error:', e);
+    toast('PDF failed — try again', 'err');
+  } finally {
+    btn.textContent = '⬇ PDF'; btn.disabled = false;
+  }
+}
 
 function openEmailFromPreview() {
   const id = document.getElementById('qp-wrap')?.dataset.quoteId;
@@ -2206,7 +2276,8 @@ function openEmailFromPreview() {
       <span style="color:white;font-size:13px;font-weight:600"> Quote Preview - exactly how your client sees it</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()"><- Back</button>
-        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="openEmailFromPreview()">Send to Client </button>
+        <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="downloadQuotePDF()" id="pdf-btn">⬇ PDF</button>
+        <button class="btn bp" style="font-size:12px;padding:6px 14px" onclick="openEmailFromPreview()">✉ Send to Client</button>
       </div>
     </div>
     <div class="qp-body" id="qp-body"></div>
