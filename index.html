@@ -352,8 +352,8 @@ footer {
     <div class="hero-badge"><span></span> Now in early access</div>
     <h1 class="hero-h1">Run your trade<br>business <em>smarter.</em></h1>
     <p class="hero-sub">Quotes, jobs, invoices, and client management — all in one clean dashboard built for contractors in the field.</p>
-    <form class="hero-form" onsubmit="handleHeroSubmit(event)">
-      <input class="hero-input" id="hero-email" type="email" placeholder="Enter your email" required>
+    <form class="hero-form" onsubmit="handleHeroSubmit(event)" name="waitlist" netlify netlify-honeypot="bot-field" data-netlify="true"><input type="hidden" name="form-name" value="waitlist"><input name="bot-field" style="display:none">
+      <input class="hero-input" id="hero-email" name="email" type="email" placeholder="Enter your email" required>
       <button class="hero-btn" type="submit">Get Early Access</button>
     </form>
     <p class="hero-note">Free to start. No credit card required.</p>
@@ -553,8 +553,8 @@ footer {
     <div class="capture-badge"><span style="width:6px;height:6px;background:var(--yellow);border-radius:50%"></span> Limited early access</div>
     <h2 class="capture-title">Be the first to<br><em>get access.</em></h2>
     <p class="capture-sub">Join contractors already on the waitlist. We'll reach out as soon as your spot is ready — no spam, ever.</p>
-    <form class="capture-form" onsubmit="handleCaptureSubmit(event)">
-      <input class="capture-input" id="capture-email" type="email" placeholder="your@email.com" required>
+    <form class="capture-form" onsubmit="handleCaptureSubmit(event)" name="waitlist" netlify netlify-honeypot="bot-field" data-netlify="true"><input type="hidden" name="form-name" value="waitlist"><input name="bot-field" style="display:none">
+      <input class="capture-input" id="capture-email" name="email" type="email" placeholder="your@email.com" required>
       <button class="capture-btn" type="submit">Join Waitlist</button>
     </form>
     <p class="capture-privacy">No spam. No credit card. Unsubscribe anytime.</p>
@@ -629,21 +629,32 @@ const sb = createClient(
 );
 
 async function saveEmail(email) {
+  // Save to Supabase
   try {
     const { data, error } = await sb.from('waitlist').insert([{ email }]).select();
     if (error) {
       if (error.code === '23505' || error.code === '409') {
         console.log('Email already on list — thats ok');
       } else {
-        console.error('Supabase error code:', error.code);
-        console.error('Supabase error message:', error.message);
-        console.error('Supabase error details:', error.details);
+        console.error('Supabase error:', error.message);
       }
     } else {
-      console.log('Saved to waitlist:', data);
+      console.log('Saved to Supabase:', data);
     }
   } catch(e) {
-    console.error('Save failed:', e);
+    console.error('Supabase save failed:', e);
+  }
+
+  // Also save to Netlify Forms
+  try {
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ 'form-name': 'waitlist', email }).toString()
+    });
+    console.log('Saved to Netlify Forms');
+  } catch(e) {
+    console.error('Netlify Forms save failed:', e);
   }
 }
 </script>
