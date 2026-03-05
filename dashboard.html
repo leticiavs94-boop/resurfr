@@ -481,9 +481,6 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="topbar-date">Your info appears on every quote you send</div>
       </div>
     </div>
-    <div class="topbar-right">
-      <button class="btn-primary" onclick="saveProfile()">Save Profile</button>
-    </div>
   </div>
 
   <div class="main-inner" style="max-width:680px">
@@ -599,7 +596,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
             </div>
             <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <span id="prev-email">you@yourbusiness.com</span>
+              <span id="prev-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5e27312b1e27312b2c3c2b2d37303b2d2d703d3133">[email&#160;protected]</a></span>
             </div>
           </div>
         </div>
@@ -607,6 +604,13 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
 
   </div>
+
+  <!-- STICKY SAVE BAR -->
+  <div style="position:sticky;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:50;margin-top:24px">
+    <div style="font-size:13px;color:var(--muted)">Changes apply to <strong style="color:var(--text)">all future quotes</strong> automatically.</div>
+    <button class="btn-primary" onclick="saveProfile()" style="padding:11px 28px;font-size:14px">Save Profile</button>
+  </div>
+
 </div>
 
 <div id="view-quotes" class="view">
@@ -871,7 +875,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const{createClient}=supabase;
 const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
 
@@ -2235,11 +2239,4 @@ function openEmailFromPreview() {
       </div>
       <div style="display:flex;gap:8px;padding-top:4px">
         <button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
-        <button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Send Email </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+        <button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;p
