@@ -52,11 +52,11 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
-.content{padding:28px 32px;flex:1;min-width:0}
+.content{padding:24px 28px;flex:1;min-width:0}
 .view{display:none}
 .view.active{display:block}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal);line-height:1}
 .stat-lbl{font-size:11px;color:var(--lmuted);margin-top:3px}
 .stat-sub{font-size:11px;color:var(--lmuted);margin-top:2px}
@@ -211,7 +211,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .page-title{font-size:24px}
 
   /* Stats grid */
-  .stats{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
   .stat-card{padding:14px 16px}
   .stat-val{font-size:28px}
 
@@ -568,7 +568,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
 
-  <div class="main-inner" style="max-width:720px;padding:28px 32px;margin:0 auto;width:100%;box-sizing:border-box">
+  <div class="main-inner" style="max-width:680px;padding:24px 24px;margin:0 auto;width:100%;box-sizing:border-box">
 
     <!-- LOGO & NAME -->
     <div class="panel" style="margin-bottom:16px">
@@ -576,7 +576,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">Logo &amp; Brand</div>
         <div style="font-size:12px;color:var(--muted)">Shown at the top of every quote</div>
       </div>
-      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;padding:20px 24px 20px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:0;padding:16px 20px;border-bottom:1px solid var(--border)">
         <div id="logo-upload-zone" onclick="document.getElementById('profile-logo-input').click()" style="width:80px;height:80px;border-radius:14px;background:var(--off);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;gap:4px;transition:all .2s;overflow:hidden">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px">LOGO</span>
@@ -588,7 +588,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
           <button onclick="document.getElementById('profile-logo-input').click()" style="margin-top:8px;padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Choose File</button>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px 24px 24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
         <div style="grid-column:1/-1">
           <div class="fi-label">Business Name</div>
           <input class="fi-input" id="prof-name" type="text" placeholder="e.g. Cletus Solar LLC" oninput="updateProfilePreview()">
@@ -620,7 +620,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">Contact Info</div>
         <div style="font-size:12px;color:var(--muted)">Shown on quote footer so clients can reach you</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px 24px 24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
         <div>
           <div class="fi-label">Phone Number</div>
           <input class="fi-input" id="prof-phone" type="tel" placeholder="(555) 123-4567" oninput="updateProfilePreview()">
@@ -642,7 +642,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">Business Address</div>
         <div style="font-size:12px;color:var(--muted)">For licensing and tax purposes on quotes</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px 24px 24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
         <div style="grid-column:1/-1">
           <div class="fi-label">Street Address</div>
           <input class="fi-input" id="prof-street" type="text" placeholder="123 Main Street">
@@ -1030,7 +1030,7 @@ async function boot(){
       document.getElementById('user-email').textContent='Local Preview';
       document.getElementById('user-av').textContent='LP';
     }
-    await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadQuotes()]);
+    await Promise.all([loadClients(),loadJobs(),loadInvoices(),loadQuotes(),loadProfileData()]);
     renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();
     loadServiceAlerts();
   } catch(e) {
@@ -1869,6 +1869,19 @@ function toast(msg,type='ok'){const t=document.getElementById('toast');t.textCon
 
 // ── BUSINESS PROFILE ──
 let businessProfile = {};
+
+async function loadProfileData() {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data } = await sb.from('business_profiles').select('*').eq('user_id', user.id).single();
+    if (data) {
+      businessProfile = data;
+      if (data.logo_url) businessProfile.logo_data = data.logo_url;
+      if (data.trades) businessProfile.trades = data.trades;
+    }
+  } catch(e) { /* no profile yet */ }
+}
 
 async function loadProfile() {
   const { data: { user } } = await sb.auth.getUser();
