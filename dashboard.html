@@ -773,16 +773,43 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- PAY CONFIRM -->
-<div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:24px">
-  <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    <div style="font-size:36px;margin-bottom:12px">Done</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--charcoal);margin-bottom:6px">Job Complete!</div>
-    <div style="font-size:14px;color:var(--muted);margin-bottom:4px">Was payment received from</div>
-    <div id="pay-confirm-client" style="font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">-</div>
-    <div id="pay-confirm-amount" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--green);margin-bottom:24px">$0</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button onclick="completeJobWithPayment(true)" style="width:100%;padding:14px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none"> Yes - Payment Received</button>
-      <button onclick="completeJobWithPayment(false)" style="width:100%;padding:14px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border)">Not Yet - Keep Invoice Pending</button>
+<div id="pay-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:20px;padding:0;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--green),#2A6B47);padding:24px;text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">✅</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:white">Job Complete!</div>
+      <div id="pay-confirm-client" style="font-size:14px;color:rgba(255,255,255,0.8);margin-top:4px">-</div>
+      <div id="pay-confirm-amount" style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--yellow);margin-top:4px">$0</div>
+    </div>
+
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+
+      <!-- Section 1: Payment -->
+      <div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">💳 Payment</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button onclick="completeJobWithPayment(true)" style="width:100%;padding:13px;border-radius:10px;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;text-align:left;padding-left:16px">✓ Yes — Payment Received</button>
+          <button onclick="completeJobWithPayment(false)" style="width:100%;padding:13px;border-radius:10px;background:var(--off);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);text-align:left;padding-left:16px">⏳ Not Yet — Keep Invoice Pending</button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="border-top:1px solid var(--border)"></div>
+
+      <!-- Section 2: Next Visit -->
+      <div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">📅 Schedule Next Visit</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="date" id="next-visit-date" class="fi" style="flex:1;font-size:13px">
+          <input type="time" id="next-visit-time" class="fi" style="width:110px;font-size:13px">
+        </div>
+        <input type="text" id="next-visit-note" class="fi" placeholder="Note e.g. Annual maintenance, follow-up..." style="width:100%;font-size:13px;box-sizing:border-box;margin-bottom:8px">
+        <button onclick="saveNextVisit()" style="width:100%;padding:11px;border-radius:10px;background:#EFF6FF;color:#2563EB;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #BFDBFE">📅 Save Next Visit</button>
+        <button onclick="skipNextVisit()" style="width:100%;padding:9px;border-radius:8px;background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;margin-top:4px">Skip for now</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1525,12 +1552,55 @@ function markJobDone(id){
   const cname=j?.clients?.name||clients.find(c=>String(c.id)===String(j?.client_id))?.name||'this client';
   document.getElementById('pay-confirm-client').textContent=cname;
   document.getElementById('pay-confirm-amount').textContent='$'+(j?.amount||0).toLocaleString();
+  // Pre-fill next visit if job already had one set
+  const nextVisitEl=document.getElementById('next-visit-date');
+  const nextTimeEl=document.getElementById('next-visit-time');
+  const nextNoteEl=document.getElementById('next-visit-note');
+  if(nextVisitEl) nextVisitEl.value=j?.next_visit||'';
+  if(nextTimeEl) nextTimeEl.value='';
+  if(nextNoteEl) nextNoteEl.value='';
+  document.getElementById('next-visit-saved-msg') && (document.getElementById('next-visit-saved-msg').style.display='none');
   document.getElementById('pay-confirm-overlay').style.display='flex';
 }
 
-async function completeJobWithPayment(paid){
+async function saveNextVisit(){
+  const date = document.getElementById('next-visit-date').value;
+  const time = document.getElementById('next-visit-time').value;
+  const note = document.getElementById('next-visit-note').value.trim();
+  if(!date){toast('Pick a date for the next visit','err');return;}
+  const id = pendingCompleteJobId;
+  if(id){
+    await sb.from('jobs').update({next_visit:date}).eq('id',id);
+    // Also create a new scheduled job for the next visit
+    const j=jobs.find(x=>x.id===id);
+    if(j){
+      await sb.from('jobs').insert({
+        client_id:j.client_id||null,
+        client_name:j.client_name||null,
+        client_name_fallback:j.client_name_fallback||null,
+        service:j.service||'Follow-up visit',
+        date:date,
+        time:time||null,
+        status:'scheduled',
+        notes:note||('Follow-up from job on '+(j.date||'previous visit')),
+        amount:j.amount||0
+      });
+    }
+  }
+  // Show confirmation inside modal
+  const btn = document.querySelector('#pay-confirm-overlay [onclick="saveNextVisit()"]');
+  if(btn){btn.textContent='✓ Next visit saved!';btn.style.background='#DCFCE7';btn.style.color='#16A34A';btn.style.borderColor='#BBF7D0';}
+  toast('Next visit scheduled for '+new Date(date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})+'!','ok');
+}
+
+async function skipNextVisit(){
   document.getElementById('pay-confirm-overlay').style.display='none';
-  const id=pendingCompleteJobId;pendingCompleteJobId=null;
+  await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();loadServiceAlerts();
+}
+
+async function completeJobWithPayment(paid){
+  // Mark job done and handle invoice — keep overlay open so they can schedule next visit
+  const id=pendingCompleteJobId;
   if(!id)return;
   await sb.from('jobs').update({status:'completed'}).eq('id',id);
   const j=jobs.find(x=>x.id===id);
@@ -1539,7 +1609,17 @@ async function completeJobWithPayment(paid){
     const inv=invoices.filter(i=>String(i.client_id)===String(j.client_id)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
     if(inv) await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);
   }
-  toast(paid?'Job complete & payment recorded! ':'Job complete - invoice still pending.','ok');
+  // Update payment button UI to show it was tapped
+  const yesBtn=document.querySelector('#pay-confirm-overlay [onclick="completeJobWithPayment(true)"]');
+  const noBtn=document.querySelector('#pay-confirm-overlay [onclick="completeJobWithPayment(false)"]');
+  if(paid){
+    if(yesBtn){yesBtn.textContent='✓ Payment Recorded';yesBtn.style.opacity='1';yesBtn.disabled=true;}
+    if(noBtn){noBtn.style.opacity='0.4';noBtn.disabled=true;}
+  } else {
+    if(noBtn){noBtn.textContent='✓ Invoice Kept Pending';noBtn.style.opacity='1';noBtn.disabled=true;}
+    if(yesBtn){yesBtn.style.opacity='0.4';yesBtn.disabled=true;}
+  }
+  toast(paid?'Payment recorded! Now schedule the next visit.':'Invoice kept pending. Schedule next visit?','ok');
   await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoices();renderDashboard();renderDashQuotes();loadServiceAlerts();
 }
 
