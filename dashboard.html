@@ -314,7 +314,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
 .converting{animation:pulse .6s ease-out;}
 #view-profile .panel .card-body, #view-profile .panel > div:last-child{padding:20px 24px;}
-@media(max-width:768px){.prof-contact-row{grid-template-columns:1fr !important;} #view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
+@media(max-width:768px){.prof-contact-row{grid-template-columns:1fr !important;} .prof-addr-row{grid-template-columns:1fr !important;} #view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
@@ -644,26 +644,30 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">Business Address</div>
         <div style="font-size:12px;color:var(--muted)">For licensing and tax purposes on quotes</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 18px">
-        <div style="grid-column:1/-1">
+      <div style="display:flex;flex-direction:column;gap:12px;padding:14px 16px 18px">
+        <div>
           <div class="fi-label">Street Address</div>
           <input class="fi-input" id="prof-street" type="text" placeholder="123 Main Street">
         </div>
-        <div>
-          <div class="fi-label">City</div>
-          <input class="fi-input" id="prof-city" type="text" placeholder="Miami">
+        <div class="prof-addr-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div class="fi-label">City</div>
+            <input class="fi-input" id="prof-city" type="text" placeholder="Miami">
+          </div>
+          <div style="min-width:0">
+            <div class="fi-label">State</div>
+            <input class="fi-input" id="prof-state" type="text" placeholder="Florida" style="min-width:0;width:100%;box-sizing:border-box">
+          </div>
         </div>
-        <div>
-          <div class="fi-label">State</div>
-          <input class="fi-input" id="prof-state" type="text" placeholder="Florida">
-        </div>
-        <div>
-          <div class="fi-label">ZIP Code</div>
-          <input class="fi-input" id="prof-zip" type="text" placeholder="33101">
-        </div>
-        <div>
-          <div class="fi-label">License # <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
-          <input class="fi-input" id="prof-license" type="text" placeholder="e.g. EC13008012">
+        <div class="prof-addr-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div class="fi-label">ZIP Code</div>
+            <input class="fi-input" id="prof-zip" type="text" placeholder="33101">
+          </div>
+          <div style="min-width:0">
+            <div class="fi-label">License # <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
+            <input class="fi-input" id="prof-license" type="text" placeholder="e.g. EC13008012" style="min-width:0;width:100%;box-sizing:border-box">
+          </div>
         </div>
       </div>
     </div>
@@ -675,11 +679,11 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div style="font-size:12px;color:var(--muted)">This is how your header looks on sent quotes</div>
       </div>
       <div style="background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin:0 16px 16px">
-        <div style="background:var(--green);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="background:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
           <div id="prev-logo-wrap">
-            <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Your Business Name</div>
+            <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Your Business Name</div>
           </div>
-          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1px">ESTIMATE #001</div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px">ESTIMATE #001</div>
         </div>
         <div style="padding:16px 20px">
           <div style="display:flex;justify-content:space-between;margin-bottom:12px">
@@ -2010,7 +2014,7 @@ function updateProfilePreview() {
     if (businessProfile.logo_data) {
       logoWrap.innerHTML = `<img src="${businessProfile.logo_data}" style="height:44px;max-width:100px;object-fit:contain;border-radius:6px">`;
     } else {
-      logoWrap.innerHTML = `<div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">${name}</div>`;
+      logoWrap.innerHTML = `<div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${name}</div>`;
     }
   }
   const nameEl = document.getElementById('prev-biz-name');
