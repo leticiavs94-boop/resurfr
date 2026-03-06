@@ -314,7 +314,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
 .converting{animation:pulse .6s ease-out;}
 #view-profile .panel .card-body, #view-profile .panel > div:last-child{padding:20px 24px;}
-@media(max-width:768px){#view-profile .main-inner{padding:14px !important;} .content{padding:14px !important;} #view-profile .panel{border-radius:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;}}
+@media(max-width:768px){#view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
@@ -568,15 +568,15 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
 
-  <div class="main-inner" style="max-width:680px;padding:24px 24px;margin:0 auto;width:100%;box-sizing:border-box">
+  <div class="main-inner" style="max-width:680px;padding:20px 16px;margin:0 auto;width:100%;box-sizing:border-box">
 
     <!-- LOGO & NAME -->
     <div class="panel" style="margin-bottom:16px">
-      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border)">
         <div class="panel-title">Logo &amp; Brand</div>
         <div style="font-size:12px;color:var(--muted)">Shown at the top of every quote</div>
       </div>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:0;padding:16px 20px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border)">
         <div id="logo-upload-zone" onclick="document.getElementById('profile-logo-input').click()" style="width:80px;height:80px;border-radius:14px;background:var(--off);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;gap:4px;transition:all .2s;overflow:hidden">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px">LOGO</span>
@@ -588,7 +588,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
           <button onclick="document.getElementById('profile-logo-input').click()" style="margin-top:8px;padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Choose File</button>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 18px">
         <div style="grid-column:1/-1">
           <div class="fi-label">Business Name</div>
           <input class="fi-input" id="prof-name" type="text" placeholder="e.g. Cletus Solar LLC" oninput="updateProfilePreview()">
@@ -599,7 +599,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         </div>
         <div style="grid-column:1/-1">
           <div class="fi-label">What trades do you work in? <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(select all that apply)</span></div>
-          <div id="trades-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
+          <div id="trades-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;padding:0 2px">
             <label class="trade-chip"><input type="checkbox" value="Solar" onchange="updateTradeSelection()"><span>☀️ Solar</span></label>
             <label class="trade-chip"><input type="checkbox" value="HVAC" onchange="updateTradeSelection()"><span>❄️ HVAC</span></label>
             <label class="trade-chip"><input type="checkbox" value="Roofing" onchange="updateTradeSelection()"><span>🏠 Roofing</span></label>
@@ -616,11 +616,11 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
     <!-- CONTACT -->
     <div class="panel" style="margin-bottom:16px">
-      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border)">
         <div class="panel-title">Contact Info</div>
         <div style="font-size:12px;color:var(--muted)">Shown on quote footer so clients can reach you</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 18px">
         <div>
           <div class="fi-label">Phone Number</div>
           <input class="fi-input" id="prof-phone" type="tel" placeholder="(555) 123-4567" oninput="updateProfilePreview()">
@@ -638,11 +638,11 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
     <!-- ADDRESS -->
     <div class="panel" style="margin-bottom:16px">
-      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border)">
         <div class="panel-title">Business Address</div>
         <div style="font-size:12px;color:var(--muted)">For licensing and tax purposes on quotes</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 18px">
         <div style="grid-column:1/-1">
           <div class="fi-label">Street Address</div>
           <input class="fi-input" id="prof-street" type="text" placeholder="123 Main Street">
@@ -668,11 +668,11 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
     <!-- LIVE PREVIEW -->
     <div class="panel" style="background:var(--off);border:1px solid var(--border)">
-      <div class="panel-head" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:20px">
+      <div class="panel-head" style="border-bottom:1px solid var(--border)">
         <div class="panel-title">Quote Preview</div>
         <div style="font-size:12px;color:var(--muted)">This is how your header looks on sent quotes</div>
       </div>
-      <div style="background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin:0 24px 24px">
+      <div style="background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin:0 16px 16px">
         <div style="background:var(--green);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
           <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Your Business Name</div>
           <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1px">ESTIMATE #001</div>
@@ -2060,10 +2060,11 @@ async function saveProfile() {
     trades: Array.from(document.querySelectorAll('#trades-grid input:checked')).map(i=>i.value).join(','),
     updated_at: new Date().toISOString()
   };
+  if (businessProfile.logo_data) profile.logo_url = businessProfile.logo_data;
   const { error } = await sb.from('business_profiles').upsert(profile, { onConflict: 'user_id' });
   btn.textContent = 'Save Profile'; btn.disabled = false;
   if (error) { toast('Error saving profile', 'err'); return; }
-  businessProfile = profile;
+  businessProfile = { ...profile, logo_data: businessProfile.logo_data };
   // Lock fields and show saved state
   lockProfileFields(true);
   document.getElementById('profile-save-btn').style.display = 'none';
