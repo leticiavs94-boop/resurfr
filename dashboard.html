@@ -741,7 +741,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">All Quotes</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap" id="q-filters"></div>
       </div>
-      <div style="overflow-x:auto"><table class="desktop-table" id="q-tbl"><thead><tr><th>Client</th><th>Title</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="q-tbody"></tbody></table></div>
+      <div style="overflow-x:auto"><table class="desktop-table" id="q-tbl"><thead><tr><th>Client</th><th>Title</th><th>Amount</th><th>Date</th><th>Profit 🔒</th><th>Status</th><th></th></tr></thead><tbody id="q-tbody"></tbody></table></div>
       <div id="q-cards"></div>
     </div>
   </div>
@@ -1417,7 +1417,7 @@ function renderJobs(){
 function renderInvoices(){
   if(invoices.length===0){document.getElementById('invoices-list').innerHTML=`<div class="empty">No invoices yet</div>`;return;}
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
-  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
+  const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Profit 🔒</th><th>Status</th><th></th></tr></thead><tbody>`+
     invoices.map(i=>`<tr>
       <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</strong></td>
       <td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
@@ -2089,6 +2089,44 @@ async function loadQuotes() {
   if (nb) { nb.textContent = pending; nb.style.display = pending ? 'inline' : 'none'; }
 }
 
+
+function toggleCostSection() {
+  const sec = document.getElementById('cost-section');
+  const icon = document.getElementById('cost-toggle-icon');
+  const open = sec.style.display !== 'none';
+  sec.style.display = open ? 'none' : 'block';
+  icon.textContent = open ? '▶' : '▼';
+}
+
+function recalcProfit() {
+  const materials = parseFloat(document.getElementById('nq-cost-materials')?.value) || 0;
+  const labor = parseFloat(document.getElementById('nq-cost-labor')?.value) || 0;
+  const other = parseFloat(document.getElementById('nq-cost-other')?.value) || 0;
+  const totalCost = materials + labor + other;
+
+  // Get current quote total from recalcQuote
+  const subtotalEl = document.getElementById('nq-subtotal');
+  const taxAmtEl = document.getElementById('nq-taxamt');
+  const subtotal = parseFloat(subtotalEl?.textContent?.replace(/[$,]/g,'')) || 0;
+  const taxAmt = parseFloat(taxAmtEl?.textContent?.replace(/[$,]/g,'')) || 0;
+  const revenue = subtotal + taxAmt;
+
+  const profit = revenue - totalCost;
+  const margin = revenue > 0 ? Math.round((profit / revenue) * 100) : 0;
+
+  const summary = document.getElementById('profit-summary');
+  if (totalCost > 0 || revenue > 0) {
+    summary.style.display = 'block';
+    document.getElementById('ps-cost').textContent = '$' + totalCost.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('ps-profit').textContent = (profit >= 0 ? '$' : '-$') + Math.abs(profit).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('ps-profit').style.color = profit >= 0 ? '#16A34A' : '#DC2626';
+    document.getElementById('ps-margin').textContent = margin + '%';
+    document.getElementById('ps-margin').style.color = margin >= 30 ? '#2563EB' : margin >= 0 ? '#D97706' : '#DC2626';
+  } else {
+    summary.style.display = 'none';
+  }
+}
+
 function calcQ(q) {
   const s = q.lines.reduce((a, l) => a + (l.q * l.p), 0);
   const t = s * ((q.tax || 0) / 100);
@@ -2178,7 +2216,7 @@ function renderQuotesTable(filter = 'all') {
       return `<div class="m-card">
         <div class="m-card-top"><div class="m-card-name">${q.client_name || '-'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
         <div class="m-card-meta">${q.title || '-'} &middot; ${fmt(q.created_at)}</div>
-        <div class="m-card-tags">${qbadge(q.status)}</div>
+        <div class="m-card-tags">${qbadge(q.status)} ${quoteProfit(q)}</div>
         <div class="m-card-actions">
           <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
           <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
@@ -2206,6 +2244,10 @@ function openQuoteModal(clientName) {
   document.getElementById('nq-client-email').value = '';
   document.getElementById('nq-job-date').value = '';
   document.getElementById('nq-job-time').value = '';
+  document.getElementById('nq-cost-materials').value = '';
+  document.getElementById('nq-cost-labor').value = '';
+  document.getElementById('nq-cost-other').value = '';
+  document.getElementById('profit-summary').style.display = 'none';
   // Populate client dropdown
   const sel = document.getElementById('nq-client');
   if (sel && sel.tagName === 'SELECT') {
@@ -2241,6 +2283,10 @@ function editQuote(id) {
   document.getElementById('nq-client-email').value = q.client_email || '';
   document.getElementById('nq-job-date').value = q.job_date || '';
   document.getElementById('nq-job-time').value = q.job_time || '';
+  document.getElementById('nq-cost-materials').value = q.cost_materials || '';
+  document.getElementById('nq-cost-labor').value = q.cost_labor || '';
+  document.getElementById('nq-cost-other').value = q.cost_other || '';
+  recalcProfit();
   // Line items
   const lines = q.lines || [];
   document.getElementById('line-items').innerHTML = lines.map((l, i) => `
@@ -2263,6 +2309,7 @@ function addQuoteLine() {
 }
 
 function recalcQuote() {
+  setTimeout(recalcProfit, 50);
   let sub = 0;
   document.querySelectorAll('.li-row').forEach(row => {
     const q = parseFloat(row.querySelector('.li-qty')?.value) || 0;
@@ -2309,6 +2356,9 @@ async function saveQuote() {
     client_email: document.getElementById('nq-client-email').value.trim() || null,
     job_date: document.getElementById('nq-job-date').value || null,
     job_time: document.getElementById('nq-job-time').value || null,
+    cost_materials: parseFloat(document.getElementById('nq-cost-materials').value) || 0,
+    cost_labor: parseFloat(document.getElementById('nq-cost-labor').value) || 0,
+    cost_other: parseFloat(document.getElementById('nq-cost-other').value) || 0,
     status: editingQuoteId ? undefined : 'draft'
   };
   if (editingQuoteId) delete payload.status;
@@ -2766,6 +2816,51 @@ function openEmailFromPreview() {
       <label class="fl">Notes <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label>
       <input class="fi" id="nq-notes" placeholder="Payment terms, conditions..." autocomplete="off">
     </div>
+
+    <!-- PRIVATE COSTS — NOT shown to client -->
+    <div style="margin-top:16px;border:1.5px dashed #D1B854;border-radius:10px;overflow:hidden">
+      <div style="background:#FFFBEB;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCostSection()">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">🔒</span>
+          <span style="font-size:12px;font-weight:700;color:#92400E">MY COSTS — Private, not shown to client</span>
+        </div>
+        <span id="cost-toggle-icon" style="font-size:12px;color:#92400E">▼</span>
+      </div>
+      <div id="cost-section" style="background:#FFFDF0;padding:14px;display:block">
+        <div class="fi-2" style="margin-bottom:10px">
+          <div class="fg">
+            <label class="fl" style="color:#92400E">Materials Cost ($)</label>
+            <input class="fi" id="nq-cost-materials" type="number" placeholder="0.00" oninput="recalcProfit()" autocomplete="off" style="border-color:#D1B854">
+          </div>
+          <div class="fg">
+            <label class="fl" style="color:#92400E">Labor Cost ($)</label>
+            <input class="fi" id="nq-cost-labor" type="number" placeholder="0.00" oninput="recalcProfit()" autocomplete="off" style="border-color:#D1B854">
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label class="fl" style="color:#92400E">Other Costs ($) <span style="font-weight:400;text-transform:none;color:#B45309">(fuel, subcontractors...)</span></label>
+          <input class="fi" id="nq-cost-other" type="number" placeholder="0.00" oninput="recalcProfit()" autocomplete="off" style="border-color:#D1B854">
+        </div>
+        <!-- Profit summary -->
+        <div id="profit-summary" style="background:white;border-radius:8px;padding:12px 14px;border:1px solid #D1B854;display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.5px">Total Cost</div>
+              <div id="ps-cost" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#92400E;margin-top:2px">$0</div>
+            </div>
+            <div style="border-left:1px solid #F0E0A0;border-right:1px solid #F0E0A0">
+              <div style="font-size:10px;font-weight:700;color:#16A34A;text-transform:uppercase;letter-spacing:.5px">Profit</div>
+              <div id="ps-profit" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#16A34A;margin-top:2px">$0</div>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:.5px">Margin</div>
+              <div id="ps-margin" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#2563EB;margin-top:2px">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="q-modal-actions">
       <button style="background:var(--off);color:var(--muted);border:1px solid var(--border)" onclick="closeQuoteModal()">Cancel</button>
       <button style="background:var(--charcoal);color:white" onclick="saveQuote()">Save Draft</button>
