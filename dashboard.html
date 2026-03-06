@@ -314,7 +314,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 20px transparent}}
 .converting{animation:pulse .6s ease-out;}
 #view-profile .panel .card-body, #view-profile .panel > div:last-child{padding:20px 24px;}
-@media(max-width:768px){#view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
+@media(max-width:768px){.prof-contact-row{grid-template-columns:1fr !important;} #view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 
 
@@ -620,18 +620,20 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
         <div class="panel-title">Contact Info</div>
         <div style="font-size:12px;color:var(--muted)">Shown on quote footer so clients can reach you</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 18px">
-        <div>
-          <div class="fi-label">Phone Number</div>
-          <input class="fi-input" id="prof-phone" type="tel" placeholder="(555) 123-4567" oninput="updateProfilePreview()">
+      <div style="display:flex;flex-direction:column;gap:12px;padding:14px 16px 18px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="prof-contact-row">
+          <div>
+            <div class="fi-label">Phone Number</div>
+            <input class="fi-input" id="prof-phone" type="tel" placeholder="(555) 123-4567" oninput="updateProfilePreview()">
+          </div>
+          <div style="min-width:0">
+            <div class="fi-label">Email Address</div>
+            <input class="fi-input" id="prof-email" type="email" placeholder="you@yourbusiness.com" oninput="updateProfilePreview()" style="min-width:0;width:100%;box-sizing:border-box">
+          </div>
         </div>
         <div>
-          <div class="fi-label">Email Address</div>
-          <input class="fi-input" id="prof-email" type="email" placeholder="you@yourbusiness.com" oninput="updateProfilePreview()">
-        </div>
-        <div style="grid-column:1/-1">
           <div class="fi-label">Website <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></div>
-          <input class="fi-input" id="prof-website" type="url" placeholder="www.yourbusiness.com">
+          <input class="fi-input" id="prof-website" type="url" placeholder="www.yourbusiness.com" style="width:100%;box-sizing:border-box">
         </div>
       </div>
     </div>
@@ -674,7 +676,9 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       </div>
       <div style="background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin:0 16px 16px">
         <div style="background:var(--green);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
-          <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Your Business Name</div>
+          <div id="prev-logo-wrap">
+            <div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">Your Business Name</div>
+          </div>
           <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1px">ESTIMATE #001</div>
         </div>
         <div style="padding:16px 20px">
@@ -2000,7 +2004,17 @@ function updateProfilePreview() {
   const name = document.getElementById('prof-name').value || 'Your Business Name';
   const phone = document.getElementById('prof-phone').value || '(555) 123-4567';
   const email = document.getElementById('prof-email').value || 'you@yourbusiness.com';
-  document.getElementById('prev-biz-name').textContent = name;
+  // Show logo if available, otherwise show name text
+  const logoWrap = document.getElementById('prev-logo-wrap');
+  if (logoWrap) {
+    if (businessProfile.logo_data) {
+      logoWrap.innerHTML = `<img src="${businessProfile.logo_data}" style="height:44px;max-width:100px;object-fit:contain;border-radius:6px">`;
+    } else {
+      logoWrap.innerHTML = `<div id="prev-biz-name" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:white">${name}</div>`;
+    }
+  }
+  const nameEl = document.getElementById('prev-biz-name');
+  if (nameEl) nameEl.textContent = name;
   document.getElementById('prev-from').textContent = name;
   document.getElementById('prev-phone').textContent = phone;
   document.getElementById('prev-email').textContent = email;
@@ -2017,6 +2031,7 @@ function handleLogoUpload(input) {
       zone.innerHTML = `<input type="file" id="profile-logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">`;
       businessProfile.logo_data = e.target.result;
       businessProfile._logo_changed = true;
+      updateProfilePreview();
     };
     reader.readAsDataURL(input.files[0]);
   }
