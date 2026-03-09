@@ -2809,38 +2809,149 @@ function closeEmailModal() {
 }
 
 async function generateQuotePDFBase64(quoteId) {
-  // Generate PDF from the quote preview and return as base64
   try {
-    // Temporarily render the quote preview off-screen
     const q = quotes.find(x => x.id == quoteId);
     if (!q) return null;
-
-    // Use existing qp-body if visible, otherwise render fresh
-    let element = document.getElementById('qp-body');
-    const qpWrap = document.getElementById('qp-wrap');
-    const wasHidden = qpWrap.style.display === 'none' || !qpWrap.style.display;
-
-    if (wasHidden) {
-      // Render quote into qp-body offscreen temporarily
-      previewQuote(quoteId);
-      qpWrap.style.visibility = 'hidden';
-      await new Promise(r => setTimeout(r, 300)); // let it render
-    }
-
     const { jsPDF } = window.jspdf;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const W = 210; // A4 width mm
+    const margin = 16;
+    const col = W - margin * 2;
+    const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const { s, t, total } = calcQ(q);
+    let y = 0;
 
-    if (wasHidden) {
-      qpWrap.style.display = 'none';
-      qpWrap.style.visibility = '';
+    // ── HEADER BAR ──
+    pdf.setFillColor(30, 77, 53);
+    pdf.rect(0, 0, W, 28, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text(businessProfile.name || 'Your Business', margin, 12);
+    pdf.setFontSize(9);
+    pdf.setTextColor(200, 230, 200);
+    pdf.text('ESTIMATE #' + String(q.id).slice(-6).toUpperCase(), margin, 19);
+    const dateStr = new Date(q.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    pdf.text(dateStr, W - margin, 19, { align: 'right' });
+    y = 36;
+
+    // ── FROM / TO ──
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('FROM', margin, y);
+    pdf.text('PREPARED FOR', W / 2 + 4, y);
+    y += 5;
+    pdf.setTextColor(30, 30, 30);
+    pdf.setFontSize(11);
+    pdf.text(businessProfile.name || 'Your Business', margin, y);
+    pdf.text(q.client_name || '', W / 2 + 4, y);
+    y += 5;
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+    pdf.setTextColor(80, 80, 80);
+    if (businessProfile.phone) { pdf.text(businessProfile.phone, margin, y); y += 4; }
+    if (businessProfile.email) { pdf.text(businessProfile.email, margin, y); y += 4; }
+    if (businessProfile.street) { pdf.text(businessProfile.street + (businessProfile.city ? ', ' + businessProfile.city : ''), margin, y); y += 4; }
+    if (q.client_email) pdf.text(q.client_email, W / 2 + 4, y - (businessProfile.phone ? 8 : 4));
+    if (q.job_date) {
+      const jd = new Date(q.job_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      pdf.setTextColor(30, 77, 53);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Job Date: ' + jd + (q.job_time ? ' at ' + q.job_time : ''), W / 2 + 4, y - 4);
+      pdf.setTextColor(80, 80, 80);
+      pdf.setFont('helvetica', 'normal');
+    }
+    y += 6;
+
+    // ── DIVIDER ──
+    pdf.setDrawColor(220, 220, 220);
+    pdf.setLineWidth(0.4);
+    pdf.line(margin, y, W - margin, y);
+    y += 8;
+
+    // ── TITLE ──
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(12);
+    pdf.setTextColor(30, 30, 30);
+    pdf.text(q.title || 'Quote', margin, y);
+    y += 8;
+
+    // ── TABLE HEADER ──
+    pdf.setFillColor(248, 248, 248);
+    pdf.rect(margin, y - 4, col, 8, 'F');
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('DESCRIPTION', margin + 2, y);
+    pdf.text('QTY', W - margin - 50, y, { align: 'center' });
+    pdf.text('UNIT PRICE', W - margin - 25, y, { align: 'right' });
+    pdf.text('AMOUNT', W - margin, y, { align: 'right' });
+    y += 7;
+
+    // ── LINE ITEMS ──
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    (q.lines || []).forEach((l, i) => {
+      if (i % 2 === 1) { pdf.setFillColor(252, 252, 252); pdf.rect(margin, y - 4, col, 8, 'F'); }
+      pdf.setTextColor(50, 50, 50);
+      pdf.text(l.d || '', margin + 2, y);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(String(l.q), W - margin - 50, y, { align: 'center' });
+      pdf.text(fmt(l.p), W - margin - 25, y, { align: 'right' });
+      pdf.setTextColor(30, 30, 30);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(fmt(l.q * l.p), W - margin, y, { align: 'right' });
+      pdf.setFont('helvetica', 'normal');
+      y += 8;
+    });
+
+    // ── TOTALS ──
+    y += 4;
+    pdf.setDrawColor(220, 220, 220);
+    pdf.line(W - margin - 60, y - 2, W - margin, y - 2);
+    pdf.setFontSize(10);
+    pdf.setTextColor(80, 80, 80);
+    pdf.text('Subtotal', W - margin - 60, y + 4);
+    pdf.text(fmt(s), W - margin, y + 4, { align: 'right' });
+    y += 10;
+    if (q.tax) {
+      pdf.text('Tax (' + q.tax + '%)', W - margin - 60, y);
+      pdf.text(fmt(t), W - margin, y, { align: 'right' });
+      y += 8;
+    }
+    // Total box
+    pdf.setFillColor(30, 77, 53);
+    pdf.roundedRect(W - margin - 64, y - 4, 64, 12, 3, 3, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    pdf.text('TOTAL DUE', W - margin - 60, y + 4);
+    pdf.setFontSize(13);
+    pdf.text(fmt(total), W - margin - 2, y + 4, { align: 'right' });
+    y += 18;
+
+    // ── NOTES ──
+    if (q.notes) {
+      pdf.setFillColor(255, 251, 235);
+      pdf.rect(margin, y - 2, col, 14, 'F');
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 80, 0);
+      pdf.setFont('helvetica', 'normal');
+      const noteLines = pdf.splitTextToSize(q.notes, col - 4);
+      pdf.text(noteLines, margin + 3, y + 4);
+      y += 18;
     }
 
-    // Return base64 string (strip the data:application/pdf;base64, prefix)
+    // ── FOOTER ──
+    pdf.setFillColor(248, 248, 248);
+    pdf.rect(0, 285, W, 12, 'F');
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(businessProfile.name || 'Your Business', margin, 292);
+    pdf.text('Powered by Resurfr', W - margin, 292, { align: 'right' });
+
     return pdf.output('datauristring').split(',')[1];
   } catch(e) {
     console.error('PDF gen error:', e);
