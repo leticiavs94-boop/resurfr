@@ -248,7 +248,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .pipe-draft::before{background:#9CA3AF;}
 .pipe-sent::before{background:#2563EB;}
 .pipe-approved::before{background:#16A34A;}
-.pipe-converted::before{background:#7C3AED;}
+.pipe-follow_up::before{background:#D97706;}
 .pipe-n{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--dark);line-height:1;}
 .pipe-l{font-size:11px;font-weight:700;color:var(--lm);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
 .pipe-v{font-size:12px;font-weight:600;margin-top:4px;}
@@ -2239,7 +2239,7 @@ function qbadge(st) {
     sent: ['#2563EB', '#EFF6FF', 'Sent'],
     approved: ['#16A34A', '#F0FDF4', ' Approved'],
     declined: ['#DC2626', '#FEF2F2', 'Declined'],
-    converted: ['#7C3AED', '#F5F3FF', '-> Job Created']
+    follow_up: ['#D97706', '#FFFBEB', 'Follow Up']
   };
   const [color, bg, lbl] = m[st] || m.draft;
   return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
@@ -2252,7 +2252,7 @@ function renderQuotesPipe() {
     { key: 'draft', label: 'Draft', color: '#9CA3AF' },
     { key: 'sent', label: 'Sent', color: '#2563EB' },
     { key: 'approved', label: 'Approved', color: '#16A34A' },
-    { key: 'converted', label: 'Converted', color: '#7C3AED' }
+    { key: 'follow_up', label: 'Follow Up', color: '#D97706' }
   ];
   el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">` +
     stages.map(s => {
@@ -2273,10 +2273,10 @@ function renderQuotesTable(filter = 'all') {
   const filtersEl = document.getElementById('q-filters');
   if (filtersEl) {
     const counts = {};
-    ['all','draft','sent','approved','converted','declined'].forEach(k => {
+    ['all','draft','sent','approved','follow_up','declined'].forEach(k => {
       counts[k] = k === 'all' ? quotes.length : quotes.filter(q=>q.status===k).length;
     });
-    filtersEl.innerHTML = ['all','draft','sent','approved','converted','declined'].map(k =>
+    filtersEl.innerHTML = ['all','draft','sent','approved','follow_up','declined'].map(k =>
       `<button onclick="renderQuotesTable('${k}')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid ${filter===k?'var(--green)':'var(--border)'};background:${filter===k?'var(--green)':'white'};color:${filter===k?'white':'var(--muted)'}">${k==='all'?'All':k.charAt(0).toUpperCase()+k.slice(1)} (${counts[k]})</button>`
     ).join('');
   }
@@ -2300,6 +2300,7 @@ function renderQuotesTable(filter = 'all') {
               <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
               <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
               ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="openEmailModal('${q.id}')">✉ Send</button>` : ''}
+              ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A" onclick="markQuoteFollowUp('${q.id}')">Follow Up</button>` : ''}
               ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
               ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
               <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
@@ -2626,6 +2627,14 @@ async function sendQuoteById(id) {
   renderQuotesPipe();
   renderQuotesTable();
   document.getElementById('qp-wrap').style.display = 'none';
+}
+
+async function markQuoteFollowUp(id) {
+  await sb.from('quotes').update({ status: 'follow_up' }).eq('id', id);
+  toast('Marked for follow up');
+  await loadQuotes();
+  renderQuotesPipe();
+  renderQuotesTable();
 }
 
 async function approveQuote(id) {
