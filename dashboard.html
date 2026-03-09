@@ -2299,7 +2299,7 @@ function renderQuotesTable(filter = 'all') {
             <td><div class="row-actions">
               <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
               <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
-              ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="sendQuoteById('${q.id}')">Send</button>` : ''}
+              ${q.status === 'draft' ? `<button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="openEmailModal('${q.id}')">✉ Send</button>` : ''}
               ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
               ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
               <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
@@ -2475,6 +2475,24 @@ async function saveQuote() {
   renderQuotesPipe();
   renderQuotesTable();
   return savedQuoteId;
+}
+
+async function saveAndSendQuote() {
+  // Save quote then go straight to email modal — no preview step needed
+  const clientName = document.getElementById('nq-client').value.trim();
+  const title = document.getElementById('nq-title').value.trim();
+  if (!clientName || !title) { toast('Enter a client and title'); return; }
+  const lines = getQuoteLines();
+  if (lines.length === 0) { toast('Add at least one line item'); return; }
+  await saveQuote();
+  await loadQuotes();
+  // Find the quote we just saved — most recent draft for this client+title
+  const target = quotes.find(q => q.client_name === clientName && q.title === title) ||
+                 quotes.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+  if (target) {
+    document.getElementById('nq-overlay').style.display = 'none';
+    openEmailModal(target.id);
+  }
 }
 
 async function saveAndPreviewQuote() {
@@ -2776,6 +2794,9 @@ ${businessProfile.name || 'Your Business'}${businessProfile.phone ? '\n' + busin
 function closeEmailModal() {
   document.getElementById('m-email-quote').style.display = 'none';
   emailQuoteId = null;
+  // Also close preview if it was open behind it
+  const qpWrap = document.getElementById('qp-wrap');
+  if (qpWrap) qpWrap.style.display = 'none';
 }
 
 async function sendQuoteEmail() {
@@ -2964,7 +2985,8 @@ function openEmailFromPreview() {
     <div class="q-modal-actions">
       <button style="background:var(--off);color:var(--muted);border:1px solid var(--border)" onclick="closeQuoteModal()">Cancel</button>
       <button style="background:var(--charcoal);color:white" onclick="saveQuote()">Save Draft</button>
-      <button style="background:#7C3AED;color:white" onclick="saveAndPreviewQuote()">Save &amp; Preview &#8594;</button>
+      <button style="background:#2563EB;color:white" onclick="saveAndSendQuote()">✉ Save &amp; Send</button>
+      <button style="background:#7C3AED;color:white" onclick="saveAndPreviewQuote()">Preview &#8594;</button>
     </div>
   </div>
 </div>
