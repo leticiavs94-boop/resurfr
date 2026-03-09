@@ -2317,7 +2317,7 @@ function renderQuotesTable(filter = 'all') {
             <td><div class="row-actions">
               <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
               <button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="editQuote('${q.id}')">Edit</button>
-              ${q.status === 'draft' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openEmailModal('${q.id}')">✉ Send</button>` : ''}
+              ${q.status === 'draft' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openEmailModal('${q.id}')">Send</button>` : ''}
               ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A" onclick="markQuoteFollowUp('${q.id}')">Follow Up</button>` : ''}
               ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
               ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
@@ -3020,9 +3020,10 @@ async function sendQuoteEmail() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Send failed');
 
-    toast('Quote sent to ' + to + (attachPDF ? ' with PDF ✓' : ' ✓'));
+    const sentId = emailQuoteId;
     closeEmailModal();
-    if (emailQuoteId) await sendQuoteById(emailQuoteId);
+    if (sentId) await sendQuoteById(sentId);
+    toast('Quote sent to ' + to + (attachPDF ? ' with PDF ✓' : ' ✓'));
 
   } catch (err) {
     console.error('Email error:', err);
