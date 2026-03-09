@@ -1,1 +1,1 @@
-netlify/functions/
+netlify/functions/send-quote-email.js
