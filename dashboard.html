@@ -2812,32 +2812,28 @@ async function sendQuoteEmail() {
   btn.disabled = true;
 
   try {
-    // Check if EmailJS is configured
-    if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
-      // Fallback: open mailto link
-      const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
-      window.location.href = mailtoLink;
-      toast('Opening your mail app... ');
-      closeEmailModal();
-      if (emailQuoteId) await sendQuoteById(emailQuoteId);
-      return;
-    }
-
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: to,
-      to_name: document.getElementById('eq-to').value,
-      subject: subject,
-      message: message,
+    const res = await fetch('/.netlify/functions/send-quote-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to,
+        subject,
+        message,
+        fromName: businessProfile.name || 'Resurfr Quotes'
+      })
     });
 
-    toast('Quote sent! ');
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Send failed');
+
+    toast('Quote sent to ' + to + '! ✓');
     closeEmailModal();
     if (emailQuoteId) await sendQuoteById(emailQuoteId);
 
   } catch (err) {
     console.error('Email error:', err);
-    toast('Email failed - try the mailto fallback');
+    toast('Email failed: ' + err.message, 'err');
     // Fallback to mailto
     const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
     window.open(mailtoLink);
