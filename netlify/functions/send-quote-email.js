@@ -22,7 +22,7 @@ exports.handler = async (event) => {
   }
 
   const emailPayload = {
-    from: `${fromName || 'Resurfr Quotes'} <onboarding@resend.dev>`,
+    from: `${fromName || 'Resurfr Quotes'} <hello@resurfr.com>`,
     to: [to],
     subject: subject,
     text: message,
