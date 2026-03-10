@@ -117,13 +117,17 @@ async function loadQuote() {
   const { data: q, error } = await sb.from('quotes').select('*').eq('id', id).single();
 
   if (error || !q) {
-    card.innerHTML = `<div class="state-msg"><div class="state-emoji">😕</div><div class="state-title">Quote Not Found</div><div class="state-sub">This quote may have been removed or the link is incorrect.</div></div>`;
+    console.error('Quote load error:', error);
+    card.innerHTML = `<div class="state-msg"><div class="state-emoji">😕</div><div class="state-title">Quote Not Found</div><div class="state-sub">This quote may have been removed or the link is incorrect. (ID: ${id})</div></div>`;
     return;
   }
 
-  // Load business profile for this contractor
-  const { data: profile } = await sb.from('business_profiles').select('*').eq('user_id', q.user_id).single();
-  const biz = profile || {};
+  // Load business profile for this contractor (gracefully handle missing user_id)
+  let biz = {};
+  if (q.user_id) {
+    const { data: profile } = await sb.from('business_profiles').select('*').eq('user_id', q.user_id).single();
+    biz = profile || {};
+  }
 
   // Parse lines
   const lines = typeof q.lines === 'string' ? JSON.parse(q.lines) : (q.lines || []);
