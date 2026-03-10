@@ -2251,7 +2251,7 @@ function calcQ(q) {
   return { s, t, total: s + t };
 }
 
-function qbadge(st) {
+function qbadge(st, reason) {
   const m = {
     draft: ['#9CA3AF', '#F3F4F6', 'Draft'],
     sent: ['#2563EB', '#EFF6FF', 'Sent'],
@@ -2260,7 +2260,8 @@ function qbadge(st) {
     follow_up: ['#D97706', '#FFFBEB', 'Follow Up']
   };
   const [color, bg, lbl] = m[st] || m.draft;
-  return `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
+  const tip = (st === 'declined' && reason) ? ` title="${reason}"` : '';
+  return `<span${tip} style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${bg};color:${color}">${lbl}</span>`;
 }
 
 function renderQuotesPipe() {
@@ -2485,7 +2486,8 @@ async function saveQuote() {
   if (editingQuoteId) {
     ({ error } = await sb.from('quotes').update(payload).eq('id', editingQuoteId));
   } else {
-    ({ error } = await sb.from('quotes').insert({ ...payload, status: 'draft' }));
+    const { data: { user } } = await sb.auth.getUser();
+    ({ error } = await sb.from('quotes').insert({ ...payload, status: 'draft', user_id: user?.id || null }));
   }
   if (error) { toast('Error: ' + error.message); return; }
   closeQuoteModal();
@@ -2799,6 +2801,7 @@ function openEmailModal(quoteId) {
 
 This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : '';
 
+  const quoteLink = `https://getresurfr.netlify.app/quote.html?id=${quoteId}`;
   document.getElementById('eq-message').value =
 `Hi ${q.client_name},
 
@@ -2811,7 +2814,12 @@ Subtotal:  ${fmt(s)}${q.tax ? `
 Tax (${q.tax}%): ${fmt(t)}` : ''}
 Total:     ${fmt(total)}${validStr}
 
-If you have any questions or would like to make any adjustments, please don't hesitate to reach out. We look forward to working with you.
+👉 VIEW & ACCEPT YOUR QUOTE ONLINE:
+${quoteLink}
+
+Tap the link above to review your quote and accept or decline with one tap — no login needed.
+
+If you have any questions, don't hesitate to reach out. We look forward to working with you.
 
 Best regards,
 ${businessProfile.name || 'Your Business'}${businessProfile.phone ? '\n' + businessProfile.phone : ''}${businessProfile.email ? '\n' + businessProfile.email : ''}`;
