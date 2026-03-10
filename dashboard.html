@@ -1777,7 +1777,8 @@ async function saveClientOnly(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){toast('Enter a client name','err');return;}
   const payload={name,street:document.getElementById('c-street')?.value.trim()||null,location:document.getElementById('c-loc').value.trim(),email:document.getElementById('c-email')?.value.trim()||null,surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
-  const{error}=await sb.from('clients').insert(payload);
+  const{data:{user:_u1}}=await sb.auth.getUser();
+  const{error}=await sb.from('clients').insert({...payload,user_id:_u1?.id||null});
   if(error){toast('Error: '+error.message,'err');return;}
   closeModal('client');toast('Client saved!','ok');
   await loadClients();renderClients();renderDashboard();
@@ -1793,7 +1794,8 @@ async function saveClient(){
   if(editingId.client){
     ({error}=await sb.from('clients').update(payload).eq('id',editingId.client));
   } else {
-    ({data,error}=await sb.from('clients').insert(payload).select().single());
+    const{data:{user:_u2}}=await sb.auth.getUser();
+    ({data,error}=await sb.from('clients').insert({...payload,user_id:_u2?.id||null}).select().single());
   }
   if(btn){btn.disabled=false;btn.textContent=editingId.client?'Save Changes':'Save Client';}
   if(error){toast('Error: '+error.message,'err');return;}
@@ -1822,13 +1824,15 @@ async function saveJob(){
   if(editingId.job){
     ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
   } else {
-    const{data,error:err}=await sb.from('jobs').insert(payload).select().single();
+    const{data:{user:_u3}}=await sb.auth.getUser();
+    const{data,error:err}=await sb.from('jobs').insert({...payload,user_id:_u3?.id||null}).select().single();
     error=err;if(data)newJobId=data.id;
   }
   btn.disabled=false;btn.textContent=editingId.job?'Save Changes':'Save Job';
   if(error){toast('Error: '+error.message,'err');return;}
   if(newJobId&&amt>0){
-    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',issued_date:new Date().toISOString().split('T')[0]});
+    const{data:{user:_u4}}=await sb.auth.getUser();
+    await sb.from('invoices').insert({client_id:cid,amount:amt,status:'pending',issued_date:new Date().toISOString().split('T')[0],user_id:_u4?.id||null});
   }
   closeModal('job');
   toast(editingId.job?'Job updated!':'Job saved! Invoice created automatically.','ok');
@@ -1851,7 +1855,8 @@ async function saveInvoice(){
   if(editingId.invoice){
     ({error}=await sb.from('invoices').update(payload).eq('id',editingId.invoice));
   } else {
-    ({error}=await sb.from('invoices').insert(payload));
+    const{data:{user:_u5}}=await sb.auth.getUser();
+    ({error}=await sb.from('invoices').insert({...payload,user_id:_u5?.id||null}));
   }
   btn.disabled=false;btn.textContent=editingId.invoice?'Save Changes':'Save Invoice';
   if(error){toast('Error: '+error.message,'err');return;}
@@ -1864,7 +1869,8 @@ async function qaSaveJobThenInvoice(){
   if(qaClientId){
     const svc=document.getElementById('qa-j-service').value.trim();
     if(svc){
-      await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled'});
+      const{data:{user:_u6}}=await sb.auth.getUser();
+      await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u6?.id||null});
       qaJobSaved=true;
       document.getElementById('qa-i-amount').value=document.getElementById('qa-j-amount').value||'';
     }
@@ -1877,11 +1883,13 @@ async function qaFinish(saveJob,saveInvoice){
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
   if(saveJob&&qaClientId&&!qaJobSaved){
     const svc=document.getElementById('qa-j-service').value.trim();
-    if(svc) await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled'});
+    const{data:{user:_u7}}=await sb.auth.getUser();
+    if(svc) await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u7?.id||null});
   }
   if(saveInvoice&&qaClientId){
     const amt=parseFloat(document.getElementById('qa-i-amount').value);
-    if(amt) await sb.from('invoices').insert({client_id:qaClientId,amount:amt,status:document.getElementById('qa-i-status').value,issued_date:new Date().toISOString().split('T')[0]});
+    const{data:{user:_u8}}=await sb.auth.getUser();
+    if(amt) await sb.from('invoices').insert({client_id:qaClientId,amount:amt,status:document.getElementById('qa-i-status').value,issued_date:new Date().toISOString().split('T')[0],user_id:_u8?.id||null});
   }
   if(btn)btn.disabled=false;
   closeModal('client');qaJobSaved=false;
@@ -2667,6 +2675,7 @@ async function approveQuote(id) {
     if (!exists) {
       const user = sb.auth.getUser ? (await sb.auth.getUser()).data?.user : null;
       const uid = user?.id;
+      const{data:{user:_u11}}=await sb.auth.getUser();
       await sb.from('clients').insert({
         name: q.client_name,
         email: q.client_email || null,
@@ -2709,7 +2718,8 @@ async function convertQuote(id) {
   if (clientId) jobPayload.client_id = clientId;
   else jobPayload.client_name = q.client_name; // fallback if no client_id
 
-  const { data: job, error: jobErr } = await sb.from('jobs').insert(jobPayload).select().single();
+  const{data:{user:_u9}}=await sb.auth.getUser();
+  const { data: job, error: jobErr } = await sb.from('jobs').insert({...jobPayload,user_id:_u9?.id||null}).select().single();
   if (jobErr) { console.error('Job insert error:', jobErr); toast('Failed to create job: ' + jobErr.message, 'err'); return; }
 
   // Create invoice
@@ -2721,7 +2731,8 @@ async function convertQuote(id) {
   };
   if (clientId) invoicePayload.client_id = clientId;
 
-  const { error: invErr } = await sb.from('invoices').insert(invoicePayload);
+  const{data:{user:_u10}}=await sb.auth.getUser();
+  const { error: invErr } = await sb.from('invoices').insert({...invoicePayload,user_id:_u10?.id||null});
   if (invErr) console.error('Invoice insert error:', invErr);
 
   // Mark quote as converted
