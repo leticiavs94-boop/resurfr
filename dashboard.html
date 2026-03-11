@@ -21,6 +21,9 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 #app{display:none}
 .layout{display:flex;min-height:100vh}
 .sidebar{width:var(--sw);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
+body.trial-active .sidebar{top:42px}
+body.trial-active .main{padding-top:42px}
+body.trial-active .topbar{top:42px}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
 .logo-icon{width:36px;height:36px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-icon svg{width:20px;height:20px}
@@ -40,7 +43,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-.main{margin-left:var(--sw);width:calc(100% - var(--sw));height:100vh;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -54,7 +57,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
 .content{padding:28px 32px;flex:1;min-width:0}
 .view{display:none}
-.view.active{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto}
+.view.active{display:block;overflow-y:auto;flex:1}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:4px}
@@ -401,7 +404,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 </aside>
 <div class="main">
-<div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:#1E4D35;color:white;padding:10px 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+<div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:250;background:#1E4D35;color:white;padding:10px 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
 <span>Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
 <button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
 </div>
@@ -1432,7 +1435,7 @@ ${jbadge(j.status)}
 }).join('');
 // Active clients
 const clEl=document.getElementById('d-clients');
-if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 renderRevenueChart();
 }
 function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
@@ -1447,7 +1450,7 @@ clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')"
 </tr>`).join('')+`</tbody></table>`;
 const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
 <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
-<div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} court${(c.courts||1)!==1?'s':''}</div>
+<div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''</div>
 <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
 <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div>
 </div>`).join('');
