@@ -40,7 +40,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));height:100vh;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -54,7 +54,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
 .content{padding:28px 32px;flex:1;min-width:0}
 .view{display:none}
-.view.active{display:block}
+.view.active{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:4px}
@@ -342,10 +342,6 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div id="loading-screen"><div class="ls-logo">Resurfr</div><div class="ls-spin"></div></div>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div id="app">
-<div id="trial-topbar" style="display:none;background:#1E4D35;color:white;text-align:center;padding:10px 20px;font-size:13px;font-weight:600;position:sticky;top:0;z-index:999;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
-  <span id="trial-topbar-text">Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
-  <button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
-</div>
 <div class="layout">
 <aside class="sidebar" id="sidebar">
 <div class="sidebar-logo">
@@ -405,6 +401,10 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 </aside>
 <div class="main">
+<div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:#1E4D35;color:white;padding:10px 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+<span>Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
+<button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
+</div>
 <div id="view-dashboard" class="view active">
 <div class="topbar">
 <div class="topbar-left">
@@ -892,7 +892,7 @@ Profile Saved
 </div>
 </div>
 </div>
-<div class="content">
+<div class="content" style="max-width:700px;margin:0 auto;width:100%;box-sizing:border-box">
 
   <!-- Trial banner -->
   <div id="billing-trial-banner" style="background:linear-gradient(135deg,#1E4D35,#2A6B47);border-radius:16px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
@@ -936,6 +936,7 @@ Profile Saved
     <a href="/cdn-cgi/l/email-protection#640c0108080b24160117111602164a070b09" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at <span class="__cf_email__" data-cfemail="157d7079797a55677066606773673b767a78">[email&#160;protected]</span> →</a>
   </div>
 
+</div>
 </div>
 </div>
 
@@ -1113,6 +1114,7 @@ const daysLeft = Math.ceil((trialEnd - new Date()) / (1000 * 60 * 60 * 24));
 const trialBar = document.getElementById('trial-topbar');
 if (daysLeft > 0 && daysLeft <= 15) {
   trialBar.style.display = 'flex';
+  document.body.classList.add('trial-active');
   document.getElementById('trial-topbar-days').textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
   document.getElementById('trial-days-left').textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left';
 }
