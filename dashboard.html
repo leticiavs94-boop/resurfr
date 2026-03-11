@@ -342,6 +342,10 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div id="loading-screen"><div class="ls-logo">Resurfr</div><div class="ls-spin"></div></div>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div id="app">
+<div id="trial-topbar" style="display:none;background:#1E4D35;color:white;text-align:center;padding:10px 20px;font-size:13px;font-weight:600;position:sticky;top:0;z-index:999;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+  <span id="trial-topbar-text">Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
+  <button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
+</div>
 <div class="layout">
 <aside class="sidebar" id="sidebar">
 <div class="sidebar-logo">
@@ -888,7 +892,7 @@ Profile Saved
 </div>
 </div>
 </div>
-<div class="content" style="max-width:680px">
+<div class="content">
 
   <!-- Trial banner -->
   <div id="billing-trial-banner" style="background:linear-gradient(135deg,#1E4D35,#2A6B47);border-radius:16px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
@@ -911,7 +915,7 @@ Profile Saved
         </div>
         <div style="font-size:12px;color:rgba(255,255,255,0.35)">billed annually · <span style="text-decoration:line-through">$49/mo</span></div>
       </div>
-      <a href="mailto:hello@resurfr.com?subject=Upgrade to Pro" style="display:inline-block;padding:13px 24px;background:var(--yellow);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);text-decoration:none">Upgrade to Pro →</a>
+      <a href="/cdn-cgi/l/email-protection#dbb3beb7b7b49ba9bea8aea9bda9f5b8b4b6e4a8aeb9b1beb8afe68eabbca9babfbefbafb4fb8ba9b4" style="display:inline-block;padding:13px 24px;background:var(--yellow);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);text-decoration:none">Upgrade to Pro →</a>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Unlimited clients & jobs</div>
@@ -929,7 +933,7 @@ Profile Saved
   <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px 24px">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Questions about your plan?</div>
     <div style="font-size:13px;color:var(--lmuted);margin-bottom:14px">We're happy to help.</div>
-    <a href="mailto:hello@resurfr.com" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at hello@resurfr.com →</a>
+    <a href="/cdn-cgi/l/email-protection#640c0108080b24160117111602164a070b09" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at <span class="__cf_email__" data-cfemail="157d7079797a55677066606773673b767a78">[email&#160;protected]</span> →</a>
   </div>
 
 </div>
@@ -1067,7 +1071,7 @@ Profile Saved
 <div id="photo-viewer-caption" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:12px;font-family:'DM Sans',sans-serif"></div>
 </div>
 <div class="toast" id="toast"></div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const{createClient}=supabase;
 const sb=createClient('https://qyrgkspwxjmbjnkaixag.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA');
 let clients=[],jobs=[],invoices=[];
@@ -1102,6 +1106,16 @@ if(session){
 const email=session.user.email;
 document.getElementById('user-email').textContent=email;
 document.getElementById('user-av').textContent=email.substring(0,2).toUpperCase();
+// Trial banner
+const createdAt = new Date(session.user.created_at);
+const trialEnd = new Date(createdAt.getTime() + 15 * 24 * 60 * 60 * 1000);
+const daysLeft = Math.ceil((trialEnd - new Date()) / (1000 * 60 * 60 * 24));
+const trialBar = document.getElementById('trial-topbar');
+if (daysLeft > 0 && daysLeft <= 15) {
+  trialBar.style.display = 'flex';
+  document.getElementById('trial-topbar-days').textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+  document.getElementById('trial-days-left').textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left';
+}
 } else {
 // No session - redirect to login on production
 const isLocal=window.location.protocol==='file:'||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1';
@@ -3125,5 +3139,4 @@ openEmailModal(id);
 </label>
 </div>
 <div style="display:flex;gap:8px;padding-top:4px">
-<button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
-<button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#2563EB;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✉ Send Quote</button>
+<button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font
