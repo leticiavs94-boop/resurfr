@@ -1568,9 +1568,9 @@ function showClientDetail(id){
   const c=clients.find(x=>String(x.id)===String(id));if(!c)return;
   const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
   const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id));
+  const cQuotes=quotes.filter(q=>q.client_name?.toLowerCase().trim()===c.name?.toLowerCase().trim());
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
-  const el=document.getElementById('client-detail-overlay');
   document.getElementById('view-client-detail').dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
@@ -1619,7 +1619,6 @@ function showClientDetail(id){
         </div>
       </div>`).join('');
   // Quotes section
-  const cQuotes = quotes.filter(q => q.client_name?.toLowerCase().trim() === c.name?.toLowerCase().trim());
   const cdQuotesEl = document.getElementById('cd-quotes');
   if (cdQuotesEl) {
     cdQuotesEl.innerHTML = cQuotes.length === 0
