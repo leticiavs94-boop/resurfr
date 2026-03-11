@@ -121,6 +121,15 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .panel:last-child{margin-bottom:0}
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
 .panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)}
+.row-item{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);gap:12px}
+.row-item:last-child{border-bottom:none}
+.row-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.row-main{flex:1;min-width:0}
+.row-title{font-size:14px;font-weight:600;color:var(--charcoal)}
+.row-sub{font-size:12px;color:var(--lmuted);margin-top:2px}
+.row-right{text-align:right;flex-shrink:0}
+.row-amount{font-size:14px;font-weight:700;color:var(--charcoal)}
+.panel-count{font-size:11px;font-weight:700;color:var(--lmuted);background:var(--off);border:1px solid var(--border);border-radius:20px;padding:2px 8px}
 .back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:6px 0}
 .back-btn:hover{color:var(--green)}
 .panel-link{font-size:11px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:0}
@@ -885,14 +894,13 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
     <!-- Header card -->
     <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:16px">
         <div id="cd-avatar" style="width:56px;height:56px;border-radius:14px;background:var(--charcoal);color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">TE</div>
         <div style="flex:1;min-width:0">
-          <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);line-height:1.1">Client</div>
+          <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal);line-height:1.1">Client</div>
           <div id="cd-meta" style="font-size:13px;color:var(--lmuted);margin-top:3px"></div>
         </div>
       </div>
-      <!-- Contact info -->
       <div id="cd-contact"></div>
     </div>
 
@@ -923,6 +931,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Job History</div>
+        <span class="panel-count" id="cd-jobs-count"></span>
       </div>
       <div id="cd-jobs"></div>
     </div>
@@ -931,6 +940,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Quotes</div>
+        <span class="panel-count" id="cd-quotes-count"></span>
       </div>
       <div id="cd-quotes"></div>
     </div>
@@ -939,6 +949,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Invoices</div>
+        <span class="panel-count" id="cd-inv-count-badge"></span>
       </div>
       <div id="cd-invoices"></div>
     </div>
@@ -1571,47 +1582,57 @@ function showClientDetail(id){
   if(c.street||c.location) contactHtml += `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${[c.street,c.location].filter(Boolean).join(', ')}</div>`;
   if(c.notes) contactHtml += `<div style="font-size:12px;color:var(--muted);font-style:italic">${c.notes}</div>`;
   const contactEl = document.getElementById('cd-contact');
-  if(contactEl) contactEl.innerHTML = contactHtml ? `<div style="display:flex;flex-direction:column;gap:6px;padding:12px 20px;border-bottom:1px solid var(--border)">${contactHtml}</div>` : '';
+  if(contactEl) contactEl.innerHTML = contactHtml ? `<div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:16px;margin-top:16px;border-top:1px solid var(--border)">${contactHtml}</div>` : '';
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
   document.getElementById('cd-jobcount').textContent=cJobs.length;
   const cdInvCount=document.getElementById('cd-invcount'); if(cdInvCount) cdInvCount.textContent=cInvoices.length;
+  const jCountBadge=document.getElementById('cd-jobs-count'); if(jCountBadge) jCountBadge.textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
+  const qCountBadge=document.getElementById('cd-quotes-count'); if(qCountBadge) qCountBadge.textContent=cQuotes.length+' quote'+(cQuotes.length!==1?'s':'');
+  const iCountBadge=document.getElementById('cd-inv-count-badge'); if(iCountBadge) iCountBadge.textContent=cInvoices.length+' invoice'+(cInvoices.length!==1?'s':'');
+  const sortedJobs = cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
-    ?'<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
-    :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
-      <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${j.service||'-'}</div>
-          <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(j.date)}${j.notes?' &middot; '+j.notes:''}</div>
-          ${j.next_visit?`<div style="font-size:10px;color:#2A7A52;margin-top:2px;font-weight:600">-> Next: ${fmt(j.next_visit)}</div>`:''}
+    ?'<div style="padding:32px 20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
+    :sortedJobs.map(j=>`
+      <div class="row-item">
+        <div class="row-icon" style="background:var(--off)">🔧</div>
+        <div class="row-main">
+          <div class="row-title">${j.service||'-'}</div>
+          <div class="row-sub">${fmt(j.date)}${j.time?' &middot; '+fmtTime(j.time):''}${j.notes?' &middot; '+j.notes:''}</div>
+          ${j.next_visit?`<div style="font-size:11px;color:#2A7A52;margin-top:2px;font-weight:600">→ Next: ${fmt(j.next_visit)}</div>`:''}
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700">$${(j.amount||0).toLocaleString()}</div>
+        <div class="row-right">
+          <div class="row-amount">$${(j.amount||0).toLocaleString()}</div>
           ${jbadge(j.status)}
         </div>
       </div>`).join('');
   document.getElementById('cd-invoices').innerHTML=cInvoices.length===0
-    ?'<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No invoices</div>'
+    ?'<div style="padding:32px 20px;text-align:center;color:var(--lmuted);font-size:13px">No invoices yet</div>'
     :cInvoices.map(i=>`
-      <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px">
-        <div style="flex:1;font-size:13px;font-weight:600;color:var(--charcoal)">${fmt(i.issued_date||i.created_at)}</div>
-        <div style="font-size:13px;font-weight:700">$${(i.amount||0).toLocaleString()}</div>
-        ${ibadge(i.status)}
-        ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif"> Paid</button>`:''}
+      <div class="row-item">
+        <div class="row-main">
+          <div class="row-title">Invoice — ${fmt(i.issued_date||i.created_at)}</div>
+        </div>
+        <div class="row-right" style="display:flex;align-items:center;gap:8px">
+          <div class="row-amount">$${(i.amount||0).toLocaleString()}</div>
+          ${ibadge(i.status)}
+          ${i.status!=='paid'?`<button onclick="markPaid('${i.id}')" style="font-size:10px;padding:3px 8px;border-radius:5px;background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif">✓ Paid</button>`:''}
+        </div>
       </div>`).join('');
   // Quotes section
   const cQuotes = quotes.filter(q => q.client_name?.toLowerCase().trim() === c.name?.toLowerCase().trim());
   const cdQuotesEl = document.getElementById('cd-quotes');
   if (cdQuotesEl) {
     cdQuotesEl.innerHTML = cQuotes.length === 0
-      ? '<div style="padding:16px;text-align:center;color:var(--lmuted);font-size:13px">No quotes yet</div>'
+      ? '<div style="padding:32px 20px;text-align:center;color:var(--lmuted);font-size:13px">No quotes yet</div>'
       : cQuotes.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(q => `
-        <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px;cursor:pointer" onclick="previewQuote('${q.id}')">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--charcoal)">${q.title||'-'}</div>
-            <div style="font-size:11px;color:var(--lmuted);margin-top:2px">${fmt(q.created_at)}</div>
+        <div class="row-item" style="cursor:pointer" onclick="previewQuote('${q.id}')">
+          <div class="row-icon" style="background:var(--off)">📄</div>
+          <div class="row-main">
+            <div class="row-title">${q.title||'-'}</div>
+            <div class="row-sub">${fmt(q.created_at)}</div>
           </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;font-weight:700">$${(calcQ(q).total||0).toLocaleString(undefined,{minimumFractionDigits:0})}</div>
+          <div class="row-right">
+            <div class="row-amount">$${(calcQ(q).total||0).toLocaleString(undefined,{minimumFractionDigits:0})}</div>
             ${qbadge(q.status)}
           </div>
         </div>`).join('');
