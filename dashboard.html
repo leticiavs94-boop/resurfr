@@ -879,11 +879,9 @@ Profile Saved
 </div>
 <div class="overlay" id="m-client">
 <div class="modal">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-<div style="flex-shrink:0;display:flex">
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#C8E62B"/><text x="4" y="22" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="20" fill="#181C17">R</text></svg>
-</div>
-<span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
+<div style="display:flex;align-items:center;margin-bottom:12px">
+<button onclick="closeModal('client')" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
 </div>
 <div class="modal-title" id="client-modal-title">Add Client</div>
 <div id="qa-steps" style="display:none;margin-bottom:20px;margin-top:4px">
@@ -943,11 +941,9 @@ Profile Saved
 </div>
 <div class="overlay" id="m-job">
 <div class="modal">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-<div style="flex-shrink:0;display:flex">
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#C8E62B"/><text x="4" y="22" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="20" fill="#181C17">R</text></svg>
-</div>
-<span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
+<div style="display:flex;align-items:center;margin-bottom:12px">
+<button onclick="closeModal('job')" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
 </div>
 <div class="modal-title" id="job-modal-title">Add Job</div>
 <div class="modal-sub" id="job-modal-sub" style="display:none"></div>
@@ -976,11 +972,9 @@ Profile Saved
 </div>
 <div class="overlay" id="m-invoice">
 <div class="modal">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-<div style="flex-shrink:0;display:flex">
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#C8E62B"/><text x="4" y="22" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="20" fill="#181C17">R</text></svg>
-</div>
-<span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--charcoal);letter-spacing:0.5px">Resurfr</span>
+<div style="display:flex;align-items:center;margin-bottom:12px">
+<button onclick="closeModal('invoice')" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
 </div>
 <div class="modal-title" id="invoice-modal-title">New Invoice</div>
 <div class="modal-sub" id="invoice-modal-sub" style="display:none"></div>
@@ -2931,10 +2925,10 @@ openEmailModal(id);
 </script>
 <div class="overlay" id="nq-overlay" style="z-index:500">
 <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
-<div class="mh">
-<div class="mh-title" id="modal-title">New Quote</div>
-<button class="mx" onclick="closeQuoteModal()">&#x2715;</button>
+<div style="display:flex;align-items:center;margin-bottom:12px">
+<button onclick="closeQuoteModal()" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
 </div>
+<div class="mh-title" id="modal-title" style="margin-bottom:16px">New Quote</div>
 <div class="fi-2">
 <div class="fg"><label class="fl">Client Name *</label>
 <input class="fi" id="nq-client" placeholder="Client name" list="nq-client-list" autocomplete="off" oninput="autoFillClientEmail()">
