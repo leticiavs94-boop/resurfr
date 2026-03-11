@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resurfr — Let's get you set up</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1E4D35;
+  --green-light: #2A6B47;
+  --yellow: #C8E62B;
+  --charcoal: #181C17;
+  --off: #F4F6F1;
+  --border: #E2E8DC;
+  --muted: #9DAA96;
+  --text: #1A1F18;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+
+/* Background */
+.bg {
+  position: fixed;
+  inset: 0;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: var(--yellow);
+}
+.bg-circle-1 { width: 600px; height: 600px; top: -200px; right: -100px; }
+.bg-circle-2 { width: 400px; height: 400px; bottom: -150px; left: -100px; opacity: 0.05; }
+
+/* Main wrap */
+.wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  animation: fadeDown 0.5s ease both;
+}
+.logo-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.logo-dot { color: var(--yellow); }
+
+/* Progress bar */
+.progress-wrap {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 32px;
+  animation: fadeDown 0.5s ease 0.1s both;
+}
+.progress-track {
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--yellow);
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Card */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+/* Step */
+.step { display: none; }
+.step.active {
+  display: block;
+  animation: slideIn 0.35s cubic-bezier(.4,0,.2,1) both;
+}
+.step.exit {
+  animation: slideOut 0.25s cubic-bezier(.4,0,.2,1) both;
+}
+
+.step-number {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.step-question {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--charcoal);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.step-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Input */
+.step-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  color: var(--charcoal);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  background: var(--off);
+  margin-bottom: 8px;
+}
+.step-input:focus {
+  border-color: var(--green);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(30,77,53,0.08);
+}
+.step-input::placeholder { color: #C0C8BA; }
+
+/* Input pair */
+.input-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* Trade chips */
+.trades-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.trade-chip {
+  padding: 12px 10px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--off);
+}
+.trade-chip:hover { border-color: var(--green); background: #F0F7F4; }
+.trade-chip.selected {
+  border-color: var(--green);
+  background: var(--green);
+  color: white;
+}
+.trade-chip .trade-icon { font-size: 22px; margin-bottom: 4px; }
+.trade-chip .trade-name { font-size: 12px; font-weight: 700; color: var(--charcoal); }
+.trade-chip.selected .trade-name { color: white; }
+
+/* Volume chips */
+.volume-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.volume-chip {
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--off);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.volume-chip:hover { border-color: var(--green); background: #F0F7F4; }
+.volume-chip.selected { border-color: var(--green); background: var(--green); }
+.volume-chip .vol-label { font-size: 14px; font-weight: 700; color: var(--charcoal); }
+.volume-chip .vol-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.volume-chip.selected .vol-label,
+.volume-chip.selected .vol-sub { color: white; }
+
+/* Next button */
+.next-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--charcoal);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.next-btn:hover { background: var(--green); }
+.next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.next-btn.primary { background: var(--green); }
+.next-btn.primary:hover { background: var(--green-light); }
+
+.skip-btn {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 4px;
+  text-align: center;
+}
+.skip-btn:hover { color: var(--charcoal); }
+
+/* Error */
+.step-error {
+  font-size: 12px;
+  color: #C0392B;
+  font-weight: 600;
+  min-height: 18px;
+  margin-bottom: 4px;
+}
+
+/* Animations */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-30px); }
+}
+
+/* Done screen */
+.done-screen {
+  text-align: center;
+  padding: 8px 0;
+}
+.done-emoji { font-size: 56px; margin-bottom: 16px; }
+.done-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+.done-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+@media (max-width: 480px) {
+  .card { padding: 28px 20px 20px; }
+  .step-question { font-size: 26px; }
+  .trades-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-circle bg-circle-1"></div>
+  <div class="bg-circle bg-circle-2"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- Logo -->
+  <div class="logo">
+    <svg width="36" height="36" viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="11" fill="#C8E62B"/><text x="7" y="34" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="32" fill="#181C17">R</text></svg>
+    <span class="logo-text">Resurfr<span class="logo-dot">.</span></span>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progress-text">Step 1 of 5</span>
+      <span id="progress-pct">20%</span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card" id="main-card">
+
+    <!-- STEP 1: Business Name -->
+    <div class="step active" id="step-1">
+      <div class="step-number">Step 1 of 5</div>
+      <div class="step-question">What's your business called?</div>
+      <div class="step-hint">This appears on every quote you send to clients.</div>
+      <input class="step-input" id="s1-name" type="text" placeholder="e.g. Cletus Solar LLC" autocomplete="organization" autofocus>
+      <div class="step-error" id="s1-err"></div>
+      <button class="next-btn primary" onclick="goStep(2)">Continue →</button>
+    </div>
+
+    <!-- STEP 2: Trade -->
+    <div class="step" id="step-2">
+      <div class="step-number">Step 2 of 5</div>
+      <div class="step-question">What's your trade?</div>
+      <div class="step-hint">Pick the one that best describes your work.</div>
+      <div class="trades-grid">
+        <div class="trade-chip" onclick="selectTrade(this,'Solar')"><div class="trade-icon">☀️</div><div class="trade-name">Solar</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Roofing')"><div class="trade-icon">🏠</div><div class="trade-name">Roofing</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'HVAC')"><div class="trade-icon">❄️</div><div class="trade-name">HVAC</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Plumbing')"><div class="trade-icon">🔧</div><div class="trade-name">Plumbing</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Electrical')"><div class="trade-icon">⚡</div><div class="trade-name">Electrical</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Painting')"><div class="trade-icon">🎨</div><div class="trade-name">Painting</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Pool')"><div class="trade-icon">🏊</div><div class="trade-name">Pool</div></div>
+        <div class="trade-chip" onclick="selectTrade(this,'Other')"><div class="trade-icon">🛠️</div><div class="trade-name">Other</div></div>
+      </div>
+      <div class="step-error" id="s2-err"></div>
+      <button class="next-btn primary" onclick="goStep(3)">Continue →</button>
+    </div>
+
+    <!-- STEP 3: Phone -->
+    <div class="step" id="step-3">
+      <div class="step-number">Step 3 of 5</div>
+      <div class="step-question">What's your phone number?</div>
+      <div class="step-hint">Shown on quotes so clients can reach you easily.</div>
+      <input class="step-input" id="s3-phone" type="tel" placeholder="(555) 123-4567" autocomplete="tel">
+      <div class="step-error" id="s3-err"></div>
+      <button class="next-btn primary" onclick="goStep(4)">Continue →</button>
+      <button class="skip-btn" onclick="goStep(4)">Skip for now</button>
+    </div>
+
+    <!-- STEP 4: City & State -->
+    <div class="step" id="step-4">
+      <div class="step-number">Step 4 of 5</div>
+      <div class="step-question">Where are you based?</div>
+      <div class="step-hint">Helps clients know your service area.</div>
+      <div class="input-pair">
+        <input class="step-input" id="s4-city" type="text" placeholder="City" autocomplete="address-level2" style="margin-bottom:0">
+        <input class="step-input" id="s4-state" type="text" placeholder="State" autocomplete="address-level1" style="margin-bottom:0">
+      </div>
+      <div class="step-error" id="s4-err" style="margin-top:8px"></div>
+      <button class="next-btn primary" onclick="goStep(5)" style="margin-top:20px">Continue →</button>
+      <button class="skip-btn" onclick="goStep(5)">Skip for now</button>
+    </div>
+
+    <!-- STEP 5: Volume -->
+    <div class="step" id="step-5">
+      <div class="step-number">Step 5 of 5</div>
+      <div class="step-question">How many jobs a month?</div>
+      <div class="step-hint">Helps us tailor your dashboard experience.</div>
+      <div class="volume-grid">
+        <div class="volume-chip" onclick="selectVolume(this,'1-5')">
+          <div>
+            <div class="vol-label">Just getting started</div>
+            <div class="vol-sub">1–5 jobs per month</div>
+          </div>
+        </div>
+        <div class="volume-chip" onclick="selectVolume(this,'6-20')">
+          <div>
+            <div class="vol-label">Growing steady</div>
+            <div class="vol-sub">6–20 jobs per month</div>
+          </div>
+        </div>
+        <div class="volume-chip" onclick="selectVolume(this,'20+')">
+          <div>
+            <div class="vol-label">Running full speed</div>
+            <div class="vol-sub">20+ jobs per month</div>
+          </div>
+        </div>
+      </div>
+      <div class="step-error" id="s5-err"></div>
+      <button class="next-btn primary" id="finish-btn" onclick="finish()">Let's go! 🚀</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://qyrgkspwxjmbjnkaixag.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cmdrc3B3eGptYmpua2FpeGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NzQ0NTgsImV4cCI6MjA4NzU1MDQ1OH0.AHE_1iR8De17u-bVwsfzPc0nKK8MCDB5SEU5Ks531DA'
+);
+
+// Redirect if not logged in
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (!session) window.location.href = '/login.html';
+});
+
+let selectedTrade = '';
+let selectedVolume = '';
+let currentStep = 1;
+const TOTAL = 5;
+
+function updateProgress(step) {
+  const pct = Math.round((step / TOTAL) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Step ${step} of ${TOTAL}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+function goStep(next) {
+  // Validate current step
+  if (next > currentStep) {
+    if (currentStep === 1) {
+      const name = document.getElementById('s1-name').value.trim();
+      if (!name) { document.getElementById('s1-err').textContent = 'Please enter your business name.'; return; }
+      document.getElementById('s1-err').textContent = '';
+    }
+    if (currentStep === 2) {
+      if (!selectedTrade) { document.getElementById('s2-err').textContent = 'Please select your trade.'; return; }
+      document.getElementById('s2-err').textContent = '';
+    }
+  }
+
+  const current = document.getElementById('step-' + currentStep);
+  current.classList.remove('active');
+  current.classList.add('exit');
+  setTimeout(() => current.classList.remove('exit'), 300);
+
+  currentStep = next;
+  updateProgress(next);
+
+  const nextEl = document.getElementById('step-' + next);
+  nextEl.classList.add('active');
+
+  // Auto focus input on next step
+  setTimeout(() => {
+    const inp = nextEl.querySelector('.step-input');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function selectTrade(el, trade) {
+  document.querySelectorAll('.trade-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTrade = trade;
+  document.getElementById('s2-err').textContent = '';
+}
+
+function selectVolume(el, vol) {
+  document.querySelectorAll('.volume-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedVolume = vol;
+  document.getElementById('s5-err').textContent = '';
+}
+
+async function finish() {
+  if (!selectedVolume) {
+    document.getElementById('s5-err').textContent = 'Please select your job volume.';
+    return;
+  }
+
+  const btn = document.getElementById('finish-btn');
+  btn.textContent = 'Setting up...';
+  btn.disabled = true;
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { window.location.href = '/login.html'; return; }
+
+  const profile = {
+    user_id: user.id,
+    name: document.getElementById('s1-name').value.trim(),
+    trades: selectedTrade,
+    phone: document.getElementById('s3-phone').value.trim() || null,
+    city: document.getElementById('s4-city').value.trim() || null,
+    state: document.getElementById('s4-state').value.trim() || null,
+    job_volume: selectedVolume,
+    updated_at: new Date().toISOString()
+  };
+
+  await sb.from('business_profiles').upsert(profile, { onConflict: 'user_id' });
+
+  // Show done screen
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('main-card').innerHTML = `
+    <div class="done-screen">
+      <div class="done-emoji">🎉</div>
+      <div class="done-title">You're all set, ${profile.name}!</div>
+      <div class="done-sub">Your dashboard is ready. Start adding clients, create your first quote, and get paid faster.</div>
+      <button class="next-btn primary" onclick="window.location.href='/dashboard.html'" style="max-width:280px;margin:0 auto">
+        Go to Dashboard →
+      </button>
+    </div>
+  `;
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (currentStep === 1) goStep(2);
+    else if (currentStep === 3) goStep(4);
+    else if (currentStep === 4) goStep(5);
+  }
+});
+</script>
+</body>
+</html>
