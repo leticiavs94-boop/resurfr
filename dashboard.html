@@ -1435,7 +1435,7 @@ ${jbadge(j.status)}
 }).join('');
 // Active clients
 const clEl=document.getElementById('d-clients');
-if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
+if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 renderRevenueChart();
 }
 function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
@@ -1450,7 +1450,7 @@ clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')"
 </tr>`).join('')+`</tbody></table>`;
 const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
 <div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
-<div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''</div>
+<div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''}</div>
 <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
 <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div>
 </div>`).join('');
