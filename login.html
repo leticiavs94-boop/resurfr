@@ -55,11 +55,15 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   </div>
 
   <div class="login-card">
-    <div class="login-title">Welcome back</div>
-    <div class="login-sub">Sign in to your contractor dashboard</div>
+    <div class="login-title" id="form-title">Welcome back</div>
+    <div class="login-sub" id="form-sub">Sign in to your contractor dashboard</div>
 
     <div class="error-msg" id="error-msg">Invalid email or password. Please try again.</div>
 
+    <div class="form-group" id="name-group" style="display:none">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="fullname" placeholder="e.g. Cletus Solar" autocomplete="name">
+    </div>
     <div class="form-group">
       <label class="form-label">Email</label>
       <input type="email" class="form-input" id="email" placeholder="you@example.com" autocomplete="email">
@@ -69,7 +73,14 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
       <input type="password" class="form-input" id="password" placeholder="••••••••" autocomplete="current-password">
     </div>
 
-    <button class="login-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+    <div class="form-group" id="confirm-group" style="display:none">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" class="form-input" id="confirm-password" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="handleAuth()">Sign In</button>
+    <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--light-muted)">
+      Don't have an account? <a href="#" onclick="toggleMode()" id="toggle-link" style="color:var(--green);font-weight:700;text-decoration:none">Create one free</a>
+    </div>
 
     <div class="login-footer">Resurfr · Built for contractors</div>
   </div>
@@ -89,8 +100,30 @@ sb.auth.getSession().then(({ data: { session } }) => {
 
 // Allow Enter key to submit
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleLogin();
+  if (e.key === 'Enter') handleAuth();
 });
+
+let isRegister = false;
+
+function toggleMode() {
+  isRegister = !isRegister;
+  document.getElementById('form-title').textContent = isRegister ? 'Create your account' : 'Welcome back';
+  document.getElementById('form-sub').textContent = isRegister ? 'Start managing your jobs for free' : 'Sign in to your contractor dashboard';
+  document.getElementById('login-btn').textContent = isRegister ? 'Create Account' : 'Sign In';
+  document.getElementById('toggle-link').textContent = isRegister ? 'Sign in instead' : 'Create one free';
+  document.getElementById('name-group').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('confirm-group').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('error-msg').classList.remove('show');
+  document.getElementById('password').autocomplete = isRegister ? 'new-password' : 'current-password';
+}
+
+async function handleAuth() {
+  if (isRegister) {
+    await handleRegister();
+  } else {
+    await handleLogin();
+  }
+}
 
 async function handleLogin() {
   const email = document.getElementById('email').value.trim();
@@ -115,6 +148,51 @@ async function handleLogin() {
     err.classList.add('show');
     btn.disabled = false;
     btn.textContent = 'Sign In';
+    return;
+  }
+
+  window.location.href = '/dashboard.html';
+}
+
+async function handleRegister() {
+  const name = document.getElementById('fullname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirm-password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('error-msg');
+
+  err.classList.remove('show');
+
+  if (!name) { err.textContent = 'Please enter your name.'; err.classList.add('show'); return; }
+  if (!email) { err.textContent = 'Please enter your email.'; err.classList.add('show'); return; }
+  if (!password || password.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.classList.add('show'); return; }
+  if (password !== confirm) { err.textContent = 'Passwords do not match.'; err.classList.add('show'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name } }
+  });
+
+  if (error) {
+    err.textContent = error.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+    return;
+  }
+
+  // Auto sign in after register
+  const { error: signInErr } = await sb.auth.signInWithPassword({ email, password });
+  if (signInErr) {
+    err.textContent = 'Account created! Please sign in.';
+    err.classList.add('show');
+    toggleMode();
+    btn.disabled = false;
     return;
   }
 
