@@ -54,7 +54,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
 .content{padding:28px 32px;flex:1;min-width:0}
 .view{display:none}
-.view.active{display:block}
+.view.active{display:flex;flex-direction:column}
+#view-client-detail.active{display:block}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:4px}
@@ -890,7 +891,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
       <button class="btn" onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;color:#A84E2A">Delete</button>
     </div>
   </div>
-  <div class="content" style="max-width:680px;margin:0 auto">
+  <div class="content">
 
     <!-- Header card -->
     <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px">
@@ -1637,17 +1638,19 @@ function showClientDetail(id){
           </div>
         </div>`).join('');
   }
-  // Show full page view instead of overlay
-  document.querySelectorAll('.view').forEach(v=>v.style.display='none');
-  document.getElementById('view-client-detail').style.display='flex';
-  document.getElementById('view-client-detail').style.flexDirection='column';
+  // Show full page view
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const cdv = document.getElementById('view-client-detail');
+  cdv.classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function closeClientDetail(){
-  document.getElementById('view-client-detail').style.display='none';
-  document.querySelectorAll('.view').forEach(v=>v.style.display='none');
-  document.getElementById('view-clients').style.display='flex';
-  document.getElementById('view-clients').style.flexDirection='column';
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-clients').classList.add('active');
+  const nb=document.getElementById('nav-clients');if(nb)nb.classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function cdAddJob(){
