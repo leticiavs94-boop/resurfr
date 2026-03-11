@@ -52,13 +52,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
 .btn-yellow{background:var(--yellow);color:var(--charcoal)}.btn-yellow:hover{background:#d4f030}
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
-.content{padding:24px 28px;flex:1;min-width:0}
+.content{padding:28px 32px;flex:1;min-width:0}
 .view{display:none}
 .view.active{display:block}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
-.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--charcoal);line-height:1}
-.stat-lbl{font-size:11px;color:var(--lmuted);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--lmuted);text-transform:uppercase;letter-spacing:.5px}
 .stat-sub{font-size:11px;color:var(--lmuted);margin-top:2px}
 
 /* ── CALENDAR ── */
@@ -116,11 +116,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .ob-step-text{font-size:13px;font-weight:600}
 .ob-step-sub{font-size:11px;opacity:0.7;margin-top:1px}
 .ob-footer{font-size:11px;opacity:0.6;display:flex;gap:16px;flex-wrap:wrap}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.panel{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px}
 .panel:last-child{margin-bottom:0}
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
 .panel-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)}
+.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:6px 0}
+.back-btn:hover{color:var(--green)}
 .panel-link{font-size:11px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:0}
 .panel-link:hover{text-decoration:underline}
 .c-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .15s}
@@ -195,7 +197,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   /* Main layout */
   .main{margin-left:0;width:100%}
   .menu-btn{display:flex}
-  .content{padding:16px}
+  .content{padding:16px 14px}
   .grid2{grid-template-columns:1fr}
   .desktop-table{display:none}
   .m-card{display:block}
@@ -211,8 +213,8 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
   .page-title{font-size:24px}
 
   /* Stats grid */
-  .stats{grid-template-columns:1fr 1fr;gap:10px}
-  .stat-card{padding:14px 16px}
+  .stats{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .stat-card{padding:14px 16px;border-radius:12px}
   .stat-val{font-size:28px}
 
   /* Pipeline: 2x2 on mobile */
@@ -419,12 +421,35 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
     </div>
   </div>
   <div class="content">
-    <div class="stats">
-      <div class="stat-card"><div class="stat-val" id="s-revenue">$0</div><div class="stat-lbl">YTD Revenue</div></div>
-      <div class="stat-card" style="border-color:rgba(30,77,53,0.2);background:linear-gradient(135deg,#F0FDF4,#fff)"><div class="stat-val" id="s-profit" style="color:#16A34A">$0</div><div class="stat-lbl">YTD Profit</div><div class="stat-sub" id="s-margin" style="color:#16A34A"></div></div>
-      <div class="stat-card"><div class="stat-val" id="s-clients">0</div><div class="stat-lbl">Active Clients</div><div class="stat-sub" id="s-courts" style="color:var(--lmuted)"></div></div>
-      <div class="stat-card"><div class="stat-val" id="s-invoices">$0</div><div class="stat-lbl">Pending Invoices</div><div class="stat-sub" id="s-inv-count"></div></div>
-      <div class="stat-card"><div class="stat-val" id="s-jobs">0</div><div class="stat-lbl">Jobs This Month</div><div class="stat-sub" id="s-jobs-sub"></div></div>
+    <!-- PRIMARY STATS — 3 cards -->
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl" style="margin-bottom:8px">YTD Revenue</div>
+        <div class="stat-val" id="s-revenue">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl" style="margin-bottom:8px">Pending Invoices</div>
+        <div class="stat-val" id="s-invoices">$0</div>
+        <div class="stat-sub" id="s-inv-count" style="color:var(--lmuted);font-size:11px;margin-top:4px"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl" style="margin-bottom:8px">Jobs This Month</div>
+        <div class="stat-val" id="s-jobs">0</div>
+        <div class="stat-sub" id="s-jobs-sub" style="color:var(--lmuted);font-size:11px;margin-top:4px"></div>
+      </div>
+    </div>
+    <!-- SECONDARY STATS — 2 cards, smaller -->
+    <div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:28px">
+      <div class="stat-card" style="padding:12px 16px;border-color:rgba(30,77,53,0.15);background:linear-gradient(135deg,#F0FDF4,#fff)">
+        <div class="stat-lbl" style="margin-bottom:4px">YTD Profit</div>
+        <div class="stat-val" id="s-profit" style="color:#16A34A;font-size:22px">$0</div>
+        <div class="stat-sub" id="s-margin" style="color:#16A34A;font-size:11px;margin-top:2px"></div>
+      </div>
+      <div class="stat-card" style="padding:12px 16px">
+        <div class="stat-lbl" style="margin-bottom:4px">Active Clients</div>
+        <div class="stat-val" id="s-clients" style="font-size:22px">0</div>
+        <div class="stat-sub" id="s-courts" style="color:var(--lmuted);font-size:11px;margin-top:2px"></div>
+      </div>
     </div>
     <div id="onboarding-banner"></div>
     <div class="grid2">
@@ -842,35 +867,82 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 
 <!-- CLIENT DETAIL -->
-<div id="client-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div style="background:white;border-radius:24px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3)">
-    <div style="display:flex;align-items:center;gap:14px;padding:20px 20px 14px;border-bottom:1px solid var(--border)">
-      <div id="cd-avatar" style="width:48px;height:48px;border-radius:12px;background:var(--charcoal);color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">TE</div>
-      <div style="flex:1;min-width:0">
-        <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)">Client</div>
-        <div id="cd-meta" style="font-size:12px;color:var(--lmuted);margin-top:2px"></div>
+<!-- CLIENT DETAIL — full page view -->
+<div id="view-client-detail" class="view" style="display:none">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="closeClientDetail()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Clients
+      </button>
+    </div>
+    <div class="topbar-right">
+      <button class="btn" onclick="cdEdit()" style="background:var(--off);border:1px solid var(--border);color:var(--charcoal)">Edit</button>
+      <button class="btn" onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;color:#A84E2A">Delete</button>
+    </div>
+  </div>
+  <div class="content" style="max-width:680px;margin:0 auto">
+
+    <!-- Header card -->
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div id="cd-avatar" style="width:56px;height:56px;border-radius:14px;background:var(--charcoal);color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">TE</div>
+        <div style="flex:1;min-width:0">
+          <div id="cd-name" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);line-height:1.1">Client</div>
+          <div id="cd-meta" style="font-size:13px;color:var(--lmuted);margin-top:3px"></div>
+        </div>
       </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        <button onclick="cdEdit()" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer">Edit</button>
-        <button onclick="cdDelete()" style="background:#FDF0EE;border:1px solid #F5D4CF;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:#A84E2A;cursor:pointer">Delete</button>
-        <button onclick="document.getElementById('client-detail-overlay').style.display='none'" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer">Close</button>
+      <!-- Contact info -->
+      <div id="cd-contact"></div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px">
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:16px 18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:6px">Total Billed</div>
+        <div id="cd-total" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal)">$0</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:16px 18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:6px">Jobs</div>
+        <div id="cd-jobcount" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal)">0</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:16px 18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:6px">Invoices</div>
+        <div id="cd-invcount" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal)">0</div>
       </div>
     </div>
-    <div id="cd-contact"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)">
-      <div style="background:white;padding:14px 20px">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted)">Total Billed</div>
-        <div id="cd-total" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);margin-top:2px">$0</div>
-      </div>
-      <div style="background:white;padding:14px 20px">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted)">Jobs</div>
-        <div id="cd-jobcount" style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--charcoal);margin-top:2px">0</div>
-      </div>
+
+    <!-- Quick actions -->
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-yellow" onclick="cdAddJob()" style="flex:1;min-width:120px;justify-content:center">+ Add Job</button>
+      <button class="btn btn-dark" onclick="cdAddQuote()" style="flex:1;min-width:120px;justify-content:center">+ New Quote</button>
+      <button class="btn" onclick="cdAddInvoice()" style="flex:1;min-width:120px;justify-content:center;background:var(--off);border:1px solid var(--border);color:var(--charcoal)">+ Invoice</button>
     </div>
-    <div style="padding:14px 20px 6px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal)">JOB HISTORY</div></div>
-    <div id="cd-jobs"></div>
-    <div style="padding:14px 20px 6px;margin-top:4px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal)">INVOICES</div></div>
-    <div id="cd-invoices"></div>
+
+    <!-- Jobs panel -->
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Job History</div>
+      </div>
+      <div id="cd-jobs"></div>
+    </div>
+
+    <!-- Quotes panel -->
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Quotes</div>
+      </div>
+      <div id="cd-quotes"></div>
+    </div>
+
+    <!-- Invoices panel -->
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Invoices</div>
+      </div>
+      <div id="cd-invoices"></div>
+    </div>
+
   </div>
 </div>
 
@@ -1488,7 +1560,7 @@ function showClientDetail(id){
   const total=cJobs.reduce((s,j)=>s+(j.amount||0),0);
   const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
   const el=document.getElementById('client-detail-overlay');
-  el.dataset.clientId=id;
+  document.getElementById('view-client-detail').dataset.clientId=id;
   document.getElementById('cd-avatar').textContent=c.name.substring(0,2).toUpperCase();
   document.getElementById('cd-name').textContent=c.name;
   document.getElementById('cd-meta').innerHTML=[c.location,c.surface,c.courts?(c.courts+' unit'+(c.courts!==1?'s':'')):null].filter(Boolean).join(' &middot; ');
@@ -1501,7 +1573,8 @@ function showClientDetail(id){
   const contactEl = document.getElementById('cd-contact');
   if(contactEl) contactEl.innerHTML = contactHtml ? `<div style="display:flex;flex-direction:column;gap:6px;padding:12px 20px;border-bottom:1px solid var(--border)">${contactHtml}</div>` : '';
   document.getElementById('cd-total').textContent='$'+total.toLocaleString();
-  document.getElementById('cd-jobcount').textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
+  document.getElementById('cd-jobcount').textContent=cJobs.length;
+  const cdInvCount=document.getElementById('cd-invcount'); if(cdInvCount) cdInvCount.textContent=cInvoices.length;
   document.getElementById('cd-jobs').innerHTML=cJobs.length===0
     ?'<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">No jobs yet</div>'
     :cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(j=>`
@@ -1543,7 +1616,37 @@ function showClientDetail(id){
           </div>
         </div>`).join('');
   }
-  el.style.display='flex';
+  // Show full page view instead of overlay
+  document.querySelectorAll('.view').forEach(v=>v.style.display='none');
+  document.getElementById('view-client-detail').style.display='flex';
+  document.getElementById('view-client-detail').style.flexDirection='column';
+}
+
+function closeClientDetail(){
+  document.getElementById('view-client-detail').style.display='none';
+  document.querySelectorAll('.view').forEach(v=>v.style.display='none');
+  document.getElementById('view-clients').style.display='flex';
+  document.getElementById('view-clients').style.flexDirection='column';
+}
+
+function cdAddJob(){
+  const id = document.getElementById('view-client-detail').dataset.clientId;
+  const c = clients.find(x=>String(x.id)===String(id));
+  closeClientDetail();
+  setTimeout(()=>{ openModal('job'); if(c){ const sel=document.getElementById('j-client'); if(sel) sel.value=id; } },100);
+}
+
+function cdAddQuote(){
+  const id = document.getElementById('view-client-detail').dataset.clientId;
+  const c = clients.find(x=>String(x.id)===String(id));
+  closeClientDetail();
+  setTimeout(()=>{ openQuoteModal(); if(c){ const el=document.getElementById('nq-client'); if(el) el.value=c.name; const el2=document.getElementById('nq-client-email'); if(el2&&c.email) el2.value=c.email; } },100);
+}
+
+function cdAddInvoice(){
+  const id = document.getElementById('view-client-detail').dataset.clientId;
+  closeClientDetail();
+  setTimeout(()=>{ openModal('invoice'); const sel=document.getElementById('i-client'); if(sel) sel.value=id; },100);
 }
 
 function showJobDetail(id){
@@ -1975,8 +2078,8 @@ function cstatusbadge(s){const map={active:{label:'Active',bg:'#E8F5EE',color:'#
 function jbadge(s){const m={scheduled:'b-scheduled',inprogress:'b-inprogress',completed:'b-completed',cancelled:'b-cancelled'};return`<span class="badge ${m[s]||'b-scheduled'}">${s||'scheduled'}</span>`;}
 function ibadge(s){const m={paid:'b-paid',pending:'b-pending',overdue:'b-overdue'};return`<span class="badge ${m[s]||'b-pending'}">${s||'pending'}</span>`;}
 function showClientDetailByName(name){const c=clients.find(x=>x.name===name);if(c)showClientDetail(c.id);}
-function cdEdit(){const id=document.getElementById('client-detail-overlay').dataset.clientId;document.getElementById('client-detail-overlay').style.display='none';editClient(id);}
-function cdDelete(){const id=document.getElementById('client-detail-overlay').dataset.clientId;const c=clients.find(x=>String(x.id)===String(id));if(!c)return;document.getElementById('client-detail-overlay').style.display='none';confirmDelete('client',id,c.name);}
+function cdEdit(){const id=document.getElementById('view-client-detail').dataset.clientId;closeClientDetail();editClient(id);}
+function cdDelete(){const id=document.getElementById('view-client-detail').dataset.clientId;const c=clients.find(x=>String(x.id)===String(id));if(!c)return;closeClientDetail();confirmDelete('client',id,c.name);}
 function openPhoto(url,caption){if(!url)return;document.getElementById('photo-viewer-img').src=url;document.getElementById('photo-viewer-caption').textContent=caption||'';document.getElementById('photo-viewer').style.display='flex';}
 function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':'');setTimeout(()=>t.className='toast',3000);}
 
