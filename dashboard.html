@@ -385,6 +385,9 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <button class="nav-item" id="nav-profile" onclick="nav('profile',this)">
 <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Business Profile
 </button>
+<button class="nav-item" id="nav-billing" onclick="nav('billing',this)">
+<svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Plan & Billing
+</button>
 </nav>
 <div class="sidebar-footer">
 <div class="user-card">
@@ -877,6 +880,61 @@ Profile Saved
 </div>
 </div>
 </div>
+<div id="view-billing" class="view">
+<div class="topbar">
+<div class="topbar-left">
+<div>
+<div class="page-title">Plan & Billing</div>
+</div>
+</div>
+</div>
+<div class="content" style="max-width:680px">
+
+  <!-- Trial banner -->
+  <div id="billing-trial-banner" style="background:linear-gradient(135deg,#1E4D35,#2A6B47);border-radius:16px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:white;margin-bottom:4px">Your free trial is active 🎉</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7)">Enjoy full access for 15 days. No credit card needed.</div>
+    </div>
+    <div style="background:var(--yellow);border-radius:10px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;color:var(--charcoal);white-space:nowrap" id="trial-days-left">15 days left</div>
+  </div>
+
+  <!-- Plan card -->
+  <div style="background:var(--charcoal);border-radius:20px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;right:0;width:200px;height:200px;background:var(--yellow);opacity:0.04;border-radius:50%;transform:translate(50px,-80px)"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Pro Plan</div>
+        <div style="display:flex;align-items:flex-end;gap:4px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:white;line-height:1">$29</span>
+          <span style="font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:10px">/mo</span>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.35)">billed annually · <span style="text-decoration:line-through">$49/mo</span></div>
+      </div>
+      <a href="mailto:hello@resurfr.com?subject=Upgrade to Pro" style="display:inline-block;padding:13px 24px;background:var(--yellow);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);text-decoration:none">Upgrade to Pro →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Unlimited clients & jobs</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Professional quotes & PDFs</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Online quote approval</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Invoice & payment tracking</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Revenue & profit reports</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Calendar & scheduling</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Business profile & logo</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Email quotes to clients</div>
+    </div>
+  </div>
+
+  <!-- Questions -->
+  <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px 24px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Questions about your plan?</div>
+    <div style="font-size:13px;color:var(--lmuted);margin-bottom:14px">We're happy to help.</div>
+    <a href="mailto:hello@resurfr.com" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at hello@resurfr.com →</a>
+  </div>
+
+</div>
+</div>
+
 <div class="overlay" id="m-client">
 <div class="modal">
 <div style="display:flex;align-items:center;margin-bottom:12px">
