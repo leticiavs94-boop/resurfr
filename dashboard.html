@@ -54,8 +54,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 .btn-dark{background:var(--charcoal);color:white}.btn-dark:hover{background:var(--green)}
 .content{padding:28px 32px;flex:1;min-width:0}
 .view{display:none}
-.view.active{display:flex;flex-direction:column}
-#view-client-detail.active{display:block}
+.view.active{display:block}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--charcoal);line-height:1;margin-bottom:4px}
@@ -878,7 +877,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 
 <!-- CLIENT DETAIL -->
 <!-- CLIENT DETAIL — full page view -->
-<div id="view-client-detail" class="view" style="display:none">
+<div id="view-client-detail" class="view">
   <div class="topbar">
     <div class="topbar-left">
       <button class="back-btn" onclick="closeClientDetail()">
