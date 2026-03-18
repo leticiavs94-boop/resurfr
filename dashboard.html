@@ -20,10 +20,12 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--off);col
 @keyframes spin{to{transform:rotate(360deg)}}
 #app{display:none}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:var(--sw);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
-body.trial-active .sidebar{top:42px}
-body.trial-active .main{padding-top:42px}
-body.trial-active .topbar{top:42px}
+.sidebar{width:var(--sw);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1),top .2s;overflow-y:auto;}
+:root{--trial-h:44px}
+body.trial-active .sidebar{top:var(--trial-h)}
+body.trial-active .main{margin-top:var(--trial-h)}
+body.trial-active .topbar{top:var(--trial-h)}
+#trial-topbar{height:var(--trial-h);box-sizing:border-box}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
 .logo-icon{width:36px;height:36px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-icon svg{width:20px;height:20px}
@@ -43,7 +45,7 @@ body.trial-active .topbar{top:42px}
 .sign-out:hover{color:rgba(255,255,255,0.6)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
 .sidebar-overlay.open{display:block}
-.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0}
+.main{margin-left:var(--sw);width:calc(100% - var(--sw));min-height:100vh;display:flex;flex-direction:column;min-width:0;transition:margin-top .2s}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--charcoal);align-items:center;justify-content:center}
@@ -404,7 +406,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 </aside>
 <div class="main">
-<div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:250;background:#1E4D35;color:white;padding:10px 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+<div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:250;background:#1E4D35;color:white;padding:0 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:nowrap;white-space:nowrap;overflow:hidden">
 <span>Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
 <button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
 </div>
@@ -985,7 +987,10 @@ Profile Saved
 <div id="qa-page-2" style="display:none">
 <div style="background:#E8F5EE;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600"> Client saved! Now add a job for <span id="qa-client-name-display"></span></div>
 <div class="fg"><label class="fl">Service</label><input type="text" class="fi" id="qa-j-service" placeholder="e.g. Panel installation, Lawn mow" autocomplete="off"></div>
+<div class="row2">
 <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="qa-j-date"></div>
+<div class="fg"><label class="fl">Time</label><input type="time" class="fi" id="qa-j-time"></div>
+</div>
 <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="qa-j-amount" placeholder="3800" autocomplete="off"></div>
 <div class="fg"><label class="fl">Job Status</label>
 <select class="fi" id="qa-j-status"><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
@@ -1504,8 +1509,15 @@ await sb.from('invoices').update({status:'paid'}).eq('id',id);
 toast('Invoice marked as paid! ','ok');
 await loadInvoices();renderDashboard();
 }
-function showClientDetail(id){
-const c=clients.find(x=>String(x.id)===String(id));if(!c)return;
+async function showClientDetail(id){
+let c=clients.find(x=>String(x.id)===String(id));
+if(!c){
+  // Not in cache — fetch directly
+  const{data}=await sb.from('clients').select('*').eq('id',id).single();
+  if(!data){console.warn('Client not found:',id);return;}
+  c=data;
+  clients.push(c);
+}
 const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
 const cInvoices=invoices.filter(i=>String(i.client_id)===String(c.id));
 const cQuotes=quotes.filter(q=>q.client_name?.toLowerCase().trim()===c.name?.toLowerCase().trim());
@@ -1908,7 +1920,7 @@ if(qaClientId){
 const svc=document.getElementById('qa-j-service').value.trim();
 if(svc){
 const{data:{user:_u6}}=await sb.auth.getUser();
-await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u6?.id||null});
+await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,time:document.getElementById('qa-j-time').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u6?.id||null});
 qaJobSaved=true;
 document.getElementById('qa-i-amount').value=document.getElementById('qa-j-amount').value||'';
 }
@@ -1921,7 +1933,7 @@ if(btn){btn.disabled=true;btn.textContent='Saving...';}
 if(saveJob&&qaClientId&&!qaJobSaved){
 const svc=document.getElementById('qa-j-service').value.trim();
 const{data:{user:_u7}}=await sb.auth.getUser();
-if(svc) await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u7?.id||null});
+if(svc) await sb.from('jobs').insert({client_id:qaClientId,service:svc,date:document.getElementById('qa-j-date').value||null,time:document.getElementById('qa-j-time').value||null,amount:parseFloat(document.getElementById('qa-j-amount').value)||0,status:document.getElementById('qa-j-status').value||'scheduled',user_id:_u7?.id||null});
 }
 if(saveInvoice&&qaClientId){
 const amt=parseFloat(document.getElementById('qa-i-amount').value);
