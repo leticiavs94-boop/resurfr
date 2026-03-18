@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resurfr — Brand Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --yellow: #C8E62B;
+      --green: #1E4D35;
+      --green-mid: #2A6647;
+      --charcoal: #181C17;
+      --text: #1A1F18;
+      --white: #FFFFFF;
+      --off: #F4F6F1;
+      --border: #E2E8DC;
+      --muted: #6B7A65;
+      --light-muted: #9DAA96;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── Navigation ── */
+    .guide-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--charcoal);
+      border-bottom: 3px solid var(--yellow);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .guide-nav .logo-mark {
+      background: var(--yellow);
+      color: var(--charcoal);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .guide-nav span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--light-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .guide-nav a {
+      color: var(--light-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .guide-nav a:hover { color: var(--yellow); }
+
+    /* ── Sections ── */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--green-mid);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(32px, 5vw, 48px);
+      color: var(--charcoal);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 600px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 100%;
+      background: var(--charcoal);
+      padding: 120px 40px;
+      text-align: center;
+      border-bottom: none;
+    }
+    .hero .logo-lockup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .hero .logo-icon {
+      background: var(--yellow);
+      color: var(--charcoal);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 48px;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+    }
+    .hero .logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 64px;
+      color: var(--white);
+      letter-spacing: -1px;
+    }
+    .hero h2 {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 18px;
+      color: var(--light-muted);
+      margin-bottom: 8px;
+    }
+    .hero .version {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── Color Palette ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .color-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .color-swatch {
+      height: 120px;
+    }
+    .color-info {
+      padding: 16px;
+      background: var(--white);
+    }
+    .color-name {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .color-value {
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'DM Sans', monospace;
+    }
+    .color-usage {
+      font-size: 12px;
+      color: var(--light-muted);
+      margin-top: 8px;
+    }
+
+    /* ── Typography ── */
+    .type-row {
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .type-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .type-meta {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .type-meta span {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--off);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .type-sample-barlow {
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .type-sample-dm {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Logo Rules ── */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .logo-example {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .logo-preview {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .logo-preview .icon {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+    .logo-preview .wordmark {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    .logo-caption {
+      padding: 16px;
+      background: var(--off);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .logo-caption span {
+      display: block;
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Buttons ── */
+    .button-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--charcoal);
+    }
+    .btn-dark {
+      background: var(--charcoal);
+      color: var(--white);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--charcoal);
+      border: 1.5px solid var(--border);
+    }
+    .btn-green {
+      background: var(--green);
+      color: var(--white);
+    }
+    .btn-danger {
+      background: #DC3545;
+      color: var(--white);
+    }
+    .btn-sm {
+      font-size: 12px;
+      padding: 8px 18px;
+      border-radius: 8px;
+    }
+
+    /* ── Status Badges ── */
+    .badge-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .badge-scheduled { background: #DBEAFE; color: #1E40AF; }
+    .badge-progress  { background: #FEF9C3; color: #854D0E; }
+    .badge-completed { background: #DCFCE7; color: #166534; }
+    .badge-cancelled { background: #FEE2E2; color: #991B1B; }
+    .badge-draft     { background: var(--off); color: var(--muted); }
+
+    /* ── Card Example ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .card h4 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .card .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Spacing & Radius ── */
+    .spacing-demo {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .space-box {
+      background: var(--yellow);
+      border-radius: 4px;
+      position: relative;
+    }
+    .space-box span {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    .radius-demo {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 64px;
+    }
+    .radius-box {
+      width: 80px;
+      height: 80px;
+      background: var(--off);
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    /* ── Do/Don't ── */
+    .dos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .do-card, .dont-card {
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .do-card {
+      background: #DCFCE7;
+      border-left: 4px solid #16A34A;
+    }
+    .dont-card {
+      background: #FEE2E2;
+      border-left: 4px solid #DC2626;
+    }
+    .do-card h4, .dont-card h4 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .do-card ul, .dont-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .do-card li, .dont-card li {
+      font-size: 14px;
+      padding: 4px 0;
+    }
+    .do-card li::before { content: "✓ "; font-weight: 700; color: #16A34A; }
+    .dont-card li::before { content: "✗ "; font-weight: 700; color: #DC2626; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      section { padding: 48px 20px; }
+      .hero { padding: 80px 20px; }
+      .hero .logo-text { font-size: 40px; }
+      .hero .logo-icon { font-size: 32px; width: 52px; height: 52px; }
+      .guide-nav { padding: 12px 20px; gap: 16px; flex-wrap: wrap; }
+      .dos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="guide-nav">
+    <div class="logo-mark">R</div>
+    <span>Brand Guide</span>
+    <a href="#colors">Colors</a>
+    <a href="#typography">Typography</a>
+    <a href="#logo">Logo</a>
+    <a href="#components">Components</a>
+    <a href="#rules">Rules</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="logo-lockup">
+      <div class="logo-icon">R</div>
+      <div class="logo-text">Resurfr</div>
+    </div>
+    <h2>Brand Identity Guide</h2>
+    <p class="version">Version 1.0 — March 2026</p>
+  </section>
+
+  <!-- ═══════════ COLORS ═══════════ -->
+  <section id="colors">
+    <p class="section-label">01 — Foundation</p>
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">Our palette pairs an energetic yellow with grounded earth greens — bold enough for the field, professional enough for the office.</p>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background:#C8E62B"></div>
+        <div class="color-info">
+          <div class="color-name">Yellow</div>
+          <div class="color-value">#C8E62B</div>
+          <div class="color-usage">Primary accent. CTAs, highlights, logo icon.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#1E4D35"></div>
+        <div class="color-info">
+          <div class="color-name">Green</div>
+          <div class="color-value">#1E4D35</div>
+          <div class="color-usage">Primary brand. Sidebar, key UI surfaces.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#2A6647"></div>
+        <div class="color-info">
+          <div class="color-name">Green Mid</div>
+          <div class="color-value">#2A6647</div>
+          <div class="color-usage">Secondary green. Hover states, accents.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#181C17"></div>
+        <div class="color-info">
+          <div class="color-name">Charcoal</div>
+          <div class="color-value">#181C17</div>
+          <div class="color-usage">Dark backgrounds, nav, headlines.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#1A1F18"></div>
+        <div class="color-info">
+          <div class="color-name">Text</div>
+          <div class="color-value">#1A1F18</div>
+          <div class="color-usage">Default body text color.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#F4F6F1"></div>
+        <div class="color-info">
+          <div class="color-name">Off White</div>
+          <div class="color-value">#F4F6F1</div>
+          <div class="color-usage">Page backgrounds, card fills.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#E2E8DC"></div>
+        <div class="color-info">
+          <div class="color-name">Border</div>
+          <div class="color-value">#E2E8DC</div>
+          <div class="color-usage">Dividers, card borders, separators.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#6B7A65"></div>
+        <div class="color-info">
+          <div class="color-name">Muted</div>
+          <div class="color-value">#6B7A65</div>
+          <div class="color-usage">Secondary text, captions.</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#9DAA96"></div>
+        <div class="color-info">
+          <div class="color-name">Light Muted</div>
+          <div class="color-value">#9DAA96</div>
+          <div class="color-usage">Placeholder text, disabled states.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ TYPOGRAPHY ═══════════ -->
+  <section id="typography">
+    <p class="section-label">02 — Typography</p>
+    <h2 class="section-title">Type System</h2>
+    <p class="section-desc">Two typefaces. Barlow Condensed commands attention in headlines. DM Sans keeps body text clean and readable.</p>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>Barlow Condensed</span>
+        <span>900 weight</span>
+        <span>Hero headline</span>
+      </div>
+      <div class="type-sample-barlow" style="font-size:clamp(40px,6vw,72px);font-weight:900;line-height:1.05;color:var(--charcoal)">
+        Run Your Trade<br>Like a Business
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>Barlow Condensed</span>
+        <span>800 weight</span>
+        <span>Section heading</span>
+      </div>
+      <div class="type-sample-barlow" style="font-size:36px;font-weight:800;color:var(--charcoal)">
+        Quotes, Jobs & Invoices
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>Barlow Condensed</span>
+        <span>700 weight</span>
+        <span>Card title</span>
+      </div>
+      <div class="type-sample-barlow" style="font-size:22px;font-weight:700;color:var(--charcoal)">
+        Solar Panel Installation — Quote #1042
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>DM Sans</span>
+        <span>400 weight</span>
+        <span>Body copy</span>
+      </div>
+      <div class="type-sample-dm" style="font-size:16px;font-weight:400;color:var(--text);max-width:600px;line-height:1.7">
+        Resurfr helps trade contractors manage their entire business from one dashboard. Create quotes, schedule jobs, send invoices, and track revenue — all without the spreadsheet chaos.
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>DM Sans</span>
+        <span>600 weight</span>
+        <span>UI label</span>
+      </div>
+      <div class="type-sample-dm" style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">
+        Client Name &nbsp;&middot;&nbsp; Due Date &nbsp;&middot;&nbsp; Total Amount &nbsp;&middot;&nbsp; Status
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span>DM Sans</span>
+        <span>300 weight</span>
+        <span>Caption / helper</span>
+      </div>
+      <div class="type-sample-dm" style="font-size:12px;font-weight:300;color:var(--light-muted)">
+        Last updated 2 hours ago &nbsp;&middot;&nbsp; 3 line items &nbsp;&middot;&nbsp; Awaiting client approval
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LOGO ═══════════ -->
+  <section id="logo">
+    <p class="section-label">03 — Logo</p>
+    <h2 class="section-title">Logo Usage</h2>
+    <p class="section-desc">The Resurfr logo pairs a bold icon mark with a condensed wordmark. Use the right variant for the context.</p>
+
+    <div class="logo-grid">
+      <!-- Primary: Dark bg -->
+      <div class="logo-example">
+        <div class="logo-preview" style="background:var(--charcoal)">
+          <div class="icon" style="background:var(--yellow);color:var(--charcoal);font-size:36px;width:56px;height:56px">R</div>
+          <div class="wordmark" style="color:var(--white);font-size:40px">Resurfr</div>
+        </div>
+        <div class="logo-caption">Primary — Dark background <span>Use on dark surfaces, nav bars, hero sections.</span></div>
+      </div>
+
+      <!-- Light bg -->
+      <div class="logo-example">
+        <div class="logo-preview" style="background:var(--off)">
+          <div class="icon" style="background:var(--yellow);color:var(--charcoal);font-size:36px;width:56px;height:56px">R</div>
+          <div class="wordmark" style="color:var(--charcoal);font-size:40px">Resurfr</div>
+        </div>
+        <div class="logo-caption">Secondary — Light background <span>Use on white or off-white surfaces.</span></div>
+      </div>
+
+      <!-- Icon only -->
+      <div class="logo-example">
+        <div class="logo-preview" style="background:var(--white)">
+          <div class="icon" style="background:var(--yellow);color:var(--charcoal);font-size:48px;width:72px;height:72px">R</div>
+        </div>
+        <div class="logo-caption">Icon Mark — Standalone <span>Favicons, app icons, small spaces.</span></div>
+      </div>
+
+      <!-- Green variant -->
+      <div class="logo-example">
+        <div class="logo-preview" style="background:var(--green)">
+          <div class="icon" style="background:var(--yellow);color:var(--green);font-size:36px;width:56px;height:56px">R</div>
+          <div class="wordmark" style="color:var(--white);font-size:40px">Resurfr</div>
+        </div>
+        <div class="logo-caption">Brand Green — Alternate <span>Use on green branded surfaces.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ COMPONENTS ═══════════ -->
+  <section id="components">
+    <p class="section-label">04 — Components</p>
+    <h2 class="section-title">UI Components</h2>
+    <p class="section-desc">Core building blocks used across the Resurfr interface.</p>
+
+    <!-- Buttons -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;margin-bottom:20px;color:var(--charcoal)">Buttons</h3>
+    <div class="button-row">
+      <button class="btn btn-primary">Get Started</button>
+      <button class="btn btn-dark">Send Quote</button>
+      <button class="btn btn-green">Save Job</button>
+      <button class="btn btn-outline">Cancel</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+    <div class="button-row" style="margin-bottom:48px">
+      <button class="btn btn-primary btn-sm">Small CTA</button>
+      <button class="btn btn-dark btn-sm">Small Dark</button>
+      <button class="btn btn-outline btn-sm">Small Outline</button>
+    </div>
+
+    <!-- Status Badges -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;margin-bottom:20px;color:var(--charcoal)">Status Badges</h3>
+    <div class="badge-row" style="margin-bottom:48px">
+      <span class="badge badge-draft">Draft</span>
+      <span class="badge badge-scheduled">Scheduled</span>
+      <span class="badge badge-progress">In Progress</span>
+      <span class="badge badge-completed">Completed</span>
+      <span class="badge badge-cancelled">Cancelled</span>
+    </div>
+
+    <!-- Cards -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;margin-bottom:20px;color:var(--charcoal)">Cards</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h4>Roof Replacement</h4>
+        <p>Full tear-off and reshingle for residential 2,400 sq ft home. Includes materials and labor.</p>
+        <div class="card-footer">
+          <span class="badge badge-progress">In Progress</span>
+          <span style="font-weight:700;font-size:18px;font-family:'Barlow Condensed',sans-serif">$8,450</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4>HVAC Installation</h4>
+        <p>New 3-ton central AC unit with ductwork modifications. Permit included in estimate.</p>
+        <div class="card-footer">
+          <span class="badge badge-scheduled">Scheduled</span>
+          <span style="font-weight:700;font-size:18px;font-family:'Barlow Condensed',sans-serif">$5,200</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Pool Resurfacing</h4>
+        <p>Diamond Brite plaster finish with tile replacement along waterline.</p>
+        <div class="card-footer">
+          <span class="badge badge-completed">Completed</span>
+          <span style="font-weight:700;font-size:18px;font-family:'Barlow Condensed',sans-serif">$6,800</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SPACING & RADIUS ═══════════ -->
+  <section>
+    <p class="section-label">05 — Spacing & Radius</p>
+    <h2 class="section-title">Spatial System</h2>
+    <p class="section-desc">Built on an 8px base unit. Consistent spacing and rounded corners create a friendly, approachable feel.</p>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;margin-bottom:32px;color:var(--charcoal)">Spacing Scale</h3>
+    <div class="spacing-demo" style="margin-bottom:80px">
+      <div class="space-box" style="width:8px;height:8px"><span>4px</span></div>
+      <div class="space-box" style="width:16px;height:16px"><span>8px</span></div>
+      <div class="space-box" style="width:24px;height:24px"><span>12px</span></div>
+      <div class="space-box" style="width:32px;height:32px"><span>16px</span></div>
+      <div class="space-box" style="width:48px;height:48px"><span>24px</span></div>
+      <div class="space-box" style="width:64px;height:64px"><span>32px</span></div>
+      <div class="space-box" style="width:96px;height:96px"><span>48px</span></div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;margin-bottom:24px;color:var(--charcoal)">Border Radius</h3>
+    <div class="radius-demo">
+      <div class="radius-box" style="border-radius:4px">4px</div>
+      <div class="radius-box" style="border-radius:8px">8px</div>
+      <div class="radius-box" style="border-radius:12px">12px</div>
+      <div class="radius-box" style="border-radius:16px">16px</div>
+      <div class="radius-box" style="border-radius:24px">24px</div>
+      <div class="radius-box" style="border-radius:50%">Full</div>
+    </div>
+  </section>
+
+  <!-- ═══════════ DO / DON'T ═══════════ -->
+  <section id="rules">
+    <p class="section-label">06 — Guidelines</p>
+    <h2 class="section-title">Do's & Don'ts</h2>
+    <p class="section-desc">Keep the brand consistent by following these rules.</p>
+
+    <div class="dos-grid">
+      <div class="do-card">
+        <h4>Do</h4>
+        <ul>
+          <li>Use the yellow (#C8E62B) for primary CTAs</li>
+          <li>Keep Barlow Condensed for headlines only</li>
+          <li>Use DM Sans for all body and UI text</li>
+          <li>Maintain 8px spacing increments</li>
+          <li>Use the green sidebar in the app</li>
+          <li>Keep border-radius between 8–24px</li>
+        </ul>
+      </div>
+      <div class="dont-card">
+        <h4>Don't</h4>
+        <ul>
+          <li>Use Barlow Condensed for body paragraphs</li>
+          <li>Place the yellow logo on white backgrounds without the icon box</li>
+          <li>Mix in off-brand colors for status badges</li>
+          <li>Use sharp corners (0px radius) on cards</li>
+          <li>Stretch or distort the logo mark</li>
+          <li>Use font weights below 600 for Barlow</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CSS VARIABLES ═══════════ -->
+  <section>
+    <p class="section-label">07 — For Developers</p>
+    <h2 class="section-title">CSS Variables</h2>
+    <p class="section-desc">Copy-paste these into any new page to stay on-brand.</p>
+    <div style="background:var(--charcoal);border-radius:12px;padding:28px 32px;overflow-x:auto">
+<pre style="font-family:'DM Sans',monospace;font-size:13px;line-height:1.8;color:var(--light-muted);margin:0"><span style="color:var(--muted)">:root</span> {
+  <span style="color:var(--yellow)">--yellow</span>: #C8E62B;
+  <span style="color:var(--yellow)">--green</span>: #1E4D35;
+  <span style="color:var(--yellow)">--green-mid</span>: #2A6647;
+  <span style="color:var(--yellow)">--charcoal</span>: #181C17;
+  <span style="color:var(--yellow)">--text</span>: #1A1F18;
+  <span style="color:var(--yellow)">--white</span>: #FFFFFF;
+  <span style="color:var(--yellow)">--off</span>: #F4F6F1;
+  <span style="color:var(--yellow)">--border</span>: #E2E8DC;
+  <span style="color:var(--yellow)">--muted</span>: #6B7A65;
+  <span style="color:var(--yellow)">--light-muted</span>: #9DAA96;
+}</pre>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:48px 20px;background:var(--charcoal);color:var(--muted);font-size:13px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px">
+      <div style="background:var(--yellow);color:var(--charcoal);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px">R</div>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:var(--white)">Resurfr</span>
+    </div>
+    Brand Guide v1.0 &middot; Internal Use
+  </footer>
+
+</body>
+</html>
