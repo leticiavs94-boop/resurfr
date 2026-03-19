@@ -84,7 +84,7 @@
   <div class="loading" id="loading-state">Loading your quote...</div>
 </div>
 
-<div class="footer">Powered by <a href="https://getresurfr.netlify.app">Resurfr</a></div>
+<div class="footer" id="page-footer">Powered by <a href="https://getresurfr.netlify.app">Resurfr</a></div>
 
 <script>
 const { createClient } = supabase;
@@ -101,6 +101,17 @@ function fmtTime(t) {
   const [h, m] = t.split(':');
   const hr = parseInt(h);
   return (hr > 12 ? hr - 12 : hr || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
+}
+
+function fmtArrivalTime(val) {
+  const labels = {
+    early_morning: 'Early Morning (7–9 AM)',
+    morning: 'Morning (9–12 PM)',
+    afternoon: 'Afternoon (12–3 PM)',
+    late_afternoon: 'Late Afternoon (3–6 PM)',
+    custom: 'Custom'
+  };
+  return labels[val] || '';
 }
 
 async function loadQuote() {
@@ -160,7 +171,7 @@ async function loadQuote() {
           ${q.valid_until ? `<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px">Valid until ${fmtDate(q.valid_until)}</div>` : ''}
         </div>
       </div>
-      ${q.job_date ? `<div class="header-meta"><div class="meta-item">📅 <strong>${fmtDate(q.job_date)}${q.job_time ? ' at ' + fmtTime(q.job_time) : ''}</strong></div></div>` : ''}
+      ${q.job_date ? `<div class="header-meta"><div class="meta-item">📅 <strong>${fmtDate(q.job_date)}${q.job_time ? ' at ' + fmtTime(q.job_time) : ''}</strong></div>${q.arrival_time && q.arrival_time !== 'custom' ? `<div class="meta-item">🕐 Preferred Arrival: <strong>${fmtArrivalTime(q.arrival_time)}</strong></div>` : ''}</div>` : ''}
     </div>
 
     <!-- FROM / TO -->

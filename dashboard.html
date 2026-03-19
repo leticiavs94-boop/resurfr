@@ -394,7 +394,10 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .add-line-btn:hover{border-color:var(--green);color:var(--green)}
 .q-modal-actions{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
 .q-modal-actions button{flex:1;min-width:100px;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none}
-@media(max-width:768px){.fi-2{grid-template-columns:1fr}.li-head{grid-template-columns:1fr 60px 80px 28px}.li-row{grid-template-columns:1fr 60px 80px 28px;gap:4px}}
+@media(max-width:768px){.fi-2{grid-template-columns:1fr}.li-head{grid-template-columns:1fr 60px 80px 28px}.li-row{grid-template-columns:1fr 60px 80px 28px;gap:4px}
+#m-email-quote .modal{max-height:95vh;border-radius:16px 16px 0 0;margin-top:auto}
+#eq-message{font-size:14px;min-height:120px}
+}
 </style>
 </head>
 <body>
@@ -1067,7 +1070,7 @@ Profile Saved
 </div>
 </div>
 </div>
-<div class="overlay" id="m-job">
+<div class="overlay" id="m-job" role="dialog" aria-modal="true" aria-label="Job form">
 <div class="modal">
 <div style="display:flex;align-items:center;margin-bottom:12px">
 <button onclick="closeModal('job')" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0">
@@ -1082,6 +1085,16 @@ Profile Saved
 <div class="row2">
 <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="j-date"></div>
 <div class="fg"><label class="fl">Time</label><input type="time" class="fi" id="j-time"></div>
+</div>
+<div class="fg"><label class="fl">Preferred Arrival Time <span style="font-weight:400;text-transform:none;color:var(--lmuted);font-size:10px">(shown to client)</span></label>
+<select class="fi" id="j-arrival-time">
+<option value="">No preference</option>
+<option value="early_morning">Early Morning (7–9 AM)</option>
+<option value="morning">Morning (9–12 PM)</option>
+<option value="afternoon">Afternoon (12–3 PM)</option>
+<option value="late_afternoon">Late Afternoon (3–6 PM)</option>
+<option value="custom">Custom (use time above)</option>
+</select>
 </div>
 <div class="row2">
 <div class="fg"><label class="fl">Revenue ($) <span style="font-size:10px;color:var(--lmuted);font-weight:400">what client pays</span></label><input type="number" class="fi" id="j-amount" placeholder="0" autocomplete="off"></div>
@@ -1677,7 +1690,7 @@ const el=document.getElementById('job-detail-overlay');
 el.dataset.jobId=id;
 document.getElementById('jd-client').textContent=j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||j.client_name||j.client_name_fallback||'Unknown';
 document.getElementById('jd-service').textContent=j.service||'-';
-document.getElementById('jd-date').textContent=fmt(j.date)+(j.time?' at '+fmtTime(j.time):'');
+document.getElementById('jd-date').textContent=fmt(j.date)+(j.time?' at '+fmtTime(j.time):'')+(j.arrival_time&&j.arrival_time!=='custom'?' · Arrival: '+fmtArrivalTime(j.arrival_time):'');
 document.getElementById('jd-amount').textContent='$'+(j.amount||0).toLocaleString();
 document.getElementById('jd-status').innerHTML=jbadge(j.status);
 document.getElementById('jd-notes').textContent=j.notes||'No notes';
@@ -1794,6 +1807,7 @@ sel.value=j.client_id||'';
 document.getElementById('j-service').value=j.service||'';
 document.getElementById('j-date').value=j.date||'';
 document.getElementById('j-time').value=j.time||'';
+document.getElementById('j-arrival-time').value=j.arrival_time||'';
 document.getElementById('j-amount').value=j.amount||'';
 document.getElementById('j-cost').value=j.cost||'';
 document.getElementById('j-status').value=j.status||'scheduled';
@@ -1853,6 +1867,7 @@ document.getElementById('j-status').value='scheduled';
 document.getElementById('j-date').value=new Date().toISOString().split('T')[0];
 populateServiceSuggestions('j-service','j-service-list');
 document.getElementById('j-time').value='';
+document.getElementById('j-arrival-time').value='';
 const sel=document.getElementById('j-client');
 sel.innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 }
@@ -1929,7 +1944,7 @@ const btn=document.getElementById('save-job-btn');
 btn.disabled=true;btn.textContent='Saving...';
 const amt=parseFloat(document.getElementById('j-amount').value)||0;
 const cost=parseFloat(document.getElementById('j-cost').value)||0;
-const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,time:document.getElementById('j-time').value||null,amount:amt,cost:cost,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
+const payload={client_id:cid,service:svc,date:document.getElementById('j-date').value||null,time:document.getElementById('j-time').value||null,arrival_time:document.getElementById('j-arrival-time').value||null,amount:amt,cost:cost,status:document.getElementById('j-status').value,notes:document.getElementById('j-notes').value.trim()||null,next_visit:document.getElementById('j-next-visit').value||null};
 let error,newJobId=null;
 if(editingId.job){
 ({error}=await sb.from('jobs').update(payload).eq('id',editingId.job));
@@ -2393,7 +2408,7 @@ return `<tr>
 <td><div class="row-actions">
 <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
 <button class="act-btn" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE" onclick="editQuote('${q.id}')">Edit</button>
-${q.status === 'draft' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openEmailModal('${q.id}')">Send</button>` : ''}
+${q.status !== 'converted' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openEmailModal('${q.id}')">✉ Send</button>` : ''}
 ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A" onclick="markQuoteFollowUp('${q.id}')">Follow Up</button>` : ''}
 ${q.status === 'sent' || q.status === 'approved' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="approveQuote('${q.id}')">Approve</button>` : ''}
 ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
@@ -2413,6 +2428,7 @@ return `<div class="m-card">
 <div class="m-card-tags">${qbadge(q.status)}</div>
 <div class="m-card-actions">
 <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
+${q.status !== 'converted' ? `<button class="act-btn" style="background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0" onclick="openEmailModal('${q.id}')">✉ Send</button>` : ''}
 <button class="act-btn act-edit" onclick="editQuote('${q.id}')">Edit</button>
 ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="convertQuote('${q.id}')">-> Job</button>` : ''}
 <button class="act-btn act-delete" onclick="deleteQuote('${q.id}')">Delete</button>
@@ -2436,6 +2452,7 @@ document.getElementById('nq-valid').value = '';
 document.getElementById('nq-client-email').value = '';
 document.getElementById('nq-job-date').value = '';
 document.getElementById('nq-job-time').value = '';
+document.getElementById('nq-arrival-time').value = '';
 document.getElementById('nq-cost-materials').value = '';
 document.getElementById('nq-cost-labor').value = '';
 document.getElementById('nq-cost-other').value = '';
@@ -2473,6 +2490,7 @@ document.getElementById('nq-valid').value = q.valid_until || '';
 document.getElementById('nq-client-email').value = q.client_email || '';
 document.getElementById('nq-job-date').value = q.job_date || '';
 document.getElementById('nq-job-time').value = q.job_time || '';
+document.getElementById('nq-arrival-time').value = q.arrival_time || '';
 document.getElementById('nq-cost-materials').value = q.cost_materials || '';
 document.getElementById('nq-cost-labor').value = q.cost_labor || '';
 document.getElementById('nq-cost-other').value = q.cost_other || '';
@@ -2542,6 +2560,7 @@ valid_until: document.getElementById('nq-valid').value || null,
 client_email: document.getElementById('nq-client-email').value.trim() || null,
 job_date: document.getElementById('nq-job-date').value || null,
 job_time: document.getElementById('nq-job-time').value || null,
+arrival_time: document.getElementById('nq-arrival-time').value || null,
 cost_materials: parseFloat(document.getElementById('nq-cost-materials').value) || 0,
 cost_labor: parseFloat(document.getElementById('nq-cost-labor').value) || 0,
 cost_other: parseFloat(document.getElementById('nq-cost-other').value) || 0,
@@ -2622,6 +2641,7 @@ ${businessProfile.license_number?`<div style="font-size:11px;color:#999;margin-t
 <div style="font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:4px">${q.client_name}</div>
 ${q.client_email?`<div style="font-size:12px;color:#666;margin-top:2px">✉ ${q.client_email}</div>`:''}
 ${q.job_date?`<div style="font-size:12px;color:#1E4D35;font-weight:700;margin-top:6px">📅 Job Date: ${new Date(q.job_date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}${q.job_time?' at '+fmtTime(q.job_time):''}</div>`:''}
+${q.arrival_time?`<div style="font-size:12px;color:#1E4D35;font-weight:600;margin-top:4px">🕐 Preferred Arrival: ${q.arrival_time==='custom'&&q.job_time?fmtTime(q.job_time):fmtArrivalTime(q.arrival_time)}</div>`:''}
 ${q.valid_until?`<div style="font-size:11px;color:#999;margin-top:4px">Valid until ${new Date(q.valid_until+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`:''}
 </div>
 </div>
@@ -2674,6 +2694,8 @@ ${q.status==='approved'?`
 document.getElementById('nq-overlay').style.display = 'none';
 document.getElementById('qp-wrap').style.display = 'flex';
 document.getElementById('qp-wrap').dataset.quoteId = id;
+const barLabel = document.getElementById('qp-bar-label');
+if (barLabel) barLabel.textContent = (businessProfile.name || 'Your Business') + ' — Quote Preview';
 }
 function closePreview() {
 document.getElementById('qp-wrap').style.display = 'none';
@@ -2742,6 +2764,7 @@ amount: total,
 status: 'scheduled',
 date: q.job_date || new Date().toISOString().split('T')[0],
 time: q.job_time || null,
+arrival_time: q.arrival_time || null,
 notes: `Converted from quote: ${q.title}`,
 client_name_fallback: q.client_name
 };
@@ -2826,6 +2849,7 @@ const fmt = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, m
 const linesList = (q.lines || []).map(l => `  - ${l.d} (${l.q}x ${fmt(l.p)}) = ${fmt(l.q * l.p)}`).join('\n');
 const validStr = q.valid_until ? `
 This estimate is valid until ${new Date(q.valid_until + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : '';
+const arrivalStr = q.arrival_time && q.arrival_time !== 'custom' ? `\nPreferred Arrival: ${fmtArrivalTime(q.arrival_time)}` : '';
 const quoteLink = `https://getresurfr.netlify.app/quote.html?id=${quoteId}`;
 document.getElementById('eq-message').value =
 `Hi ${q.client_name},
@@ -2835,7 +2859,7 @@ ${linesList}
 ------------------------
 Subtotal:  ${fmt(s)}${q.tax ? `
 Tax (${q.tax}%): ${fmt(t)}` : ''}
-Total:     ${fmt(total)}${validStr}
+Total:     ${fmt(total)}${arrivalStr}${validStr}
 👉 VIEW & ACCEPT YOUR QUOTE ONLINE:
 ${quoteLink}
 Tap the link above to review your quote and accept or decline with one tap — no login needed.
@@ -2843,13 +2867,12 @@ If you have any questions, don't hesitate to reach out. We look forward to worki
 Best regards,
 ${businessProfile.name || 'Your Business'}${businessProfile.phone ? '\n' + businessProfile.phone : ''}${businessProfile.email ? '\n' + businessProfile.email : ''}`;
 document.getElementById('m-email-quote').style.display = 'flex';
+// Auto-focus the "To" field after a short delay for animation
+setTimeout(() => { const toField = document.getElementById('eq-to'); if (toField && !toField.value) toField.focus(); }, 150);
 }
 function closeEmailModal() {
 document.getElementById('m-email-quote').style.display = 'none';
 emailQuoteId = null;
-// Also close preview if it was open behind it
-const qpWrap = document.getElementById('qp-wrap');
-if (qpWrap) qpWrap.style.display = 'none';
 }
 async function generateQuotePDFBase64(quoteId) {
 try {
@@ -2900,6 +2923,10 @@ const jd = new Date(q.job_date + 'T00:00:00').toLocaleDateString('en-US', { week
 pdf.setTextColor(30, 77, 53);
 pdf.setFont('helvetica', 'bold');
 pdf.text('Job Date: ' + jd + (q.job_time ? ' at ' + q.job_time : ''), W / 2 + 4, y - 4);
+if (q.arrival_time && q.arrival_time !== 'custom') {
+pdf.text('Preferred Arrival: ' + fmtArrivalTime(q.arrival_time), W / 2 + 4, y);
+y += 4;
+}
 pdf.setTextColor(80, 80, 80);
 pdf.setFont('helvetica', 'normal');
 }
@@ -3070,7 +3097,7 @@ document.getElementById('qp-wrap').style.display = 'none';
 openEmailModal(id);
 }
 </script>
-<div class="overlay" id="nq-overlay" style="z-index:500">
+<div class="overlay" id="nq-overlay" style="z-index:500" role="dialog" aria-modal="true" aria-label="Quote form">
 <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
 <div style="display:flex;align-items:center;margin-bottom:12px">
 <button onclick="closeQuoteModal()" style="display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -3095,6 +3122,16 @@ openEmailModal(id);
 <div class="fg"><label class="fl">Job Time <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label>
 <input class="fi" type="time" id="nq-job-time">
 </div>
+</div>
+<div class="fg"><label class="fl">Preferred Arrival Time <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(shown to client on quote)</span></label>
+<select class="fi" id="nq-arrival-time">
+<option value="">No preference</option>
+<option value="early_morning">Early Morning (7–9 AM)</option>
+<option value="morning">Morning (9–12 PM)</option>
+<option value="afternoon">Afternoon (12–3 PM)</option>
+<option value="late_afternoon">Late Afternoon (3–6 PM)</option>
+<option value="custom">Custom (use time above)</option>
+</select>
 </div>
 <div class="fi-2">
 <div class="fg"><label class="fl">Valid Until</label>
@@ -3177,7 +3214,7 @@ openEmailModal(id);
 <div class="qp-wrap" id="qp-wrap">
 <div class="qp">
 <div class="qp-bar">
-<span style="color:white;font-size:13px;font-weight:600"> Quote Preview - exactly how your client sees it</span>
+<span id="qp-bar-label" style="color:white;font-size:13px;font-weight:600">Quote Preview</span>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="closePreview()"><- Back</button>
 <button class="btn" style="background:rgba(255,255,255,.12);color:white;font-size:12px;padding:6px 14px" onclick="downloadQuotePDF()" id="pdf-btn">⬇ PDF</button>
@@ -3187,35 +3224,35 @@ openEmailModal(id);
 <div class="qp-body" id="qp-body"></div>
 </div>
 </div>
-<div class="overlay" id="m-email-quote" style="z-index:600">
+<div class="overlay" id="m-email-quote" style="z-index:600" role="dialog" aria-modal="true" aria-labelledby="email-modal-title" onclick="if(event.target===this)closeEmailModal()">
 <div class="modal" style="max-width:500px">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)">
-<div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">Send Quote by Email</div>
-<button onclick="closeEmailModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px">&#x2715;</button>
+<div id="email-modal-title" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">Send Quote by Email</div>
+<button onclick="closeEmailModal()" aria-label="Close email modal" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px">&#x2715;</button>
 </div>
 <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
 <div class="fg">
-<label class="fl">To</label>
-<input class="fi" id="eq-to" type="email" placeholder="client@email.com" autocomplete="off">
+<label class="fl" for="eq-to">To *</label>
+<input class="fi" id="eq-to" type="email" placeholder="client@email.com" autocomplete="off" required>
 </div>
 <div class="fg">
-<label class="fl">Subject</label>
-<input class="fi" id="eq-subject" value="Your Estimate from Resurfr" autocomplete="off">
+<label class="fl" for="eq-subject">Subject</label>
+<input class="fi" id="eq-subject" value="" autocomplete="off">
 </div>
 <div class="fg">
-<label class="fl">Message</label>
-<textarea class="fi" id="eq-message" rows="6" style="resize:vertical;line-height:1.6;font-family:'DM Sans',sans-serif"></textarea>
+<label class="fl" for="eq-message">Message <span style="font-weight:400;text-transform:none;color:var(--lmuted);font-size:10px">(customize before sending)</span></label>
+<textarea class="fi" id="eq-message" rows="8" style="resize:vertical;line-height:1.6;font-family:'DM Sans',sans-serif"></textarea>
 </div>
 <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 14px;font-size:12px;color:#166534;line-height:1.5;display:flex;align-items:center;justify-content:space-between;gap:12px">
 <span>📎 Attach quote as PDF</span>
 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700">
-<input type="checkbox" id="eq-attach-pdf" checked style="width:16px;height:16px;cursor:pointer">
+<input type="checkbox" id="eq-attach-pdf" checked style="width:16px;height:16px;cursor:pointer" aria-label="Include PDF attachment">
 <span>Include PDF</span>
 </label>
 </div>
 <div style="display:flex;gap:8px;padding-top:4px">
 <button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
-<button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✉ Send Quote</button>
+<button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:14px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s">✉ Send Quote</button>
 </div>
 </div>
 </div>
@@ -3418,8 +3455,11 @@ else openGlobalSearch();
 }
 // ESC = close overlays
 if (e.key === 'Escape') {
+if (document.getElementById('m-email-quote').style.display === 'flex') { closeEmailModal(); return; }
 if (document.getElementById('search-overlay').style.display === 'block') { closeGlobalSearch(); return; }
 if (document.getElementById('notif-panel').style.display === 'block') { toggleNotifPanel(); return; }
+if (document.getElementById('qp-wrap').style.display !== 'none' && document.getElementById('qp-wrap').style.display) { closePreview(); return; }
+if (document.getElementById('nq-overlay').style.display === 'flex') { closeQuoteModal(); return; }
 }
 // N = new (when not in input)
 if (e.key === 'n' && !isInInput()) {
@@ -3530,6 +3570,16 @@ const [h, m] = t.split(':').map(Number);
 const ampm = h >= 12 ? 'PM' : 'AM';
 const hr = h % 12 || 12;
 return hr + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+}
+function fmtArrivalTime(val) {
+const labels = {
+early_morning: 'Early Morning (7–9 AM)',
+morning: 'Morning (9–12 PM)',
+afternoon: 'Afternoon (12–3 PM)',
+late_afternoon: 'Late Afternoon (3–6 PM)',
+custom: 'Custom'
+};
+return labels[val] || '';
 }
 
 // ── AUTO-FILL CLIENT EMAIL ON QUOTE ──
