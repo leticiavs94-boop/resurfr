@@ -200,13 +200,59 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:9000;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:var(--green)}
+/* ── CUSTOMER EFFICIENCY ENHANCEMENTS ── */
+/* Search button */
+.search-trigger{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--off);border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);transition:all .15s;white-space:nowrap}
+.search-trigger:hover{border-color:var(--green);background:white}
+.search-trigger kbd{padding:1px 5px;border-radius:3px;background:white;border:1px solid var(--border);font-size:10px;font-family:monospace;font-weight:700;color:var(--lmuted)}
+/* Notification bell */
+.notif-btn{position:relative;width:36px;height:36px;border-radius:8px;background:var(--off);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.notif-btn:hover{background:white;border-color:var(--green)}
+.notif-btn svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2}
+#notif-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:#DC2626;color:white;font-size:9px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px}
+/* Skeleton loading */
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
+.skeleton{background:linear-gradient(90deg,var(--off) 25%,#e8ebe4 50%,var(--off) 75%);background-size:200px 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+/* View transitions */
+.view{animation:fadeIn .25s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* Better focus states */
+.fi:focus,.btn:focus-visible,.nav-item:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+/* Quick action cards on dashboard */
+.quick-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.quick-action-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:1.5px dashed var(--border);background:white;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);transition:all .15s}
+.quick-action-btn:hover{border-color:var(--green);color:var(--green);background:#F5FAF6;border-style:solid}
+.quick-action-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+/* Mobile bottom nav */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.06)}
+.mobile-bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border-radius:8px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;color:var(--muted);transition:all .15s;min-width:48px}
+.mobile-nav-item.active{color:var(--green)}
+.mobile-nav-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+/* Stat card hover */
+.stat-card{transition:transform .15s,box-shadow .15s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+/* Row hover improvements */
+.c-row{transition:background .15s,transform .08s}
+.c-row:hover{background:#F5FAF6;transform:translateX(2px)}
+/* Panel hover */
+.panel{transition:box-shadow .2s}
+.panel:hover{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
+/* Smooth modal */
+.overlay.open .modal{animation:modalIn .2s ease-out}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+/* Progress ring for onboarding */
+.progress-ring{width:40px;height:40px;transform:rotate(-90deg)}
+.progress-ring circle{transition:stroke-dashoffset .5s ease-in-out}
 @media(max-width:768px){
-/* Sidebar */
+.mobile-bottom-nav{display:block}
+.content{padding-bottom:80px !important}
+/* Sidebar slides in from left on mobile */
 .sidebar{transform:translateX(-100%)}
-.sidebar.open{transform:translateX(0)}
+.sidebar.open{transform:translateX(0);display:flex !important}
 .sidebar-overlay.open{display:block}
 /* Main layout */
-.main{margin-left:0;width:100%}
+.main{margin-left:0 !important;width:100% !important}
 .menu-btn{display:flex}
 .content{padding:16px 14px}
 .grid2{grid-template-columns:1fr}
@@ -322,7 +368,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .converting{animation:pulse .6s ease-out;}
 #view-profile .panel .card-body, #view-profile .panel > div:last-child{padding:20px 24px;}
 @media(max-width:768px){.prof-contact-row{grid-template-columns:1fr !important;} .prof-addr-row{grid-template-columns:1fr !important;} #view-profile .main-inner{padding:12px 12px !important;} .content{padding:12px !important;} #view-profile .panel{border-radius:12px !important;margin-bottom:12px !important;} #view-profile .fi-input{font-size:16px !important;} #view-profile .panel-head{flex-direction:column !important;align-items:flex-start !important;gap:2px !important;} #trades-grid{grid-template-columns:repeat(2,1fr) !important;} .trade-chip span{padding:6px 8px !important;font-size:11px !important;}}
-@media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;width:100%}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);display:flex !important}.sidebar-overlay.open{display:block}.main{margin-left:0;width:100%}.menu-btn{display:flex}.stats,.pipe{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.fi-2{grid-template-columns:1fr}.li-row,.li-header{grid-template-columns:1fr 60px 70px 28px}}
 /* -- QUOTE MODAL -- */
 .mh{display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px}
 .mh-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)}
@@ -348,7 +394,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div id="app">
 <div class="layout">
-<aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
 <div class="sidebar-logo">
 <div class="logo-icon" style="flex-shrink:0;display:flex">
 <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="9" fill="#C8E62B"/><text x="5" y="27" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="26" fill="#181C17">R</text></svg>
@@ -413,13 +459,15 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div id="view-dashboard" class="view active">
 <div class="topbar">
 <div class="topbar-left">
-<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+<button class="menu-btn" onclick="openSidebar()" aria-label="Open navigation menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 <div>
 <div class="page-title" id="greeting">Good morning</div>
 <div class="topbar-date" id="today-date"></div>
 </div>
 </div>
 <div class="topbar-right">
+<button class="search-trigger" onclick="openGlobalSearch()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search <kbd>⌘K</kbd></button>
+<button class="notif-btn" onclick="toggleNotifPanel()" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span id="notif-badge">0</span></button>
 <button class="btn btn-yellow" onclick="openModal('client')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Client</button>
 <button class="btn btn-dark" onclick="openModal('job')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Job</button>
 <button class="btn" style="background:#7C3AED;color:white" onclick="openQuoteModal()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>New Quote</button>
@@ -464,7 +512,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 <button class="panel-link" onclick="nav('jobs',null)">View all</button>
 </div>
-<div id="d-upcoming"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<div id="d-upcoming"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
 <div class="panel">
 <div class="panel-head">
@@ -473,15 +521,15 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <span id="alerts-count" style="background:#FDEEE8;color:#A84E2A;font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6;display:none"></span>
 </div>
 </div>
-<div id="d-alerts"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<div id="d-alerts"><div style="padding:12px 16px"><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px"></div></div></div>
 </div>
 <div class="panel">
 <div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
-<div id="d-completed"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<div id="d-completed"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
 <div class="panel">
 <div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
-<div id="d-clients"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<div id="d-clients"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
 </div>
 <div class="panel" style="margin-bottom:16px">
@@ -489,7 +537,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="panel-title">Pending Quotes</div>
 <button class="panel-link" onclick="nav('quotes',null)">View all</button>
 </div>
-<div id="d-quotes"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<div id="d-quotes"><div style="padding:12px 16px"><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px"></div></div></div>
 </div>
 <div class="panel">
 <div class="panel-head">
@@ -756,9 +804,6 @@ Profile Saved
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
 <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
 <div style="font-size:32px;margin-bottom:12px">Delete</div>
@@ -892,6 +937,7 @@ Profile Saved
 <div id="view-billing" class="view">
 <div class="topbar">
 <div class="topbar-left">
+<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 <div>
 <div class="page-title">Plan & Billing</div>
 </div>
@@ -972,7 +1018,10 @@ Profile Saved
 <select class="fi" id="c-status"><option value="active">Active Client</option><option value="prospect">Prospect</option><option value="inactive">Inactive</option></select>
 </div>
 </div>
+<div class="row2">
+<div class="fg"><label class="fl">Phone <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label><input type="tel" class="fi" id="c-phone" placeholder="(555) 123-4567" autocomplete="off"></div>
 <div class="fg"><label class="fl">Email <span style="font-weight:400;text-transform:none;color:var(--lmuted)">(optional)</span></label><input type="email" class="fi" id="c-email" placeholder="client@email.com" autocomplete="off"></div>
+</div>
 <div class="fg"><label class="fl">Notes</label><input type="text" class="fi" id="c-notes" placeholder="Optional notes..." autocomplete="off"></div>
 <div class="modal-btns" id="edit-client-btns" style="display:none">
 <button class="b-cancel" onclick="closeModal('client')">Cancel</button>
@@ -1715,6 +1764,7 @@ document.getElementById('qa-page-2').style.display='none';
 document.getElementById('qa-page-3').style.display='none';
 document.getElementById('c-name').value=c.name||'';
 const cstreet=document.getElementById('c-street');if(cstreet)cstreet.value=c.street||'';
+const cphone=document.getElementById('c-phone');if(cphone)cphone.value=c.phone||'';
 const cemail=document.getElementById('c-email');if(cemail)cemail.value=c.email||'';
 document.getElementById('c-loc').value=c.location||'';
 document.getElementById('c-surface').value=c.surface||'';
@@ -1782,7 +1832,7 @@ document.getElementById('qa-new-btns').style.display='block';
 document.getElementById('qa-page-1').style.display='block';
 document.getElementById('qa-page-2').style.display='none';
 document.getElementById('qa-page-3').style.display='none';
-['c-name','c-street','c-loc','c-email','c-courts','c-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+['c-name','c-street','c-loc','c-phone','c-email','c-courts','c-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 document.getElementById('c-surface').value='';
 document.getElementById('c-status').value='active';
 }
@@ -1830,7 +1880,7 @@ function removeInvoicePhoto(){invoicePhotoUrl=null;const ex=document.getElementB
 async function saveClientOnly(){
 const name=document.getElementById('c-name').value.trim();
 if(!name){toast('Enter a client name','err');return;}
-const payload={name,street:document.getElementById('c-street')?.value.trim()||null,location:document.getElementById('c-loc').value.trim(),email:document.getElementById('c-email')?.value.trim()||null,surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
+const payload={name,street:document.getElementById('c-street')?.value.trim()||null,location:document.getElementById('c-loc').value.trim(),phone:document.getElementById('c-phone')?.value.trim()||null,email:document.getElementById('c-email')?.value.trim()||null,surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
 const{data:{user:_u1}}=await sb.auth.getUser();
 const{error}=await sb.from('clients').insert({...payload,user_id:_u1?.id||null});
 if(error){toast('Error: '+error.message,'err');return;}
@@ -1842,7 +1892,7 @@ const name=document.getElementById('c-name').value.trim();
 if(!name){toast('Enter a client name','err');return;}
 const btn=document.getElementById('save-client-btn');
 if(btn){btn.disabled=true;btn.textContent='Saving...';}
-const payload={name,street:document.getElementById('c-street')?.value.trim()||null,location:document.getElementById('c-loc').value.trim(),email:document.getElementById('c-email')?.value.trim()||null,surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
+const payload={name,street:document.getElementById('c-street')?.value.trim()||null,location:document.getElementById('c-loc').value.trim(),phone:document.getElementById('c-phone')?.value.trim()||null,email:document.getElementById('c-email')?.value.trim()||null,surface:document.getElementById('c-surface').value,courts:parseInt(document.getElementById('c-courts').value)||1,notes:document.getElementById('c-notes').value.trim()||null,status:document.getElementById('c-status').value||'active'};
 let error,data;
 if(editingId.client){
 ({error}=await sb.from('clients').update(payload).eq('id',editingId.client));
@@ -3156,4 +3206,326 @@ openEmailModal(id);
 </label>
 </div>
 <div style="display:flex;gap:8px;padding-top:4px">
-<button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font
+<button onclick="closeEmailModal()" style="flex:1;padding:12px;border-radius:8px;background:var(--off);color:var(--muted);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+<button id="eq-send-btn" onclick="sendQuoteEmail()" style="flex:2;padding:12px;border-radius:8px;background:#7C3AED;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✉ Send Quote</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Upgrade Modal -->
+<div id="upgrade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:800;align-items:center;justify-content:center;padding:20px">
+<div style="background:white;border-radius:20px;padding:32px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+<div style="font-size:36px;margin-bottom:12px">⭐</div>
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--charcoal);margin-bottom:8px">Upgrade to Pro</div>
+<div id="upgrade-reason" style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5"></div>
+<button onclick="nav('billing',document.getElementById('nav-billing'));closeUpgradeModal()" style="width:100%;padding:14px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">View Plans →</button>
+<button onclick="closeUpgradeModal()" style="width:100%;padding:10px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer">Maybe later</button>
+</div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-bottom-nav">
+<div class="mobile-bottom-nav-inner">
+<button class="mobile-nav-item active" onclick="nav('dashboard',document.getElementById('nav-dashboard'));updateMobileNav(this)">
+<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home
+</button>
+<button class="mobile-nav-item" onclick="nav('calendar',document.getElementById('nav-calendar'));updateMobileNav(this)">
+<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar
+</button>
+<button class="mobile-nav-item" onclick="openModal('job')" style="position:relative;margin-top:-12px">
+<div style="width:44px;height:44px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(200,230,43,0.4)">
+<svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--charcoal);stroke-width:2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</div>
+<span style="margin-top:2px">Add</span>
+</button>
+<button class="mobile-nav-item" onclick="nav('clients',document.getElementById('nav-clients'));updateMobileNav(this)">
+<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients
+</button>
+<button class="mobile-nav-item" onclick="openGlobalSearch()">
+<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
+</button>
+</div>
+</div>
+
+<script>
+function updateMobileNav(el) {
+document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+el.classList.add('active');
+}
+</script>
+
+<!-- Global Search Overlay -->
+<div id="search-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1100;padding:60px 20px 20px;backdrop-filter:blur(4px)">
+<div style="max-width:560px;margin:0 auto">
+<div style="background:white;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.3);overflow:hidden">
+<div style="padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input id="global-search-input" type="text" placeholder="Search clients, jobs, quotes..." style="flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--charcoal);background:transparent" oninput="handleGlobalSearch(this.value)" autocomplete="off">
+<kbd style="padding:3px 8px;border-radius:5px;background:var(--off);border:1px solid var(--border);font-size:11px;font-weight:700;color:var(--muted);font-family:monospace">ESC</kbd>
+</div>
+<div id="search-results" style="max-height:400px;overflow-y:auto;padding:8px 0">
+<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">Type to search across all your data...</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Notification Center -->
+<div id="notif-panel" style="display:none;position:fixed;top:56px;right:16px;width:340px;max-height:480px;background:white;border-radius:16px;box-shadow:0 16px 60px rgba(0,0,0,0.2);z-index:500;overflow:hidden;border:1px solid var(--border)">
+<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Notifications</div>
+<button onclick="toggleNotifPanel()" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted);padding:2px 6px;border-radius:4px">✕</button>
+</div>
+<div id="notif-list" style="overflow-y:auto;max-height:400px;padding:4px 0"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CUSTOMER EFFICIENCY ENHANCEMENTS
+// ══════════════════════════════════════════
+
+// ── GLOBAL SEARCH ──
+let searchJustOpened = false;
+function openGlobalSearch() {
+const overlay = document.getElementById('search-overlay');
+searchJustOpened = true;
+overlay.style.display = 'block';
+setTimeout(() => {
+searchJustOpened = false;
+document.getElementById('global-search-input').focus();
+}, 100);
+}
+function closeGlobalSearch() {
+if (searchJustOpened) return;
+document.getElementById('search-overlay').style.display = 'none';
+document.getElementById('global-search-input').value = '';
+document.getElementById('search-results').innerHTML = '<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">Type to search across all your data...</div>';
+}
+document.getElementById('search-overlay')?.addEventListener('mousedown', function(e) {
+if (e.target === this) closeGlobalSearch();
+});
+
+function handleGlobalSearch(query) {
+const q = query.toLowerCase().trim();
+const results = document.getElementById('search-results');
+if (!q) {
+results.innerHTML = '<div style="padding:20px;text-align:center;color:var(--lmuted);font-size:13px">Type to search across all your data...</div>';
+return;
+}
+let html = '';
+// Search clients
+const matchedClients = clients.filter(c => c.name?.toLowerCase().includes(q) || c.location?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.surface?.toLowerCase().includes(q));
+if (matchedClients.length) {
+html += '<div style="padding:6px 20px 4px;font-size:10px;font-weight:700;color:var(--lmuted);letter-spacing:1px;text-transform:uppercase">Clients</div>';
+matchedClients.slice(0, 5).forEach(c => {
+html += `<div onclick="closeGlobalSearch();showClientDetail('${c.id}')" style="padding:10px 20px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s" onmouseover="this.style.background='#F8FAF6'" onmouseout="this.style.background='transparent'">
+<div style="width:32px;height:32px;border-radius:8px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--charcoal);flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div>
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--charcoal)">${highlightMatch(c.name, q)}</div><div style="font-size:11px;color:var(--lmuted)">${c.location || ''} ${c.surface ? '· ' + c.surface : ''}</div></div>
+<span style="font-size:10px;font-weight:700;color:var(--lmuted);background:var(--off);padding:2px 8px;border-radius:4px">Client</span>
+</div>`;
+});
+}
+// Search jobs
+const matchedJobs = jobs.filter(j => j.service?.toLowerCase().includes(q) || j.client_name?.toLowerCase().includes(q) || (j.clients?.name||'').toLowerCase().includes(q) || j.notes?.toLowerCase().includes(q));
+if (matchedJobs.length) {
+html += '<div style="padding:6px 20px 4px;font-size:10px;font-weight:700;color:var(--lmuted);letter-spacing:1px;text-transform:uppercase;margin-top:4px">Jobs</div>';
+matchedJobs.slice(0, 5).forEach(j => {
+const cname = j.clients?.name || j.client_name || 'Unknown';
+html += `<div onclick="closeGlobalSearch();editJob('${j.id}')" style="padding:10px 20px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s" onmouseover="this.style.background='#F8FAF6'" onmouseout="this.style.background='transparent'">
+<div style="width:32px;height:32px;border-radius:8px;background:#E8F5EE;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2A7A52" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--charcoal)">${highlightMatch(j.service || 'Job', q)}</div><div style="font-size:11px;color:var(--lmuted)">${cname} · $${(j.amount||0).toLocaleString()}</div></div>
+${jbadge(j.status)}
+</div>`;
+});
+}
+// Search quotes
+const matchedQuotes = quotes.filter(qu => qu.client_name?.toLowerCase().includes(q) || qu.title?.toLowerCase().includes(q));
+if (matchedQuotes.length) {
+html += '<div style="padding:6px 20px 4px;font-size:10px;font-weight:700;color:var(--lmuted);letter-spacing:1px;text-transform:uppercase;margin-top:4px">Quotes</div>';
+matchedQuotes.slice(0, 5).forEach(qu => {
+html += `<div onclick="closeGlobalSearch();previewQuote('${qu.id}')" style="padding:10px 20px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s" onmouseover="this.style.background='#F8FAF6'" onmouseout="this.style.background='transparent'">
+<div style="width:32px;height:32px;border-radius:8px;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--charcoal)">${highlightMatch(qu.title || 'Quote', q)}</div><div style="font-size:11px;color:var(--lmuted)">${qu.client_name} · $${calcQ(qu).total.toLocaleString()}</div></div>
+${qbadge(qu.status)}
+</div>`;
+});
+}
+if (!html) {
+html = '<div style="padding:32px 20px;text-align:center;color:var(--lmuted);font-size:13px">No results found for "' + query + '"</div>';
+}
+results.innerHTML = html;
+}
+
+function highlightMatch(text, query) {
+if (!text || !query) return text || '';
+const idx = text.toLowerCase().indexOf(query.toLowerCase());
+if (idx === -1) return text;
+return text.substring(0, idx) + '<mark style="background:var(--yellow);color:var(--charcoal);padding:0 2px;border-radius:2px">' + text.substring(idx, idx + query.length) + '</mark>' + text.substring(idx + query.length);
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', function(e) {
+// Cmd/Ctrl + K = Global search
+if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+e.preventDefault();
+const overlay = document.getElementById('search-overlay');
+if (overlay.style.display === 'block') closeGlobalSearch();
+else openGlobalSearch();
+}
+// ESC = close overlays
+if (e.key === 'Escape') {
+if (document.getElementById('search-overlay').style.display === 'block') { closeGlobalSearch(); return; }
+if (document.getElementById('notif-panel').style.display === 'block') { toggleNotifPanel(); return; }
+}
+// N = new (when not in input)
+if (e.key === 'n' && !isInInput()) {
+e.preventDefault();
+openModal('job');
+}
+// C = new client (when not in input)
+if (e.key === 'c' && !isInInput()) {
+e.preventDefault();
+openModal('client');
+}
+// Q = new quote (when not in input)
+if (e.key === 'q' && !isInInput()) {
+e.preventDefault();
+openQuoteModal();
+}
+});
+
+function isInInput() {
+const el = document.activeElement;
+return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.contentEditable === 'true');
+}
+
+// ── NOTIFICATION CENTER ──
+function toggleNotifPanel() {
+const panel = document.getElementById('notif-panel');
+if (panel.style.display === 'block') {
+panel.style.display = 'none';
+} else {
+renderNotifications();
+panel.style.display = 'block';
+}
+}
+
+function renderNotifications() {
+const list = document.getElementById('notif-list');
+const notifs = [];
+const today = new Date();
+// Overdue invoices
+invoices.filter(i => i.status === 'overdue').forEach(i => {
+const cname = i.clients?.name || 'Client';
+notifs.push({ icon: '💰', title: 'Overdue Invoice', sub: cname + ' — $' + (i.amount||0).toLocaleString(), color: '#A84E2A', bg: '#FDEEE8', action: () => editInvoice(i.id), urgency: 3 });
+});
+// Pending invoices
+invoices.filter(i => i.status === 'pending').forEach(i => {
+const cname = i.clients?.name || 'Client';
+notifs.push({ icon: '⏳', title: 'Pending Payment', sub: cname + ' — $' + (i.amount||0).toLocaleString(), color: '#B88000', bg: '#FFF8E1', action: () => editInvoice(i.id), urgency: 2 });
+});
+// Today's jobs
+const todayStr = today.toISOString().split('T')[0];
+jobs.filter(j => j.date === todayStr && j.status !== 'completed').forEach(j => {
+const cname = j.clients?.name || j.client_name || 'Client';
+notifs.push({ icon: '📋', title: "Today's Job", sub: cname + ' — ' + (j.service||''), color: '#2563EB', bg: '#EFF6FF', action: () => showJobDetail(j.id), urgency: 2 });
+});
+// Follow-up quotes
+quotes.filter(q => q.status === 'follow_up' || q.status === 'sent').forEach(q => {
+notifs.push({ icon: '📄', title: q.status === 'follow_up' ? 'Quote Needs Follow Up' : 'Quote Awaiting Response', sub: q.client_name + ' — ' + q.title, color: '#7C3AED', bg: '#F5F3FF', action: () => previewQuote(q.id), urgency: 1 });
+});
+notifs.sort((a, b) => b.urgency - a.urgency);
+if (notifs.length === 0) {
+list.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--lmuted);font-size:13px">All caught up! No pending items.</div>';
+return;
+}
+list.innerHTML = notifs.slice(0, 15).map(n => `<div onclick="toggleNotifPanel();(${n.action.toString()})()" style="padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s" onmouseover="this.style.background='#F8FAF6'" onmouseout="this.style.background='transparent'">
+<div style="width:32px;height:32px;border-radius:8px;background:${n.bg};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${n.icon}</div>
+<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:${n.color}">${n.title}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n.sub}</div></div>
+</div>`).join('');
+}
+
+// ── LIST SEARCH/FILTER ──
+function addListSearch(containerId, placeholder, filterFn) {
+const container = document.getElementById(containerId);
+if (!container) return;
+const existing = container.previousElementSibling;
+if (existing && existing.classList.contains('list-search-bar')) return;
+const bar = document.createElement('div');
+bar.className = 'list-search-bar';
+bar.style.cssText = 'padding:12px 16px;background:white;border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:10';
+bar.innerHTML = `<div style="display:flex;align-items:center;gap:8px;background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 12px">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" placeholder="${placeholder}" style="border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--charcoal);flex:1" oninput="filterList('${containerId}', this.value)">
+</div>`;
+container.parentNode.insertBefore(bar, container);
+}
+
+function filterList(containerId, query) {
+const q = query.toLowerCase().trim();
+const container = document.getElementById(containerId);
+if (!container) return;
+// Filter desktop table rows
+const rows = container.querySelectorAll('table tbody tr');
+rows.forEach(row => {
+const text = row.textContent.toLowerCase();
+row.style.display = !q || text.includes(q) ? '' : 'none';
+});
+// Filter mobile cards
+const cards = container.querySelectorAll('.m-card');
+cards.forEach(card => {
+const text = card.textContent.toLowerCase();
+card.style.display = !q || text.includes(q) ? '' : 'none';
+});
+}
+
+// ── ENHANCED TIME FORMAT ──
+function fmtTime(t) {
+if (!t) return '';
+const [h, m] = t.split(':').map(Number);
+const ampm = h >= 12 ? 'PM' : 'AM';
+const hr = h % 12 || 12;
+return hr + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+}
+
+// ── AUTO-FILL CLIENT EMAIL ON QUOTE ──
+function autoFillClientEmail() {
+const name = document.getElementById('nq-client')?.value.trim();
+if (!name) return;
+const client = clients.find(c => c.name?.toLowerCase() === name.toLowerCase());
+if (client?.email) {
+document.getElementById('nq-client-email').value = client.email;
+}
+}
+
+// ── INJECT SEARCH BARS ON NAV ──
+const origNav = nav;
+nav = function(name, el) {
+origNav(name, el);
+setTimeout(() => {
+if (name === 'clients') addListSearch('clients-list', 'Search clients by name, location...', null);
+if (name === 'jobs') addListSearch('jobs-list', 'Search jobs by client, service...', null);
+if (name === 'invoices') addListSearch('invoices-list', 'Search invoices by client, amount...', null);
+}, 100);
+};
+
+// ── NOTIFICATION BADGE COUNT ──
+function updateNotifBadge() {
+const count = invoices.filter(i => i.status === 'overdue' || i.status === 'pending').length +
+jobs.filter(j => j.date === new Date().toISOString().split('T')[0] && j.status !== 'completed').length +
+quotes.filter(q => q.status === 'follow_up').length;
+const badge = document.getElementById('notif-badge');
+if (badge) {
+badge.textContent = count;
+badge.style.display = count > 0 ? 'flex' : 'none';
+}
+}
+
+// ── RUN AFTER BOOT ──
+const origBoot = boot;
+// Update notif badge after data loads
+setTimeout(updateNotifBadge, 2000);
+</script>
+</body>
+</html>
