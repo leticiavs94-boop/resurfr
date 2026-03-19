@@ -218,6 +218,13 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* Better focus states */
 .fi:focus,.btn:focus-visible,.nav-item:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+/* Smart insights bar */
+.insights-bar{display:flex;gap:10px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.insight-card{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:white;min-width:200px;flex-shrink:0;cursor:pointer;transition:all .15s}
+.insight-card:hover{border-color:var(--green);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.insight-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.insight-text{font-size:12px;font-weight:600;color:var(--charcoal);line-height:1.4}
+.insight-sub{font-size:10px;color:var(--lmuted);font-weight:500;margin-top:1px}
 /* Quick action cards on dashboard */
 .quick-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .quick-action-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:1.5px dashed var(--border);background:white;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);transition:all .15s}
@@ -502,6 +509,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="stat-sub" id="s-courts" style="color:var(--lmuted);font-size:11px;margin-top:2px"></div>
 </div>
 </div>
+<div id="smart-insights" class="insights-bar"></div>
 <div id="onboarding-banner"></div>
 <div class="grid2">
 <div class="panel">
@@ -891,7 +899,7 @@ Profile Saved
 </div>
 <div id="cd-contact"></div>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px">
 <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px">
 <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:4px">Billed</div>
 <div id="cd-total" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">$0</div>
@@ -903,6 +911,10 @@ Profile Saved
 <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px">
 <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:4px">Invoices</div>
 <div id="cd-invcount" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">0</div>
+</div>
+<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px">
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lmuted);margin-bottom:4px">Last Active</div>
+<div id="cd-lastactive" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--charcoal)">-</div>
 </div>
 </div>
 <div style="display:flex;gap:8px;margin-bottom:14px">
@@ -1264,18 +1276,47 @@ html += '</div>';
 // Day job list below calendar
 const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 const todayJobs = jobs.filter(j => j.date === todayStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
-if (todayJobs.length) {
-html += `<div style="margin-top:16px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin-bottom:10px">Today's Jobs</div>`;
+const tomorrowStr = (()=>{const t=new Date(now);t.setDate(t.getDate()+1);return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`})();
+const tomorrowJobs = jobs.filter(j => j.date === tomorrowStr && j.status!=='completed'&&j.status!=='cancelled');
+// Today's summary
+const todayRev = todayJobs.filter(j=>j.status!=='cancelled').reduce((s,j)=>s+(j.amount||0),0);
+const todayDone = todayJobs.filter(j=>j.status==='completed').length;
+const todayLeft = todayJobs.filter(j=>j.status!=='completed'&&j.status!=='cancelled').length;
+if (todayJobs.length || tomorrowJobs.length) {
+html += `<div style="margin-top:16px">`;
+if(todayJobs.length){
+html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal)">Today's Jobs</div>
+<div style="display:flex;gap:12px;font-size:11px;font-weight:600">
+<span style="color:#2563EB">${todayLeft} remaining</span>
+<span style="color:#16A34A">${todayDone} done</span>
+<span style="color:var(--muted)">$${todayRev.toLocaleString()} revenue</span>
+</div></div>`;
 todayJobs.forEach(j => {
-html += `<div onclick="editJob('${j.id}')" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer">
+const cname=j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||j.client_name||j.client_name_fallback||'';
+html += `<div onclick="showJobDetail('${j.id}')" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
 <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${j.status==='completed'?'#16A34A':j.status==='inprogress'?'#CA8A04':'#2563EB'}"></div>
 <div style="flex:1;min-width:0">
 <div style="font-size:13px;font-weight:700;color:var(--charcoal)">${j.service||'Job'}</div>
-<div style="font-size:11px;color:var(--muted)">${j.client_name||''} ${j.time?'· '+fmtTime(j.time):''}</div>
+<div style="font-size:11px;color:var(--muted)">${cname} ${j.time?'· '+fmtTime(j.time):''}</div>
 </div>
-<span class="badge b-${j.status||'scheduled'}">${j.status||'scheduled'}</span>
+<div style="text-align:right;flex-shrink:0">
+<div style="font-size:12px;font-weight:700;color:var(--charcoal)">$${(j.amount||0).toLocaleString()}</div>
+<span class="badge b-${j.status||'scheduled'}" style="font-size:9px">${j.status||'scheduled'}</span>
+</div>
 </div>`;
 });
+}
+if(tomorrowJobs.length){
+html += `<div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--muted);margin:16px 0 8px">Tomorrow &middot; ${tomorrowJobs.length} job${tomorrowJobs.length!==1?'s':''}</div>`;
+tomorrowJobs.slice(0,3).forEach(j=>{
+const cname=j.clients?.name||clients.find(c=>String(c.id)===String(j.client_id))?.name||j.client_name||j.client_name_fallback||'';
+html+=`<div onclick="showJobDetail('${j.id}')" style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;cursor:pointer;opacity:0.7">
+<div style="font-size:12px;font-weight:600;color:var(--muted);flex:1">${j.time?fmtTime(j.time)+' · ':''}${j.service||'Job'} &middot; ${cname}</div>
+<div style="font-size:11px;font-weight:700;color:var(--muted)">$${(j.amount||0).toLocaleString()}</div>
+</div>`;
+});
+}
 html += '</div>';
 }
 document.getElementById('cal-body').innerHTML = html;
@@ -1491,23 +1532,74 @@ ${jbadge(j.status)}
 const clEl=document.getElementById('d-clients');
 if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 renderRevenueChart();
+renderSmartInsights();
+}
+function renderSmartInsights(){
+const el=document.getElementById('smart-insights');if(!el)return;
+const insights=[];
+const now=new Date();const todayStr=now.toISOString().split('T')[0];
+// Overdue invoices
+const overdue=invoices.filter(i=>i.status==='overdue');
+if(overdue.length>0){const amt=overdue.reduce((s,i)=>s+(i.amount||0),0);insights.push({icon:'💰',bg:'#FDEEE8',text:`$${amt.toLocaleString()} overdue`,sub:`${overdue.length} invoice${overdue.length!==1?'s':''} need attention`,action:()=>nav('invoices',null)});}
+// Quotes awaiting response
+const awaiting=quotes.filter(q=>q.status==='sent');
+if(awaiting.length>0){const oldest=awaiting.reduce((o,q)=>{const d=Math.floor((now-new Date(q.created_at))/86400000);return d>o?d:o;},0);insights.push({icon:'📄',bg:'#F5F3FF',text:`${awaiting.length} quote${awaiting.length!==1?'s':''} awaiting response`,sub:oldest>3?`Oldest sent ${oldest} days ago`:'Recently sent',action:()=>nav('quotes',null)});}
+// Follow-up needed
+const followUp=quotes.filter(q=>q.status==='follow_up');
+if(followUp.length>0){insights.push({icon:'🔔',bg:'#FFFBEB',text:`${followUp.length} quote${followUp.length!==1?'s':''} need follow-up`,sub:'Tap to view pipeline',action:()=>filterQuotes('follow_up')});}
+// Today's jobs
+const todayJobs=jobs.filter(j=>j.date===todayStr&&j.status!=='completed'&&j.status!=='cancelled');
+if(todayJobs.length>0){const rev=todayJobs.reduce((s,j)=>s+(j.amount||0),0);insights.push({icon:'📋',bg:'#EFF6FF',text:`${todayJobs.length} job${todayJobs.length!==1?'s':''} today`,sub:`$${rev.toLocaleString()} in scheduled revenue`,action:()=>nav('calendar',null)});}
+// Clients without recent jobs
+const staleClients=clients.filter(c=>{const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));if(cJobs.length===0)return false;const last=cJobs.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0))[0];const days=Math.floor((now-new Date(last.date+'T00:00:00'))/86400000);return days>60;});
+if(staleClients.length>0){insights.push({icon:'👋',bg:'#F0FDF4',text:`${staleClients.length} client${staleClients.length!==1?'s':''} haven't booked in 60+ days`,sub:'Good time to reach out',action:()=>nav('clients',null)});}
+// Monthly comparison
+const thisMonth=now.getMonth();const thisYear=now.getFullYear();
+const thisMonthRev=jobs.filter(j=>j.status==='completed'&&j.date&&new Date(j.date+'T00:00:00').getMonth()===thisMonth&&new Date(j.date+'T00:00:00').getFullYear()===thisYear).reduce((s,j)=>s+(j.amount||0),0);
+const lastMonth=thisMonth===0?11:thisMonth-1;const lastYear=thisMonth===0?thisYear-1:thisYear;
+const lastMonthRev=jobs.filter(j=>j.status==='completed'&&j.date&&new Date(j.date+'T00:00:00').getMonth()===lastMonth&&new Date(j.date+'T00:00:00').getFullYear()===lastYear).reduce((s,j)=>s+(j.amount||0),0);
+if(lastMonthRev>0){const pct=Math.round(((thisMonthRev-lastMonthRev)/lastMonthRev)*100);const up=pct>=0;insights.push({icon:up?'📈':'📉',bg:up?'#F0FDF4':'#FEF2F2',text:`${up?'+':''}${pct}% vs last month`,sub:`$${thisMonthRev.toLocaleString()} this month`,action:()=>{}});}
+if(insights.length===0){el.style.display='none';return;}
+el.style.display='flex';
+el.innerHTML=insights.slice(0,5).map(i=>`<div class="insight-card" onclick="(${i.action.toString()})()"><div class="insight-icon" style="background:${i.bg}">${i.icon}</div><div><div class="insight-text">${i.text}</div><div class="insight-sub">${i.sub}</div></div></div>`).join('');
 }
 function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
+function clientLastActivity(c){
+const cJobs=jobs.filter(j=>String(j.client_id)===String(c.id));
+const cQuotes=quotes.filter(q=>q.client_name?.toLowerCase().trim()===c.name?.toLowerCase().trim());
+const dates=[];
+cJobs.forEach(j=>{if(j.date)dates.push(new Date(j.date+'T00:00:00'));});
+cQuotes.forEach(q=>{if(q.created_at)dates.push(new Date(q.created_at));});
+if(dates.length===0)return{text:'No activity yet',days:999,color:'var(--lmuted)'};
+const latest=new Date(Math.max(...dates));
+const days=Math.floor((new Date()-latest)/86400000);
+if(days===0)return{text:'Active today',days:0,color:'#16A34A'};
+if(days===1)return{text:'Yesterday',days:1,color:'#16A34A'};
+if(days<=7)return{text:`${days}d ago`,days,color:'#16A34A'};
+if(days<=30)return{text:`${days}d ago`,days,color:'#B88000'};
+if(days<=90)return{text:`${days}d ago`,days,color:'#D97706'};
+return{text:`${days}d ago`,days,color:'#A84E2A'};
+}
+function clientValueBadge(total){
+if(total>=10000)return'<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">VIP</span>';
+if(total>=5000)return'<span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE">HIGH</span>';
+return'';
+}
 function renderClients(){
 if(clients.length===0){document.getElementById('clients-list').innerHTML=`<div class="empty">No clients yet - tap "Add Client" to get started</div>`;return;}
-const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Service Type</th><th>Units</th><th>Status</th><th>Billed</th><th></th></tr></thead><tbody>`+
-clients.map(c=>`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
-<td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><strong>${c.name}</strong></div></td>
-<td>${c.location||'-'}</td><td>${stag(c.surface)}</td><td>${c.courts||1}</td>
-<td>${cstatusbadge(c.status)}</td><td><strong>$${clientTotal(c).toLocaleString()}</strong></td>
+const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Location</th><th>Service Type</th><th>Status</th><th>Last Activity</th><th>Billed</th><th></th></tr></thead><tbody>`+
+clients.map(c=>{const total=clientTotal(c);const activity=clientLastActivity(c);const vBadge=clientValueBadge(total);return`<tr style="cursor:pointer" onclick="showClientDetail('${c.id}')">
+<td><div style="display:flex;align-items:center;gap:10px"><div class="c-av" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${c.name.substring(0,2).toUpperCase()}</div><div><strong>${c.name}</strong> ${vBadge}</div></div></td>
+<td>${c.location||'-'}</td><td>${stag(c.surface)}</td>
+<td>${cstatusbadge(c.status)}</td><td><span style="font-size:12px;color:${activity.color};font-weight:600">${activity.text}</span></td><td><strong>$${total.toLocaleString()}</strong></td>
 <td><div class="row-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div></td>
-</tr>`).join('')+`</tbody></table>`;
-const cards=clients.map(c=>`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
-<div class="m-card-top"><div class="m-card-name">${c.name}</div><div class="m-card-amount">$${clientTotal(c).toLocaleString()}</div></div>
-<div class="m-card-meta">${c.location||'-'} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''}</div>
+</tr>`}).join('')+`</tbody></table>`;
+const cards=clients.map(c=>{const total=clientTotal(c);const activity=clientLastActivity(c);const vBadge=clientValueBadge(total);return`<div class="m-card" onclick="showClientDetail('${c.id}')" style="cursor:pointer">
+<div class="m-card-top"><div class="m-card-name">${c.name} ${vBadge}</div><div class="m-card-amount">$${total.toLocaleString()}</div></div>
+<div class="m-card-meta">${c.location||'-'} &middot; <span style="color:${activity.color}">${activity.text}</span></div>
 <div class="m-card-tags">${stag(c.surface)} ${cstatusbadge(c.status)}</div>
 <div class="m-card-actions" onclick="event.stopPropagation()"><button class="act-btn act-edit" onclick="editClient('${c.id}')">Edit</button><button class="act-btn act-delete" onclick="confirmDelete('client','${c.id}','${c.name.replace(/'/g,"\\'")}')">Delete</button></div>
-</div>`).join('');
+</div>`}).join('');
 document.getElementById('clients-list').innerHTML=tbl+cards;
 }
 function renderJobs(){
@@ -1528,30 +1620,50 @@ const cards=jobs.map(j=>`<div class="m-card">
 </div>`).join('');
 document.getElementById('jobs-list').innerHTML=tbl+cards;
 }
+function invoiceAging(inv){
+const now=new Date();const issued=inv.issued_date?new Date(inv.issued_date+'T00:00:00'):new Date(inv.created_at);
+const days=Math.floor((now-issued)/86400000);
+if(inv.status==='paid')return'';
+if(inv.status==='overdue'){return days>30?`<span style="color:#DC2626;font-weight:700">${days}d overdue</span>`:days>0?`<span style="color:#D97706;font-weight:700">${days}d overdue</span>`:'';}
+if(inv.status==='pending'){return days>14?`<span style="color:#D97706;font-weight:600">Pending ${days}d</span>`:days>0?`<span style="color:var(--lmuted)">Sent ${days}d ago</span>`:'';}
+return'';
+}
 function renderInvoices(){
 if(invoices.length===0){document.getElementById('invoices-list').innerHTML=`<div class="empty">No invoices yet</div>`;return;}
 const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';
+// Summary bar
+const pendCount=invoices.filter(i=>i.status==='pending').length;
+const overdueCount=invoices.filter(i=>i.status==='overdue').length;
+const paidCount=invoices.filter(i=>i.status==='paid').length;
+const pendAmt=invoices.filter(i=>i.status==='pending').reduce((s,i)=>s+(i.amount||0),0);
+const overdueAmt=invoices.filter(i=>i.status==='overdue').reduce((s,i)=>s+(i.amount||0),0);
+const paidAmt=invoices.filter(i=>i.status==='paid').reduce((s,i)=>s+(i.amount||0),0);
+const summary=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px;border-bottom:1px solid var(--border)">
+<div style="background:#FFF8E1;border-radius:10px;padding:12px 14px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#B88000">$${pendAmt.toLocaleString()}</div><div style="font-size:10px;font-weight:700;color:#B88000;margin-top:2px">${pendCount} Pending</div></div>
+<div style="background:#FDEEE8;border-radius:10px;padding:12px 14px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#A84E2A">$${overdueAmt.toLocaleString()}</div><div style="font-size:10px;font-weight:700;color:#A84E2A;margin-top:2px">${overdueCount} Overdue</div></div>
+<div style="background:#E8F5EE;border-radius:10px;padding:12px 14px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#2A7A52">$${paidAmt.toLocaleString()}</div><div style="font-size:10px;font-weight:700;color:#2A7A52;margin-top:2px">${paidCount} Paid</div></div>
+</div>`;
 const tbl=`<table class="desktop-table"><thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>`+
-invoices.map(i=>`<tr>
+invoices.map(i=>{const aging=invoiceAging(i);return`<tr>
 <td><strong style="cursor:pointer;color:var(--green)" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</strong></td>
-<td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${fmt(i.issued_date)}</td><td>${ibadge(i.status)}</td>
+<td><strong>$${(i.amount||0).toLocaleString()}</strong></td><td>${fmt(i.issued_date)}${aging?'<div style="font-size:10px;margin-top:2px">'+aging+'</div>':''}</td><td>${ibadge(i.status)}</td>
 <td><div class="row-actions">
 ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')"> Paid</button>`:''}
 <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
 <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
 </div></td>
-</tr>`).join('')+`</tbody></table>`;
-const cards=invoices.map(i=>`<div class="m-card">
+</tr>`}).join('')+`</tbody></table>`;
+const cards=invoices.map(i=>{const aging=invoiceAging(i);return`<div class="m-card">
 <div class="m-card-top"><div class="m-card-name" style="color:var(--green);cursor:pointer" onclick="showClientDetailByName('${(i.clients?.name||'').replace(/'/g,"\\'")}'">${i.clients?.name||'?'}</div><div class="m-card-amount">$${(i.amount||0).toLocaleString()}</div></div>
-<div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${i.notes?' &middot; '+i.notes:''}</div>
+<div class="m-card-meta">${fmt(i.issued_date||i.created_at)}${aging?' &middot; '+aging:''}${i.notes?' &middot; '+i.notes:''}</div>
 <div class="m-card-tags">${ibadge(i.status)}</div>
 <div class="m-card-actions">
 ${i.status!=='paid'?`<button class="act-btn" style="background:#E8F5EE;color:#2A7A52;border:1px solid #B8DEC8" onclick="markPaid('${i.id}')"> Paid</button>`:''}
 <button class="act-btn act-edit" onclick="editInvoice('${i.id}')">Edit</button>
 <button class="act-btn act-delete" onclick="confirmDelete('invoice','${i.id}','invoice')">Delete</button>
 </div>
-</div>`).join('');
-document.getElementById('invoices-list').innerHTML=tbl+cards;
+</div>`}).join('');
+document.getElementById('invoices-list').innerHTML=summary+tbl+cards;
 }
 async function markPaid(id){
 await sb.from('invoices').update({status:'paid'}).eq('id',id);
@@ -1587,6 +1699,7 @@ if(contactEl) contactEl.innerHTML = contactHtml ? `<div style="display:flex;flex
 document.getElementById('cd-total').textContent='$'+total.toLocaleString();
 document.getElementById('cd-jobcount').textContent=cJobs.length;
 const cdInvCount=document.getElementById('cd-invcount'); if(cdInvCount) cdInvCount.textContent=cInvoices.length;
+const cdLastActive=document.getElementById('cd-lastactive');if(cdLastActive){const act=clientLastActivity(c);cdLastActive.textContent=act.text;cdLastActive.style.color=act.color;cdLastActive.style.fontSize=act.days>90?'16px':'22px';}
 const jCountBadge=document.getElementById('cd-jobs-count'); if(jCountBadge) jCountBadge.textContent=cJobs.length+' job'+(cJobs.length!==1?'s':'');
 const qCountBadge=document.getElementById('cd-quotes-count'); if(qCountBadge) qCountBadge.textContent=cQuotes.length+' quote'+(cQuotes.length!==1?'s':'');
 const iCountBadge=document.getElementById('cd-inv-count-badge'); if(iCountBadge) iCountBadge.textContent=cInvoices.length+' invoice'+(cInvoices.length!==1?'s':'');
@@ -2344,16 +2457,29 @@ const stages = [
 { key: 'approved', label: 'Approved', color: '#16A34A' },
 { key: 'follow_up', label: 'Follow Up', color: '#D97706' }
 ];
+const now=new Date();
 el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">` +
 stages.map(s => {
 const qs = quotes.filter(q => q.status === s.key);
 const val = qs.reduce((a, q) => a + calcQ(q).total, 0);
+// Calculate avg days in stage for sent quotes
+let stageInfo='';
+if(s.key==='sent'&&qs.length>0){const avgDays=Math.round(qs.reduce((a,q)=>a+Math.floor((now-new Date(q.created_at))/86400000),0)/qs.length);stageInfo=avgDays>0?`<div style="font-size:10px;color:#D97706;font-weight:600;margin-top:4px">${avgDays>7?'⚠ ':''}Avg ${avgDays}d waiting</div>`:'';}
+if(s.key==='follow_up'&&qs.length>0){stageInfo='<div style="font-size:10px;color:#D97706;font-weight:600;margin-top:4px">Needs action</div>';}
 return `<div class="pipe-card pipe-${s.key}" style="cursor:pointer" onclick="filterQuotes('${s.key}')">
 <div class="pipe-n">${qs.length}</div>
 <div class="pipe-l">${s.label}</div>
 <div class="pipe-v">$${val.toLocaleString()}</div>
+${stageInfo}
 </div>`;
 }).join('') + `</div>`;
+}
+function quoteAgeInfo(q){
+const now=new Date();const days=Math.floor((now-new Date(q.created_at))/86400000);
+let ageStr='';let expiryStr='';
+if(q.status==='sent'||q.status==='follow_up'){ageStr=days===0?'Sent today':days===1?'Sent yesterday':`Sent ${days}d ago`;if(days>7)ageStr=`<span style="color:#D97706;font-weight:700">${ageStr}</span>`;}
+if(q.valid_until){const exp=new Date(q.valid_until+'T00:00:00');const daysLeft=Math.ceil((exp-now)/86400000);if(daysLeft<0)expiryStr='<span style="color:#DC2626;font-weight:700">Expired</span>';else if(daysLeft<=3)expiryStr=`<span style="color:#D97706;font-weight:700">Expires in ${daysLeft}d</span>`;else expiryStr=`Expires in ${daysLeft}d`;}
+return{ageStr,expiryStr};
 }
 function renderQuotesTable(filter = 'all') {
 const filtered = filter === 'all' ? quotes : quotes.filter(q => q.status === filter);
@@ -2376,11 +2502,12 @@ tbody.innerHTML = filtered.length === 0
 ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--lmuted)">No quotes yet - tap "New Quote" to create one</td></tr>`
 : filtered.map(q => {
 const { total } = calcQ(q);
+const{ageStr,expiryStr}=quoteAgeInfo(q);
 return `<tr>
 <td><strong style="color:var(--green)">${q.client_name || '-'}</strong></td>
 <td>${q.title || '-'}</td>
 <td><strong>$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></td>
-<td>${fmt(q.created_at)}</td>
+<td>${fmt(q.created_at)}${ageStr?'<div style="font-size:10px;margin-top:2px">'+ageStr+'</div>':''}${expiryStr?'<div style="font-size:10px;margin-top:1px">'+expiryStr+'</div>':''}</td>
 <td>${qbadge(q.status)}</td>
 <td><div class="row-actions">
 <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>
@@ -2399,9 +2526,10 @@ const cardsEl = document.getElementById('q-cards');
 if (cardsEl) {
 cardsEl.innerHTML = filtered.length === 0 ? '' : filtered.map(q => {
 const { total } = calcQ(q);
+const{ageStr,expiryStr}=quoteAgeInfo(q);
 return `<div class="m-card">
 <div class="m-card-top"><div class="m-card-name">${q.client_name || '-'}</div><div class="m-card-amount">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
-<div class="m-card-meta">${q.title || '-'} &middot; ${fmt(q.created_at)}</div>
+<div class="m-card-meta">${q.title || '-'} &middot; ${fmt(q.created_at)}${ageStr?' &middot; '+ageStr:''}${expiryStr?' &middot; '+expiryStr:''}</div>
 <div class="m-card-tags">${qbadge(q.status)}</div>
 <div class="m-card-actions">
 <button class="act-btn" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE" onclick="previewQuote('${q.id}')">Preview</button>

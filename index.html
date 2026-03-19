@@ -323,6 +323,7 @@ footer {
   .how-step { border-radius:12px; }
   .forwho { padding:64px 24px; }
   .forwho-grid { grid-template-columns:1fr; }
+  .testimonial-grid { grid-template-columns:1fr !important; }
   .capture { padding:64px 24px; }
   .capture-form { flex-direction:column; }
   footer { padding:32px 24px; flex-direction:column; align-items:flex-start; gap:12px; }
@@ -349,9 +350,9 @@ footer {
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="hero-badge"><span></span> Now in early access</div>
+    <div class="hero-badge"><span></span> Trusted by contractors across 10+ trades</div>
     <h1 class="hero-h1">Run your trade<br>business <em>smarter.</em></h1>
-    <p class="hero-sub">Quotes, jobs, invoices, and client management — all in one clean dashboard built for contractors in the field.</p>
+    <p class="hero-sub">Send quotes that get approved, schedule jobs that don't fall through, and track every dollar — all from one dashboard built for contractors in the field.</p>
     <form class="hero-form" onsubmit="handleHeroSubmit(event)" name="waitlist" netlify netlify-honeypot="bot-field" data-netlify="true"><input type="hidden" name="form-name" value="waitlist"><input name="bot-field" style="display:none">
       <input class="hero-input" id="hero-email" name="email" type="email" placeholder="Enter your email" required>
       <button class="hero-btn" type="submit">Get Early Access</button>
@@ -369,8 +370,8 @@ footer {
       </div>
       <div style="width:1px;height:40px;background:rgba(255,255,255,0.1)"></div>
       <div>
-        <div class="hero-stat-num">All trades</div>
-        <div class="hero-stat-label">Solar, HVAC, Roofing &amp; more</div>
+        <div class="hero-stat-num">$0</div>
+        <div class="hero-stat-label">To start &mdash; 15 days free</div>
       </div>
     </div>
   </div>
@@ -417,48 +418,93 @@ footer {
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       </div>
       <div class="feat-title">Quotes &amp; Estimates</div>
-      <div class="feat-desc">Create professional estimates in seconds. Add line items, tax, notes, and send directly to your client by email.</div>
-      <span class="feat-tag">E-signature ready</span>
+      <div class="feat-desc">Create professional estimates in under a minute. Clients approve with one tap, and approved quotes convert to jobs instantly — no re-entering data.</div>
+      <span class="feat-tag">One-tap client approval</span>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
       <div class="feat-title">Job Scheduling</div>
-      <div class="feat-desc">Schedule jobs, track status, and never forget a follow-up. Convert approved quotes to jobs with one tap.</div>
-      <span class="feat-tag">Auto-convert from quotes</span>
+      <div class="feat-desc">Drag jobs onto your calendar, get automatic follow-up reminders, and track every job from scheduled to completed. No more sticky notes.</div>
+      <span class="feat-tag">Automatic follow-up reminders</span>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       </div>
       <div class="feat-title">Invoicing</div>
-      <div class="feat-desc">Send invoices, track what's paid, and see your revenue at a glance. Know exactly where your money stands.</div>
-      <span class="feat-tag">YTD revenue dashboard</span>
+      <div class="feat-desc">Invoices auto-create when jobs complete. Track what's paid, what's overdue, and see aging at a glance. Never chase a payment blind again.</div>
+      <span class="feat-tag">Auto-created from jobs</span>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       </div>
       <div class="feat-title">Client Management</div>
-      <div class="feat-desc">Keep all your client info, service history, and follow-up reminders in one place. Never lose track of a lead.</div>
-      <span class="feat-tag">Follow-up alerts</span>
+      <div class="feat-desc">Full client profiles with job history, total billed, quotes sent, and next visit dates. See every interaction at a glance — know who needs attention.</div>
+      <span class="feat-tag">Full activity timeline</span>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       </div>
       <div class="feat-title">Works on Any Device</div>
-      <div class="feat-desc">Designed mobile-first so you can manage your business from the job site, your truck, or your couch.</div>
-      <span class="feat-tag">Mobile-first design</span>
+      <div class="feat-desc">Built mobile-first for contractors on the go. Create a quote on-site, check your schedule in the truck, review invoices from the couch.</div>
+      <span class="feat-tag">Use from the job site</span>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       </div>
       <div class="feat-title">Live Dashboard</div>
-      <div class="feat-desc">See upcoming jobs, pending quotes, unpaid invoices, and recent completions the moment you open the app.</div>
-      <span class="feat-tag">Real-time data</span>
+      <div class="feat-desc">Your revenue, overdue invoices, today's jobs, and quote pipeline — all updated in real-time. Know exactly where your business stands every morning.</div>
+      <span class="feat-tag">Profit & revenue tracking</span>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--charcoal);padding:80px 48px;overflow:hidden">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:48px" class="reveal">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:12px">What contractors say</div>
+      <h2 style="font-family:'Barlow Condensed',sans-serif;font-size:clamp(36px,5vw,52px);font-weight:900;color:white;line-height:1.05">They switched. They won't go back.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px" class="testimonial-grid">
+      <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;position:relative">
+        <div style="font-size:24px;color:var(--yellow);font-family:Georgia,serif;line-height:1;margin-bottom:12px">"</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:20px">I used to lose quotes in my email. Now I send them in 30 seconds, clients approve with one tap, and the job shows up on my calendar automatically.</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--charcoal)">MR</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:white">Marco R.</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Solar Installer, FL</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;position:relative">
+        <div style="font-size:24px;color:var(--yellow);font-family:Georgia,serif;line-height:1;margin-bottom:12px">"</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:20px">The follow-up reminders alone pay for themselves. I recovered $4,200 in forgotten invoices my first month. The profit tracking is a game-changer too.</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--charcoal)">JT</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:white">James T.</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">HVAC Contractor, TX</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;position:relative">
+        <div style="font-size:24px;color:var(--yellow);font-family:Georgia,serif;line-height:1;margin-bottom:12px">"</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:20px">Finally something that isn't bloated. I just need quotes, invoices, and a schedule. Resurfr nails all three without the 50 features I'll never use.</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--charcoal)">SK</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:white">Sarah K.</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Painting Contractor, CA</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -473,18 +519,18 @@ footer {
     <div class="how-steps">
       <div class="how-step reveal">
         <div class="step-num">01</div>
-        <div class="step-title">Add your clients</div>
-        <div class="step-desc">Import or add your existing clients. Name, location, service type — takes about 30 seconds each.</div>
+        <div class="step-title">Add clients in 30 seconds</div>
+        <div class="step-desc">Name, service type, contact info. That's it. Start sending quotes immediately — no lengthy onboarding or data imports.</div>
       </div>
       <div class="how-step reveal">
         <div class="step-num">02</div>
-        <div class="step-title">Send your first quote</div>
-        <div class="step-desc">Build a professional estimate with line items and tax. Email it to your client directly from the dashboard.</div>
+        <div class="step-title">Send quotes, get approvals</div>
+        <div class="step-desc">Build a professional PDF estimate and email it. Your client approves with one tap. The job auto-schedules on your calendar.</div>
       </div>
       <div class="how-step reveal">
         <div class="step-num">03</div>
-        <div class="step-title">Get paid, stay organized</div>
-        <div class="step-desc">Convert approved quotes to jobs, generate invoices, and watch your revenue grow — all in one place.</div>
+        <div class="step-title">Complete jobs, track profit</div>
+        <div class="step-desc">Mark jobs done, confirm payment, schedule the next visit. Invoices auto-generate. Your profit dashboard updates in real-time.</div>
       </div>
     </div>
   </div>
@@ -571,7 +617,7 @@ footer {
     <div style="text-align:center;margin-bottom:48px">
       <div style="display:inline-block;background:var(--yellow);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--charcoal);margin-bottom:14px">Pricing</div>
       <h2 style="font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:900;color:var(--charcoal);line-height:1.05;margin-bottom:12px">Simple, honest pricing.</h2>
-      <p style="font-size:16px;color:var(--muted);max-width:480px;margin:0 auto">Start free for 15 days. No credit card required. Cancel anytime.</p>
+      <p style="font-size:16px;color:var(--muted);max-width:520px;margin:0 auto">One plan, everything included. Start free for 15 days — no credit card, no surprise charges. Pays for itself with one recovered invoice.</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:720px;margin:0 auto">
 
