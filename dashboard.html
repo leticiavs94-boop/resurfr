@@ -200,6 +200,19 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:9000;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:var(--green)}
+/* ── WORK VIEW TABS ── */
+.work-tabs{display:flex;gap:2px;background:var(--off);border-radius:10px;padding:3px;margin-bottom:0;border:1px solid var(--border)}
+.work-tab{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;position:relative;display:flex;align-items:center;gap:6px}
+.work-tab.active{background:white;color:var(--charcoal);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.work-tab .tab-badge{font-size:9px;font-weight:800;border-radius:10px;padding:1px 6px;line-height:1.6}
+.work-sub{display:none}
+.work-sub.active{display:block}
+/* ── SETTINGS TABS ── */
+.settings-tabs{display:flex;gap:2px;background:var(--off);border-radius:10px;padding:3px;margin-bottom:16px;border:1px solid var(--border)}
+.settings-tab{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;background:transparent;color:var(--muted);transition:all .15s}
+.settings-tab.active{background:white;color:var(--charcoal);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.settings-sub{display:none}
+.settings-sub.active{display:block}
 /* ── CUSTOMER EFFICIENCY ENHANCEMENTS ── */
 /* Search button */
 .search-trigger{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--off);border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);transition:all .15s;white-space:nowrap}
@@ -274,6 +287,10 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 .topbar-date{display:none}
 .topbar-left{flex:0 0 100%;padding-bottom:0}
 .topbar-right{display:none !important}
+/* Show work tabs on mobile as a secondary bar */
+#view-work .topbar-right,#view-settings .topbar-right{display:flex !important;flex:0 0 100%;padding-top:8px;overflow-x:auto}
+.work-tabs,.settings-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
+.work-tab,.settings-tab{white-space:nowrap;padding:6px 12px;font-size:12px}
 .page-title{font-size:24px}
 /* Stats grid */
 .stats{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -412,45 +429,31 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 <span class="logo-text">Resurfr</span>
 </div>
-<div class="sidebar-section">Main</div>
-<nav class="sidebar-nav">
+<nav class="sidebar-nav" style="padding-top:12px">
 <button class="nav-item active" id="nav-dashboard" onclick="nav('dashboard',this)">
-<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home
+</button>
+<button class="nav-item" id="nav-work" onclick="nav('work',this)">
+<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Work
+<span class="nav-badge" id="nb-work" style="display:none"></span>
 </button>
 <button class="nav-item" id="nav-clients" onclick="nav('clients',this)">
 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients
 <span class="nav-badge" id="nb-clients" style="display:none"></span>
 </button>
-<button class="nav-item" id="nav-calendar" onclick="nav('calendar',this)">
-<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="3"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="3"/><line x1="16" y1="14" x2="16" y2="14" stroke-width="3"/></svg>Calendar
-</button>
-<button class="nav-item" id="nav-jobs" onclick="nav('jobs',this)">
-<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs
+<button class="nav-item" id="nav-settings" onclick="nav('settings',this)">
+<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
 </button>
 </nav>
-<div class="sidebar-section" style="padding-top:8px">Invoices</div>
-<nav class="sidebar-nav">
-<button class="nav-item" id="nav-invoices" onclick="nav('invoices',this)">
-<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Invoices
-<span class="nav-badge" id="nb-invoices" style="display:none"></span>
-</button>
-</nav>
-<div class="sidebar-section">Finance</div>
-<nav class="sidebar-nav">
-<button class="nav-item" id="nav-quotes" onclick="nav('quotes',this)">
-<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Quotes
-<span class="nav-badge" id="nb-quotes" style="background:#7C3AED;color:white;display:none"></span>
-</button>
-</nav>
-<div class="sidebar-section">Account</div>
-<nav class="sidebar-nav">
-<button class="nav-item" id="nav-profile" onclick="nav('profile',this)">
-<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Business Profile
-</button>
-<button class="nav-item" id="nav-billing" onclick="nav('billing',this)">
-<svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Plan & Billing
-</button>
-</nav>
+<!-- Hidden nav items for backward compatibility -->
+<div style="display:none">
+<button id="nav-calendar"></button>
+<button id="nav-jobs"></button>
+<button id="nav-invoices"></button>
+<button id="nav-quotes"></button>
+<button id="nav-profile"></button>
+<button id="nav-billing"></button>
+</div>
 <div class="sidebar-footer">
 <div class="user-card">
 <div class="user-av" id="user-av">?</div>
@@ -465,7 +468,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="main">
 <div id="trial-topbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:250;background:#1E4D35;color:white;padding:0 20px;font-size:13px;font-weight:600;align-items:center;justify-content:center;gap:16px;flex-wrap:nowrap;white-space:nowrap;overflow:hidden">
 <span>Your free trial is active — <strong id="trial-topbar-days">15 days</strong> remaining</span>
-<button onclick="nav('billing',document.getElementById('nav-billing'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
+<button onclick="nav('billing',document.getElementById('nav-settings'))" style="background:var(--yellow);color:var(--charcoal);border:none;border-radius:6px;padding:5px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">Choose a Plan →</button>
 </div>
 <div id="view-dashboard" class="view active">
 <div class="topbar">
@@ -521,7 +524,7 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div class="panel-title">Upcoming Jobs</div>
 <span id="upcoming-count" style="background:var(--yellow);color:var(--charcoal);font-size:9px;font-weight:800;border-radius:10px;padding:1px 7px;line-height:1.6"></span>
 </div>
-<button class="panel-link" onclick="nav('jobs',null)">View all</button>
+<button class="panel-link" onclick="nav('jobs',document.getElementById('nav-work'))">View all</button>
 </div>
 <div id="d-upcoming"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
@@ -535,18 +538,18 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div id="d-alerts"><div style="padding:12px 16px"><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px"></div></div></div>
 </div>
 <div class="panel">
-<div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',null)">View all</button></div>
+<div class="panel-head"><div class="panel-title">Recently Completed</div><button class="panel-link" onclick="nav('jobs',document.getElementById('nav-work'))">View all</button></div>
 <div id="d-completed"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
 <div class="panel">
-<div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',null)">View all</button></div>
+<div class="panel-head"><div class="panel-title">Active Clients</div><button class="panel-link" onclick="nav('clients',document.getElementById('nav-clients'))">View all</button></div>
 <div id="d-clients"><div style="padding:12px 16px"><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px;margin-bottom:8px"></div><div class="skeleton" style="height:44px"></div></div></div>
 </div>
 </div>
 <div class="panel" style="margin-bottom:16px">
 <div class="panel-head">
 <div class="panel-title">Pending Quotes</div>
-<button class="panel-link" onclick="nav('quotes',null)">View all</button>
+<button class="panel-link" onclick="nav('quotes',document.getElementById('nav-work'))">View all</button>
 </div>
 <div id="d-quotes"><div style="padding:12px 16px"><div class="skeleton" style="height:40px;margin-bottom:8px"></div><div class="skeleton" style="height:40px"></div></div></div>
 </div>
@@ -574,7 +577,62 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 <div id="clients-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
 </div>
 </div>
-<div id="view-calendar" class="view">
+<div id="view-work" class="view">
+<div class="topbar">
+<div class="topbar-left">
+<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+<div class="page-title">Work</div>
+</div>
+<div class="topbar-right">
+<div class="work-tabs" id="work-tabs">
+<button class="work-tab active" onclick="switchWorkTab('jobs',this)">Jobs</button>
+<button class="work-tab" onclick="switchWorkTab('calendar',this)">Calendar</button>
+<button class="work-tab" onclick="switchWorkTab('invoices',this)">Invoices<span class="tab-badge" id="wt-inv-badge" style="background:#FFF8E1;color:#B88000;display:none"></span></button>
+<button class="work-tab" onclick="switchWorkTab('quotes',this)">Quotes<span class="tab-badge" id="wt-q-badge" style="background:#F5F3FF;color:#7C3AED;display:none"></span></button>
+</div>
+<button class="btn btn-yellow" id="work-add-btn" onclick="openModal('job')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="work-add-label">Add Job</span></button>
+</div>
+</div>
+<div class="content" style="padding:0">
+<div id="work-sub-jobs" class="work-sub active">
+<div id="jobs-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+</div>
+<div id="work-sub-calendar" class="work-sub">
+<div class="cal-wrap">
+<div class="cal-header">
+<div class="cal-month" id="cal-title">March 2026</div>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<div class="cal-view-btns">
+<button class="cal-view-btn active" id="cvb-month" onclick="setCalView('month')">Month</button>
+<button class="cal-view-btn" id="cvb-week" onclick="setCalView('week')">Week</button>
+</div>
+<div class="cal-nav">
+<button onclick="calPrev()">&#8249;</button>
+<button onclick="calToday()" style="width:auto;padding:0 10px;font-size:11px;font-weight:700">Today</button>
+<button onclick="calNext()">&#8250;</button>
+</div>
+</div>
+</div>
+<div id="cal-body"></div>
+</div>
+</div>
+<div id="work-sub-invoices" class="work-sub">
+<div id="invoices-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+</div>
+<div id="work-sub-quotes" class="work-sub">
+<div class="pipe" id="q-pipe"></div>
+<div class="panel" style="margin:0 16px 16px">
+<div class="panel-head" style="flex-direction:column;align-items:flex-start;gap:10px">
+<div class="panel-title">All Quotes</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap" id="q-filters"></div>
+</div>
+<div style="overflow-x:auto"><table class="desktop-table" id="q-tbl"><thead><tr><th>Client</th><th>Title</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="q-tbody"></tbody></table></div>
+<div id="q-cards"></div>
+</div>
+</div>
+</div>
+</div>
+<div id="view-calendar" class="view" style="display:none!important">
 <div class="topbar">
 <div class="topbar-left">
 <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -604,44 +662,24 @@ select.fi{color:var(--charcoal)!important;-webkit-text-fill-color:var(--charcoal
 </div>
 </div>
 </div>
-<div id="view-jobs" class="view">
+<!-- Jobs and Invoices views moved into Work view -->
+<div id="view-jobs" class="view" style="display:none!important"></div>
+<div id="view-invoices" class="view" style="display:none!important"></div>
+<div id="view-settings" class="view">
 <div class="topbar">
 <div class="topbar-left">
 <button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-<div class="page-title">Jobs</div>
+<div class="page-title">Settings</div>
 </div>
 <div class="topbar-right">
-<button class="btn btn-yellow" onclick="openModal('job')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Job</button>
-</div>
-</div>
-<div class="content" style="padding:0">
-<div id="jobs-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-</div>
-</div>
-<div id="view-invoices" class="view">
-<div class="topbar">
-<div class="topbar-left">
-<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-<div class="page-title">Invoices</div>
-</div>
-<div class="topbar-right">
-<button class="btn btn-yellow" onclick="openModal('invoice')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Invoice</button>
-</div>
-</div>
-<div class="content" style="padding:0">
-<div id="invoices-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-</div>
-</div>
-<div id="view-profile" class="view">
-<div class="topbar">
-<div class="topbar-left">
-<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-<div>
-<div class="page-title">Business Profile</div>
-<div class="topbar-date">Your info appears on every quote you send</div>
+<div class="settings-tabs" id="settings-tabs">
+<button class="settings-tab active" onclick="switchSettingsTab('profile',this)">Business Profile</button>
+<button class="settings-tab" onclick="switchSettingsTab('billing',this)">Plan & Billing</button>
 </div>
 </div>
 </div>
+<div id="settings-sub-profile" class="settings-sub active">
+<div id="view-profile" class="view" style="display:block!important">
 <div class="main-inner" style="max-width:680px;padding:20px 16px;margin:0 auto;width:100%;box-sizing:border-box">
 <div class="panel" style="margin-bottom:16px">
 <div class="panel-head" style="border-bottom:1px solid var(--border)">
@@ -788,33 +826,9 @@ Profile Saved
 </div>
 </div>
 </div>
-<div id="view-quotes" class="view">
-<div class="topbar">
-<div class="topbar-left">
-<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-<div>
-<div class="page-title">Quotes &amp; Estimates</div>
-<div class="topbar-date">Create, send, and convert quotes into jobs</div>
-</div>
-</div>
-<div class="topbar-right">
-<button class="btn" style="background:#7C3AED;color:white" onclick="openQuoteModal()">
-<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Quote
-</button>
-</div>
-</div>
-<div class="content">
-<div class="pipe" id="q-pipe"></div>
-<div class="panel">
-<div class="panel-head" style="flex-direction:column;align-items:flex-start;gap:10px">
-<div class="panel-title">All Quotes</div>
-<div style="display:flex;gap:6px;flex-wrap:wrap" id="q-filters"></div>
-</div>
-<div style="overflow-x:auto"><table class="desktop-table" id="q-tbl"><thead><tr><th>Client</th><th>Title</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="q-tbody"></tbody></table></div>
-<div id="q-cards"></div>
-</div>
-</div>
-</div>
+</div><!-- close settings-sub-profile -->
+<!-- Quotes view moved into Work view -->
+<div id="view-quotes" class="view" style="display:none!important"></div>
 <div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center;padding:20px">
 <div style="background:white;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
 <div style="font-size:32px;margin-bottom:12px">Delete</div>
@@ -945,21 +959,14 @@ Profile Saved
 </div>
 </div>
 </div>
-<div id="view-billing" class="view">
-<div class="topbar">
-<div class="topbar-left">
-<button class="menu-btn" onclick="openSidebar()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-<div>
-<div class="page-title">Plan & Billing</div>
-</div>
-</div>
-</div>
+<div id="settings-sub-billing" class="settings-sub">
+<div id="view-billing" style="display:block">
 <div class="content" style="max-width:700px;margin:0 auto;width:100%;box-sizing:border-box">
 
   <!-- Trial banner -->
   <div id="billing-trial-banner" style="background:linear-gradient(135deg,#1E4D35,#2A6B47);border-radius:16px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
     <div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:white;margin-bottom:4px">Your free trial is active 🎉</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:white;margin-bottom:4px">Your free trial is active</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.7)">Enjoy full access for 15 days. No credit card needed.</div>
     </div>
     <div style="background:var(--yellow);border-radius:10px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;color:var(--charcoal);white-space:nowrap" id="trial-days-left">15 days left</div>
@@ -977,7 +984,7 @@ Profile Saved
         </div>
         <div style="font-size:12px;color:rgba(255,255,255,0.35)">billed annually · <span style="text-decoration:line-through">$49/mo</span></div>
       </div>
-      <a href="/cdn-cgi/l/email-protection#dbb3beb7b7b49ba9bea8aea9bda9f5b8b4b6e4a8aeb9b1beb8afe68eabbca9babfbefbafb4fb8ba9b4" style="display:inline-block;padding:13px 24px;background:var(--yellow);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);text-decoration:none">Upgrade to Pro →</a>
+      <a href="/cdn-cgi/l/email-protection#dbb3beb7b7b49ba9bea8aea9bda9f5b8b4b6e4a8aeb9b1beb8afe68eabbca9babfbefbafb4fb8ba9b4" style="display:inline-block;padding:13px 24px;background:var(--yellow);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:var(--charcoal);text-decoration:none">Upgrade to Pro</a>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.8)"><span style="color:var(--yellow)">✓</span> Unlimited clients & jobs</div>
@@ -995,12 +1002,13 @@ Profile Saved
   <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px 24px">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Questions about your plan?</div>
     <div style="font-size:13px;color:var(--lmuted);margin-bottom:14px">We're happy to help.</div>
-    <a href="/cdn-cgi/l/email-protection#640c0108080b24160117111602164a070b09" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at <span class="__cf_email__" data-cfemail="157d7079797a55677066606773673b767a78">[email&#160;protected]</span> →</a>
+    <a href="/cdn-cgi/l/email-protection#640c0108080b24160117111602164a070b09" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);text-decoration:none">Email us at <span class="__cf_email__" data-cfemail="157d7079797a55677066606773673b767a78">[email&#160;protected]</span></a>
   </div>
 
 </div>
 </div>
-</div>
+</div><!-- close settings-sub-billing -->
+</div><!-- close view-settings -->
 
 <div class="overlay" id="m-client">
 <div class="modal">
@@ -1438,7 +1446,7 @@ banner.innerHTML=`<div class="onboarding">
 <div class="ob-title">Welcome to Resurfr &#128075;</div>
 <div class="ob-sub">Complete these steps to get your business set up.</div>
 <div class="ob-steps">
-<div class="ob-step" onclick="${step1Done?'':"nav('profile',document.getElementById('nav-profile'))"}" style="${stepStyle(step1Done, !step1Done)}">
+<div class="ob-step" onclick="${step1Done?'':"nav('profile',document.getElementById('nav-settings'))"}" style="${stepStyle(step1Done, !step1Done)}">
 <div class="ob-step-icon">${step1Done ? check : '&#127970;'}</div>
 <div><div class="ob-step-text">Set up your business profile</div><div class="ob-step-sub">Your name & contact info goes on every quote</div></div>
 ${!step1Done ? '<div style="margin-left:auto;font-size:11px;font-weight:700;opacity:0.7">START HERE →</div>' : ''}
@@ -1512,6 +1520,7 @@ ${jbadge(j.status)}
 const clEl=document.getElementById('d-clients');
 if(clEl) clEl.innerHTML=clients.length===0?`<div class="empty">No clients yet</div>`:clients.slice(0,5).map(c=>`<div class="c-row" style="cursor:pointer" onclick="showClientDetail('${c.id}')"><div class="c-av">${c.name.substring(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div class="c-name">${c.name}</div><div class="c-meta">${cstatusbadge(c.status)} &middot; ${c.courts||1} unit${(c.courts||1)!==1?'s':''}</div></div><div style="font-size:13px;font-weight:700">$${clientTotal(c).toLocaleString()}</div></div>`).join('');
 renderRevenueChart();
+updateWorkBadges();
 }
 function clientTotal(c){return jobs.filter(j=>String(j.client_id)===String(c.id)).reduce((s,j)=>s+(j.amount||0),0);}
 function renderClients(){
@@ -2078,13 +2087,69 @@ document.getElementById('chart-summary').innerHTML=`
 <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">${total>0?months[best]:'-'}</div><div style="font-size:10px;color:var(--lmuted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Best Month</div></div>`;
 }
 function nav(name,el){
+// Map old view names to new architecture
+const viewMap={jobs:'work',invoices:'work',quotes:'work',calendar:'work',profile:'settings',billing:'settings'};
+const workTabMap={jobs:'jobs',invoices:'invoices',quotes:'quotes',calendar:'calendar'};
+const settingsTabMap={profile:'profile',billing:'billing'};
+const actualView=viewMap[name]||name;
 document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-document.getElementById('view-'+name).classList.add('active');
-if(name==='quotes'){renderQuotesPipe();renderQuotesTable();} if(name==='profile'){loadProfile();} if(name==='calendar'){renderCalendar();}
+const viewEl=document.getElementById('view-'+actualView);
+if(viewEl)viewEl.classList.add('active');
+// Switch to correct sub-tab if navigating to a sub-section
+if(workTabMap[name]){switchWorkTab(workTabMap[name]);}
+if(settingsTabMap[name]){switchSettingsTab(settingsTabMap[name]);}
+// Trigger renders
+if(name==='quotes'||actualView==='work'&&document.querySelector('#work-sub-quotes.active')){renderQuotesPipe();renderQuotesTable();}
+if(name==='profile'||name==='settings'){loadProfile();}
+if(name==='calendar'||actualView==='work'&&document.querySelector('#work-sub-calendar.active')){renderCalendar();}
+// Update sidebar active state
+const navName=viewMap[name]?actualView:name;
 document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
 if(el)el.classList.add('active');
-else{const btn=document.getElementById('nav-'+name);if(btn)btn.classList.add('active');}
+else{const btn=document.getElementById('nav-'+navName);if(btn)btn.classList.add('active');}
 closeSidebar();document.body.scrollTop=0;document.documentElement.scrollTop=0;
+}
+function switchWorkTab(tabName,btn){
+document.querySelectorAll('.work-sub').forEach(s=>s.classList.remove('active'));
+const sub=document.getElementById('work-sub-'+tabName);
+if(sub)sub.classList.add('active');
+if(btn){document.querySelectorAll('.work-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+else{document.querySelectorAll('.work-tab').forEach(t=>{t.classList.toggle('active',t.textContent.trim().toLowerCase().startsWith(tabName))});}
+// Update add button
+const addBtn=document.getElementById('work-add-btn');
+const addLabel=document.getElementById('work-add-label');
+if(tabName==='jobs'){if(addBtn)addBtn.onclick=()=>openModal('job');if(addLabel)addLabel.textContent='Add Job';}
+else if(tabName==='invoices'){if(addBtn)addBtn.onclick=()=>openModal('invoice');if(addLabel)addLabel.textContent='New Invoice';}
+else if(tabName==='quotes'){if(addBtn)addBtn.onclick=()=>openQuoteModal();if(addLabel)addLabel.textContent='New Quote';addBtn.style.background='#7C3AED';addBtn.style.color='white';}
+else if(tabName==='calendar'){if(addBtn)addBtn.onclick=()=>openModal('job');if(addLabel)addLabel.textContent='Add Job';}
+// Reset button color for non-quote tabs
+if(tabName!=='quotes'&&addBtn){addBtn.style.background='';addBtn.style.color='';addBtn.className='btn btn-yellow';}
+else if(tabName==='quotes'&&addBtn){addBtn.className='btn';}
+// Trigger renders for the active tab
+if(tabName==='calendar')renderCalendar();
+if(tabName==='quotes'){renderQuotesPipe();renderQuotesTable();}
+// Update work tab badges
+updateWorkBadges();
+}
+function switchSettingsTab(tabName,btn){
+document.querySelectorAll('.settings-sub').forEach(s=>s.classList.remove('active'));
+const sub=document.getElementById('settings-sub-'+tabName);
+if(sub)sub.classList.add('active');
+if(btn){document.querySelectorAll('.settings-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+else{document.querySelectorAll('.settings-tab').forEach(t=>{t.classList.toggle('active',t.textContent.trim().toLowerCase().includes(tabName))});}
+if(tabName==='profile')loadProfile();
+}
+function updateWorkBadges(){
+const invBadge=document.getElementById('wt-inv-badge');
+const qBadge=document.getElementById('wt-q-badge');
+const pending=invoices.filter(i=>i.status==='pending'||i.status==='overdue').length;
+if(invBadge){invBadge.textContent=pending;invBadge.style.display=pending?'inline':'none';}
+const pendQ=quotes.filter(q=>q.status==='draft'||q.status==='sent').length;
+if(qBadge){qBadge.textContent=pendQ;qBadge.style.display=pendQ?'inline':'none';}
+// Update main work badge in sidebar
+const wb=document.getElementById('nb-work');
+const total=pending+pendQ;
+if(wb){wb.textContent=total;wb.style.display=total?'inline':'none';}
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
@@ -2438,7 +2503,7 @@ ${q.status === 'approved' ? `<button class="act-btn" style="background:#F5F3FF;c
 }
 }
 function filterQuotes(status) {
-nav('quotes', null);
+nav('quotes', document.getElementById('nav-work'));
 renderQuotesTable(status);
 }
 function openQuoteModal(clientName) {
@@ -2795,7 +2860,7 @@ renderQuotesPipe();
 renderQuotesTable();
 renderDashboard();
 document.getElementById('qp-wrap').style.display = 'none';
-nav('jobs', null);
+nav('jobs', document.getElementById('nav-work'));
 }
 async function deleteQuote(id) {
 if (!confirm('Delete this quote?')) return;
@@ -3264,7 +3329,7 @@ openEmailModal(id);
 <div style="font-size:36px;margin-bottom:12px">⭐</div>
 <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--charcoal);margin-bottom:8px">Upgrade to Pro</div>
 <div id="upgrade-reason" style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5"></div>
-<button onclick="nav('billing',document.getElementById('nav-billing'));closeUpgradeModal()" style="width:100%;padding:14px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">View Plans →</button>
+<button onclick="nav('billing',document.getElementById('nav-settings'));closeUpgradeModal()" style="width:100%;padding:14px;border-radius:10px;background:var(--yellow);color:var(--charcoal);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">View Plans →</button>
 <button onclick="closeUpgradeModal()" style="width:100%;padding:10px;border-radius:8px;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer">Maybe later</button>
 </div>
 </div>
@@ -3280,7 +3345,7 @@ Add Client
 <div class="fab-icon" style="background:rgba(29,78,216,0.1);color:#1D4ED8"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
 Add Job
 </button>
-<button class="fab-option" onclick="closeFabMenu();openModal('quote')">
+<button class="fab-option" onclick="closeFabMenu();openQuoteModal()">
 <div class="fab-icon" style="background:rgba(200,230,43,0.2);color:var(--charcoal)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
 New Quote
 </button>
@@ -3296,8 +3361,8 @@ New Invoice
 <button class="mobile-nav-item active" onclick="nav('dashboard',document.getElementById('nav-dashboard'));updateMobileNav(this)">
 <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home
 </button>
-<button class="mobile-nav-item" onclick="nav('calendar',document.getElementById('nav-calendar'));updateMobileNav(this)">
-<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar
+<button class="mobile-nav-item" onclick="nav('work',document.getElementById('nav-work'));updateMobileNav(this)">
+<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Work
 </button>
 <button class="mobile-nav-item" id="fab-trigger" onclick="toggleFabMenu()" style="position:relative;margin-top:-12px">
 <div id="fab-icon-wrap" style="width:44px;height:44px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(200,230,43,0.4);transition:transform .2s">
@@ -3308,8 +3373,8 @@ New Invoice
 <button class="mobile-nav-item" onclick="nav('clients',document.getElementById('nav-clients'));updateMobileNav(this)">
 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients
 </button>
-<button class="mobile-nav-item" onclick="openGlobalSearch()">
-<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
+<button class="mobile-nav-item" onclick="nav('settings',document.getElementById('nav-settings'));updateMobileNav(this)">
+<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
 </button>
 </div>
 </div>
@@ -3593,13 +3658,15 @@ document.getElementById('nq-client-email').value = client.email;
 }
 
 // ── INJECT SEARCH BARS ON NAV ──
-const origNav = nav;
+const origNav2 = nav;
 nav = function(name, el) {
-origNav(name, el);
+origNav2(name, el);
 setTimeout(() => {
 if (name === 'clients') addListSearch('clients-list', 'Search clients by name, location...', null);
-if (name === 'jobs') addListSearch('jobs-list', 'Search jobs by client, service...', null);
-if (name === 'invoices') addListSearch('invoices-list', 'Search invoices by client, amount...', null);
+if (name === 'jobs' || name === 'work') {
+addListSearch('jobs-list', 'Search jobs by client, service...', null);
+addListSearch('invoices-list', 'Search invoices by client, amount...', null);
+}
 }, 100);
 };
 
