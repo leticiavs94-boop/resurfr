@@ -1857,7 +1857,7 @@ document.getElementById('profile-edit-btn').style.display='block';
 document.getElementById('profile-saved-badge').style.display='flex';
 }
 }
-const FREE_LIMITS={quotes:3,clients:5};
+const FREE_LIMITS={quotes:9999,clients:9999};
 function isPro(){return businessProfile.plan==='pro';}
 function checkLimit(type){
 if(isPro())return true;
@@ -2266,10 +2266,10 @@ try{
 const{data:{session}}=await sb.auth.getSession();
 if(!session)throw new Error('Not logged in');
 const res=await fetch('/.netlify/functions/generate-insights',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
-if(!res.ok)throw new Error(await res.text());
+if(!res.ok){const t=await res.text();throw new Error(t||('HTTP '+res.status));}
 await loadInsights();
 toast('Insights ready! ✓','ok');
-}catch(e){console.error(e);toast('Analysis failed — check function logs','err');document.getElementById('ins-empty').style.display='block';}
+}catch(e){console.error(e);toast('Analysis failed: '+(e.message||e),'err');document.getElementById('ins-empty').style.display='block';}
 finally{loading.style.display='none';btn.disabled=false;btn.textContent='✨ Analyze Now';}
 }
 </script>
