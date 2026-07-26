@@ -1443,7 +1443,9 @@ const cards=invoices.map(i=>`<div class="m-card"><div class="m-card-top"><div cl
 document.getElementById('invoices-list').innerHTML=tbl+cards;
 }
 async function markPaid(id){
-await sb.from('invoices').update({status:'paid'}).eq('id',id);
+const upd=await sb.from('invoices').update({status:'paid'}).eq('id',id).select();
+if(upd.error){console.error('markPaid error:',upd.error);toast('Could not update invoice: '+(upd.error.message||'database error'),'err');return;}
+if(!upd.data||!upd.data.length){toast('Invoice did not update — likely a database permissions (RLS) issue.','err');return;}
 toast('Invoice marked as paid!','ok');
 await loadInvoices();renderInvoices();renderDashboard();updateNotifBadge();
 }
@@ -1492,7 +1494,7 @@ function cdDelete(){const id=document.getElementById('view-client-detail').datas
 
 // ── JOB DETAIL / COMPLETE ──
 function showJobDetail(id){
-const j=jobs.find(x=>x.id===id);if(!j)return;
+const j=jobs.find(x=>String(x.id)===String(id));if(!j)return;
 const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}):'Not set';
 const el=document.getElementById('job-detail-overlay');
 el.dataset.jobId=id;
@@ -1510,7 +1512,7 @@ el.style.display='flex';
 function markJobDone(id){
 document.getElementById('job-detail-overlay').style.display='none';
 pendingCompleteJobId=id;
-const j=jobs.find(x=>x.id===id);
+const j=jobs.find(x=>String(x.id)===String(id));
 const cname=j?.clients?.name||clients.find(c=>String(c.id)===String(j?.client_id))?.name||'this client';
 document.getElementById('pay-confirm-client').textContent=cname;
 document.getElementById('pay-confirm-amount').textContent='$'+(j?.amount||0).toLocaleString();
@@ -1530,7 +1532,7 @@ if(!date){toast('Pick a date for the next visit','err');return;}
 const id=pendingCompleteJobId;
 if(id){
 await sb.from('jobs').update({next_visit:date}).eq('id',id);
-const j=jobs.find(x=>x.id===id);
+const j=jobs.find(x=>String(x.id)===String(id));
 if(j){const{data:{user}}=await sb.auth.getUser();await sb.from('jobs').insert({client_id:j.client_id||null,client_name:j.client_name||null,client_name_fallback:j.client_name_fallback||null,service:j.service||'Follow-up visit',date:date,time:time||null,status:'scheduled',notes:note||('Follow-up from job on '+(j.date||'previous visit')),amount:j.amount||0,user_id:user?.id||null});}
 }
 const btn=document.querySelector('#pay-confirm-overlay [onclick="saveNextVisit()"]');
@@ -1543,8 +1545,10 @@ await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoice
 }
 async function completeJobWithPayment(paid){
 const id=pendingCompleteJobId;if(!id)return;
-await sb.from('jobs').update({status:'completed'}).eq('id',id);
-const j=jobs.find(x=>x.id===id);if(j)j.status='completed';
+const upd=await sb.from('jobs').update({status:'completed'}).eq('id',id).select();
+if(upd.error){console.error('mark done error:',upd.error);toast('Could not mark job done: '+(upd.error.message||upd.error.hint||'database error'),'err');return;}
+if(!upd.data||!upd.data.length){toast('Job did not update — likely a database permissions (RLS) issue. Run the RLS fix I sent.','err');return;}
+const j=jobs.find(x=>String(x.id)===String(id));if(j)j.status='completed';
 if(j?.client_id){const inv=invoices.filter(i=>String(i.client_id)===String(j.client_id)&&i.status==='pending').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];if(inv)await sb.from('invoices').update({status:paid?'paid':'pending'}).eq('id',inv.id);}
 const yesBtn=document.querySelector('#pay-confirm-overlay [onclick="completeJobWithPayment(true)"]');
 const noBtn=document.querySelector('#pay-confirm-overlay [onclick="completeJobWithPayment(false)"]');
@@ -1555,7 +1559,7 @@ await loadJobs();await loadInvoices();renderClients();renderJobs();renderInvoice
 }
 // ── EDIT / MODALS ──
 function editClient(id){
-const c=clients.find(x=>x.id===id);if(!c)return;
+const c=clients.find(x=>String(x.id)===String(id));if(!c)return;
 editingId.client=id;
 document.getElementById('client-modal-title').textContent='Edit Client';
 document.getElementById('qa-steps').style.display='none';
@@ -1579,7 +1583,7 @@ document.getElementById('save-client-btn').textContent='Save Changes';
 document.getElementById('m-client').classList.add('open');
 }
 function editJob(id){
-const j=jobs.find(x=>x.id===id);if(!j)return;
+const j=jobs.find(x=>String(x.id)===String(id));if(!j)return;
 editingId.job=id;
 document.getElementById('job-modal-title').textContent='Edit Job';
 const jmsub=document.getElementById('job-modal-sub');if(jmsub){jmsub.textContent='Changes save immediately';jmsub.style.display='block';}
@@ -1598,7 +1602,7 @@ document.getElementById('save-job-btn').textContent='Save Changes';
 document.getElementById('m-job').classList.add('open');
 }
 function editInvoice(id){
-const i=invoices.find(x=>x.id===id);if(!i)return;
+const i=invoices.find(x=>String(x.id)===String(id));if(!i)return;
 editingId.invoice=id;
 invoicePhotoUrl=i.photo_url||null;
 document.getElementById('invoice-modal-title').textContent='Edit Invoice';
@@ -2025,7 +2029,7 @@ const payload={client_name:clientName,title,lines:JSON.stringify(lines),tax:pars
 let error;
 if(editingQuoteId){({error}=await sb.from('quotes').update(payload).eq('id',editingQuoteId));}
 else{const{data:{user}}=await sb.auth.getUser();({error}=await sb.from('quotes').insert({...payload,status:'draft',user_id:user?.id||null}));}
-if(error){toast('Error: '+error.message);return;}
+if(error){console.error('saveQuote error:',error);toast('Could not save quote: '+(error.message||error.hint||error.details||'database error'),'err');return;}
 closeQuoteModal();
 toast(editingQuoteId?'Quote updated!':'Quote created!');
 await loadQuotes();renderQuotesPipe();renderQuotesTable();renderDashQuotes();updateNotifBadge();
@@ -2231,7 +2235,7 @@ document.getElementById('ins-empty').style.display=insCache.length?'none':'block
 wrap.innerHTML=insCache.map(i=>{const done=i.status==='done';return`<div class="ins-card ${done?'done':''}"><div class="ins-inner"><div class="ins-top"><span class="ins-type">${INS_ICONS[i.type]||'💡'} ${insEsc(i.type)}</span><span class="ins-pri ${i.priority==='high'?'high':'medium'}">${i.priority==='high'?'HIGH':'MEDIUM'}</span></div><div class="ins-title">${insEsc(i.title).toUpperCase()}</div><div class="ins-detail">${insEsc(i.detail)}</div><div class="ins-acts">${done?'<span style="font-size:12px;font-weight:700;color:var(--green)">✓ Done</span>':(i.action_type==='email'?`<button class="btn btn-dark" style="padding:8px 16px;font-size:12px" onclick="insOpenEmail('${i.id}')">${insEsc(i.action_label||'Draft email')}</button>`:'')}<button class="ins-dismiss" onclick="insDismiss('${i.id}')">Dismiss</button></div></div></div>`;}).join('');
 }
 function insOpenEmail(id){
-insCurrent=insCache.find(x=>x.id===id);if(!insCurrent)return;
+insCurrent=insCache.find(x=>String(x.id)===String(id));if(!insCurrent)return;
 document.getElementById('ins-to').value=insCurrent.email_to||'';
 document.getElementById('ins-subject').value=insCurrent.email_subject||'';
 document.getElementById('ins-body').value=insCurrent.email_body||'';
